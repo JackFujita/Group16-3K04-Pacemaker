@@ -1,9 +1,20 @@
 from tkinter import *
 from functools import partial
+import numpy as np
+
 
 def validateLogin(username, password):
+	input_username = username.get()
+	input_password = password.get()
 	print("username entered :", username.get())
 	print("password entered :", password.get())
+
+
+	f = open("secrets.txt", "a")
+	f.write(input_username+', '+input_password)
+	x = np.array([input_username, input_password])
+	f.close()
+	
 	return
 
 #window
