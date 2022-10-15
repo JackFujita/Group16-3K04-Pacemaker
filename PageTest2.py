@@ -37,9 +37,9 @@ class FirstPage(tk.Frame):
                         controller.show_frame(SecondPage)
                     else:
                         print("invalid")
-                        messagebox.showinfo("Error", "Please provide correct username and password!!")
+                        messagebox.showinfo("Error", "Please provide correct username and password")
             except:
-                messagebox.showinfo("Error", "Please provide correct username and password!!")
+                messagebox.showinfo("Error", "Please provide correct username and password")
          
         verify_button = tk.Button(border, text="Submit", font=("Arial", 15), command=verify)
         verify_button.place(x=320, y=115)
@@ -67,14 +67,14 @@ class FirstPage(tk.Frame):
             def check():
                 if Username_register.get()!="" or Password_register.get()!="" or Password_register_2.get()!="":
                     if Password_register.get()==Password_register_2.get():
-                        with open("Secrets.csv", 'w', newline='') as file:
+                        with open("Secrets.csv", 'a', newline='') as file:
                             writer = csv.writer(file)
                             writer.writerow([Username_register.get(), Password_register.get()])
-                        messagebox.showinfo("Welcome","You are registered successfully!!")
+                        messagebox.showinfo("Welcome","You are registered successfully")
                     else:
-                        messagebox.showinfo("Error","Your password didn't get match!!")
+                        messagebox.showinfo("Error","Your password didn't get match")
                 else:
-                    messagebox.showinfo("Error", "Please fill the complete field!!")
+                    messagebox.showinfo("Error", "Please fill the complete field")
                     
             b1 = tk.Button(window, text="Sign in", font=("Arial",15), bg="#ffc22a", command=check)
             b1.place(x=170, y=150)
@@ -102,10 +102,10 @@ class ThirdPage(tk.Frame):
         
         self.configure(bg='Tomato')
         
-        Label = tk.Label(self, text="Store some content related to your \n project or what your application made for. \n All the best!!", bg = "orange", font=("Arial Bold", 25))
+        Label = tk.Label(self, text="Tomato lol", bg = "orange", font=("Arial Bold", 25))
         Label.place(x=40, y=150)
         
-        Button = tk.Button(self, text="Home", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
+        Button = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
         Button.place(x=650, y=450)
         
         Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(SecondPage))
