@@ -1,6 +1,7 @@
+from calendar import c
 from pickle import TRUE
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import StringVar, messagebox
 import csv
 
 class FirstPage(tk.Frame):
@@ -102,15 +103,6 @@ class ThirdPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         
         self.configure(bg='Tomato')
-        
-        Lb1 = tk.Listbox(self, )
-        Lb1.insert(1, "AOO")
-        Lb1.insert(2, "VOO")
-        Lb1.insert(3, "AAI")
-        Lb1.insert(4, "VVI")
-        Lb1.pack()
-
-        ##AAAAAA SOME CHANGES
 
         Label = tk.Label(self, text="Tomato lol", bg = "orange", font=("Arial Bold", 25))
         Label.place(x=40, y=150)
@@ -120,6 +112,25 @@ class ThirdPage(tk.Frame):
         
         Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(SecondPage))
         Button.place(x=100, y=450)
+
+
+        def show():
+            label.config( text = clicked.get() )
+
+        options = ["AOO", "VOO", "AAI", "VVI"]
+
+        clicked = StringVar()
+        clicked.set(options[0])
+
+        drop = tk.OptionMenu(self , clicked , *options )
+        drop.pack()
+
+        button = tk.Button( self , text = "click Me" , command = show ).pack()
+
+     
+        label = tk.Label( self , text = "--Mode--" )
+        label.pack()
+
 
         #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
         
@@ -147,6 +158,8 @@ class Application(tk.Tk):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Application")
+
+    
             
 app = Application()
 app.maxsize(800,500)
