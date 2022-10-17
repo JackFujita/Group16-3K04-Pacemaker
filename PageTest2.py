@@ -115,6 +115,8 @@ class Login(ttk.Frame):
 class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
+
+        img = ttk.Label(self, image="./disconect.png", compound="image")
         
         border = ttk.LabelFrame(self, text='Mode Select')
         border.pack(fill="both", expand="yes", padx = 150, pady=150)
@@ -148,6 +150,7 @@ class ParamSelect(ttk.Frame):
         ttk.Frame.__init__(self, parent)
         # Implement checks to see if the parameter values are valid
         # will they mess up the pacemaker? (check that here)
+
 
         lowerRateLimit = 40
 
