@@ -1,10 +1,27 @@
+from atexit import register
 from calendar import c
 from pickle import TRUE
 import tkinter as tk
 from tkinter import StringVar, messagebox
+from tkinter import font
 import csv
 
-class FirstPage(tk.Frame):
+class Welcome(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        
+
+
+        welcomeLabel = tk.Label(self, text = 'Welcome to Pacemaker', font = ("Roboto Medium", 20))
+        welcomeLabel.grid(row = 2, column = 2, padx = 20, pady = 10)
+
+        Button = tk.Button(self, text="Login", font=("Arial", 15), command=lambda: controller.show_frame(Login))
+        Button.grid(row = 3, column = 2, padx = 10, pady = 10)
+                
+        Button = tk.Button(self, text="Register", font=("Arial", 15), command=lambda: controller.register)
+        Button.grid(row = 4, column = 2, padx = 20, pady = 5)
+
+class Login(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
         
@@ -45,48 +62,51 @@ class FirstPage(tk.Frame):
         verify_button = tk.Button(border, text="Submit", font=("Arial", 15), command=verify)
         verify_button.place(x=320, y=115)
         
-        def register():
-            window = tk.Tk()
-            window.resizable(0,0)
-            window.configure(bg="deep sky blue")
-            window.title("Register")
-            l1 = tk.Label(window, text="Username:", font=("Arial",15), bg="deep sky blue")
-            l1.place(x=10, y=10)
-            Username_register = tk.Entry(window, width=30, bd=5)
-            Username_register.place(x = 200, y=10)
+        # def register():
+        #     window = tk.Tk()
+        #     window.resizable(0,0)
+        #     window.configure(bg="deep sky blue")
+        #     window.title("Register")
+        #     l1 = tk.Label(window, text="Username:", font=("Arial",15), bg="deep sky blue")
+        #     l1.place(x=10, y=10)
+        #     Username_register = tk.Entry(window, width=30, bd=5)
+        #     Username_register.place(x = 200, y=10)
             
-            l2 = tk.Label(window, text="Password:", font=("Arial",15), bg="deep sky blue")
-            l2.place(x=10, y=60)
-            Password_register = tk.Entry(window, width=30, show="*", bd=5)
-            Password_register.place(x = 200, y=60)
+        #     l2 = tk.Label(window, text="Password:", font=("Arial",15), bg="deep sky blue")
+        #     l2.place(x=10, y=60)
+        #     Password_register = tk.Entry(window, width=30, show="*", bd=5)
+        #     Password_register.place(x = 200, y=60)
             
-            l3 = tk.Label(window, text="Confirm Password:", font=("Arial",15), bg="deep sky blue")
-            l3.place(x=10, y=110)
-            Password_register_2 = tk.Entry(window, width=30, show="*", bd=5)
-            Password_register_2.place(x = 200, y=110)
+        #     l3 = tk.Label(window, text="Confirm Password:", font=("Arial",15), bg="deep sky blue")
+        #     l3.place(x=10, y=110)
+        #     Password_register_2 = tk.Entry(window, width=30, show="*", bd=5)
+        #     Password_register_2.place(x = 200, y=110)
             
-            def check():
-                if Username_register.get()!="" or Password_register.get()!="" or Password_register_2.get()!="":
-                    if Password_register.get()==Password_register_2.get():
-                        with open("Secrets.csv", 'a', newline='') as file:
-                            writer = csv.writer(file)
-                            writer.writerow([Username_register.get(), Password_register.get()])
-                        messagebox.showinfo("Welcome","You are registered successfully")
-                        ###IMPLEMENT MAX USER FUNCTIONALITY
-                    else:
-                        messagebox.showinfo("Error","Your password didn't get match")
-                else:
-                    messagebox.showinfo("Error", "Please fill the complete field")
+        #     def check():
+        #         if Username_register.get()!="" or Password_register.get()!="" or Password_register_2.get()!="":
+        #             if Password_register.get()==Password_register_2.get():
+        #                 with open("Secrets.csv", 'a', newline='') as file:
+        #                     writer = csv.writer(file)
+        #                     writer.writerow([Username_register.get(), Password_register.get()])
+        #                 messagebox.showinfo("Welcome","You are registered successfully")
+        #                 ###IMPLEMENT MAX USER FUNCTIONALITY
+        #             else:
+        #                 messagebox.showinfo("Error","Your password didn't get match")
+        #         else:
+        #             messagebox.showinfo("Error", "Please fill the complete field")
                     
-            b1 = tk.Button(window, text="Sign in", font=("Arial",15), bg="#ffc22a", command=check)
-            b1.place(x=170, y=150)
+        #     b1 = tk.Button(window, text="Sign in", font=("Arial",15), bg="#ffc22a", command=check)
+        #     b1.place(x=170, y=150)
             
-            window.geometry("470x220")
-            window.mainloop()
+        #     window.geometry("470x220")
+        #     window.mainloop()
             
         B2 = tk.Button(self, text="Register", bg = "dark orange", font=("Arial",15), command=register)
         B2.place(x=650, y=20)
-        
+
+        B3 = tk.Button(self, text = "Back to welcome", font=("Roboto medium",15), command=lambda: controller.show_frame(Welcome))
+        #B3.grid(row = 4, column = 2, padx = 20, pady = 5) #WHY DOESNT THIS WORK?
+        B3.place(x=0,y=0)
 class SecondPage(tk.Frame):
     def __init__(self, parent, controller):
         tk.Frame.__init__(self, parent)
@@ -95,7 +115,7 @@ class SecondPage(tk.Frame):
         Button = tk.Button(self, text="Next", font=("Arial", 15), command=lambda: controller.show_frame(ThirdPage))
         Button.place(x=650, y=450)
         
-        Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
+        Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(Login))
         Button.place(x=100, y=450)
         
 class ThirdPage(tk.Frame):
@@ -107,7 +127,7 @@ class ThirdPage(tk.Frame):
         Label = tk.Label(self, text="Tomato lol", bg = "orange", font=("Arial Bold", 25))
         Label.place(x=40, y=150)
         
-        Button = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
+        Button = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(Login))
         Button.place(x=650, y=450)
         
         Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(SecondPage))
@@ -156,14 +176,14 @@ class FourthPage(tk.Frame):
         Label = tk.Label(self, text="Programmable Parameters", bg = "ivory", font=("Arial Bold", 20))
         Label.place(x=40, y=50)
         
-        BackToLogin = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
+        BackToLogin = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(Login))
         BackToLogin.place(x=650, y=450)
         
         Back = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(ThirdPage))
         Back.place(x=100, y=450)
 
-        Apply = tk.Button(self, text="Apply Changes", font=("Arial", 15), command=applyChanges())
-        Apply.place(x=400, y=200)
+        # Apply = tk.Button(self, text="Apply Changes", font=("Arial", 15), command=applyChanges())
+        # Apply.place(x=400, y=200)
 
         # def applyChanges():
 
@@ -185,17 +205,57 @@ class Application(tk.Tk):
         window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        for F in (FirstPage, SecondPage, ThirdPage, FourthPage):
+        for F in (Welcome, Login, SecondPage, ThirdPage, FourthPage):
             frame = F(window, self)
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
             
-        self.show_frame(FirstPage)
+        self.show_frame(Welcome)
         
     def show_frame(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Application")
+
+
+    def register():
+            window = tk.Tk()
+            window.resizable(0,0)
+            window.configure(bg="deep sky blue")
+            window.title("Register")
+            l1 = tk.Label(window, text="Username:", font=("Arial",15), bg="deep sky blue")
+            l1.place(x=10, y=10)
+            Username_register = tk.Entry(window, width=30, bd=5)
+            Username_register.place(x = 200, y=10)
+            
+            l2 = tk.Label(window, text="Password:", font=("Arial",15), bg="deep sky blue")
+            l2.place(x=10, y=60)
+            Password_register = tk.Entry(window, width=30, show="*", bd=5)
+            Password_register.place(x = 200, y=60)
+            
+            l3 = tk.Label(window, text="Confirm Password:", font=("Arial",15), bg="deep sky blue")
+            l3.place(x=10, y=110)
+            Password_register_2 = tk.Entry(window, width=30, show="*", bd=5)
+            Password_register_2.place(x = 200, y=110)
+            
+            def check():
+                if Username_register.get()!="" or Password_register.get()!="" or Password_register_2.get()!="":
+                    if Password_register.get()==Password_register_2.get():
+                        with open("Secrets.csv", 'a', newline='') as file:
+                            writer = csv.writer(file)
+                            writer.writerow([Username_register.get(), Password_register.get()])
+                        messagebox.showinfo("Welcome","You are registered successfully")
+                        ###IMPLEMENT MAX USER FUNCTIONALITY
+                    else:
+                        messagebox.showinfo("Error","Your password didn't get match")
+                else:
+                    messagebox.showinfo("Error", "Please fill the complete field")
+                    
+            b1 = tk.Button(window, text="Sign in", font=("Arial",15), bg="#ffc22a", command=check)
+            b1.place(x=170, y=150)
+            
+            window.geometry("470x220")
+            window.mainloop()
 
     
             
