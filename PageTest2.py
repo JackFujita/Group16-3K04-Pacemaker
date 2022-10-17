@@ -110,6 +110,43 @@ class ThirdPage(tk.Frame):
         
         Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(SecondPage))
         Button.place(x=100, y=450)
+
+        Button = tk.Button(self, text="Next", font=("Arial", 15), command=lambda: controller.show_frame(FourthPage))
+        Button.place(x=550, y=450)
+
+class FourthPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        
+        self.configure(bg='Green')
+
+        # Implement checks to see if the parameter values are valid
+        # will they mess up the pacemaker? (check that here)
+
+        lowerRateLimit = 40
+
+        border = tk.LabelFrame(self, text='Parameters', bg='ivory', bd = 10, font=("Arial", 20))
+        border.pack(fill="both", expand="yes", padx = 150, pady=150)
+        
+        Label = tk.Label(self, text="Programmable Parameters", bg = "ivory", font=("Arial Bold", 20))
+        Label.place(x=40, y=50)
+        
+        BackToLogin = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
+        BackToLogin.place(x=650, y=450)
+        
+        Back = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(ThirdPage))
+        Back.place(x=100, y=450)
+
+        Apply = tk.Button(self, text="Apply Changes", font=("Arial", 15), command=applyChanges())
+        Apply.place(x=400, y=200)
+
+        def applyChanges():
+
+
+        L1 = tk.Label(border, text="Param1", font=("Arial Bold", 15), bg='ivory')
+        L1.place(x=50, y=20)
+        param1 = tk.Entry(border, width = 30, bd = 5)
+        param1.place(x=180, y=20)
         
         
 class Application(tk.Tk):
@@ -124,7 +161,7 @@ class Application(tk.Tk):
         window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        for F in (FirstPage, SecondPage, ThirdPage):
+        for F in (FirstPage, SecondPage, ThirdPage, FourthPage):
             frame = F(window, self)
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
