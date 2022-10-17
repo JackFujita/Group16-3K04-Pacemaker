@@ -1,6 +1,7 @@
+from calendar import c
 from pickle import TRUE
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import StringVar, messagebox
 import csv
 
 class FirstPage(tk.Frame):
@@ -71,6 +72,7 @@ class FirstPage(tk.Frame):
                             writer = csv.writer(file)
                             writer.writerow([Username_register.get(), Password_register.get()])
                         messagebox.showinfo("Welcome","You are registered successfully")
+                        ###IMPLEMENT MAX USER FUNCTIONALITY
                     else:
                         messagebox.showinfo("Error","Your password didn't get match")
                 else:
@@ -101,7 +103,7 @@ class ThirdPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         
         self.configure(bg='Tomato')
-        
+
         Label = tk.Label(self, text="Tomato lol", bg = "orange", font=("Arial Bold", 25))
         Label.place(x=40, y=150)
         
@@ -110,8 +112,67 @@ class ThirdPage(tk.Frame):
         
         Button = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(SecondPage))
         Button.place(x=100, y=450)
+
+        Button = tk.Button(self, text="Next", font=("Arial", 15), command=lambda: controller.show_frame(FourthPage))
+        Button.place(x=550, y=450)
+
+        
+        def show():
+            label.config( text = clicked.get() )
+
+        options = ["AOO", "VOO", "AAI", "VVI"]
+
+        clicked = StringVar()
+        clicked.set(options[0])
+
+        drop = tk.OptionMenu(self , clicked , *options )
+        drop.pack()
+
+        button = tk.Button( self , text = "click Me" , command = show ).pack()
+
+     
+        label = tk.Label( self , text = "--Mode--" )
+        label.pack()
+
+
+        #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
         
         
+
+class FourthPage(tk.Frame):
+    def __init__(self, parent, controller):
+        tk.Frame.__init__(self, parent)
+        
+        self.configure(bg='Green')
+
+        # Implement checks to see if the parameter values are valid
+        # will they mess up the pacemaker? (check that here)
+
+        lowerRateLimit = 40
+
+        border = tk.LabelFrame(self, text='Parameters', bg='ivory', bd = 10, font=("Arial", 20))
+        border.pack(fill="both", expand="yes", padx = 150, pady=150)
+        
+        Label = tk.Label(self, text="Programmable Parameters", bg = "ivory", font=("Arial Bold", 20))
+        Label.place(x=40, y=50)
+        
+        BackToLogin = tk.Button(self, text="Back To Login", font=("Arial", 15), command=lambda: controller.show_frame(FirstPage))
+        BackToLogin.place(x=650, y=450)
+        
+        Back = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(ThirdPage))
+        Back.place(x=100, y=450)
+
+        Apply = tk.Button(self, text="Apply Changes", font=("Arial", 15), command=applyChanges())
+        Apply.place(x=400, y=200)
+
+        # def applyChanges():
+
+
+        # L1 = tk.Label(border, text="Param1", font=("Arial Bold", 15), bg='ivory')
+        # L1.place(x=50, y=20)
+        # param1 = tk.Entry(border, width = 30, bd = 5)
+        # param1.place(x=180, y=20)
+
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -124,7 +185,7 @@ class Application(tk.Tk):
         window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        for F in (FirstPage, SecondPage, ThirdPage):
+        for F in (FirstPage, SecondPage, ThirdPage, FourthPage):
             frame = F(window, self)
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
@@ -135,6 +196,8 @@ class Application(tk.Tk):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Application")
+
+    
             
 app = Application()
 app.maxsize(800,500)
