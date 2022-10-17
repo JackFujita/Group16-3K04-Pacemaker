@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'VOOstateflow'.
  *
- * Model version                  : 5.1
+ * Model version                  : 5.13
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sun Oct 16 23:28:44 2022
+ * C/C++ source code generated on : Mon Oct 17 10:44:23 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -21,15 +21,15 @@
 
 /* Block parameters (default storage) */
 P_VOOstateflow_T VOOstateflow_P = {
-  /* Expression: 200
+  /* Expression: 20
    * Referenced by: '<Root>/Constant3'
    */
-  200.0,
+  20.0,
 
-  /* Expression: 1
+  /* Expression: 20
    * Referenced by: '<Root>/Constant'
    */
-  1.0,
+  20.0,
 
   /* Expression: 75
    * Referenced by: '<Root>/Constant4'
@@ -41,15 +41,20 @@ P_VOOstateflow_T VOOstateflow_P = {
    */
   75.0,
 
-  /* Expression: 1000
+  /* Expression: 750
    * Referenced by: '<Root>/Constant5'
    */
-  1000.0,
+  750.0,
 
-  /* Expression: 1000
+  /* Expression: 750
    * Referenced by: '<Root>/Constant1'
    */
-  1000.0
+  750.0,
+
+  /* Expression: 1
+   * Referenced by: '<Root>/Constant6'
+   */
+  1.0
 };
 
 /*

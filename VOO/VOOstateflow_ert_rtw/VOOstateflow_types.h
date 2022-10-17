@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'VOOstateflow'.
  *
- * Model version                  : 5.1
+ * Model version                  : 5.13
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sun Oct 16 23:28:44 2022
+ * C/C++ source code generated on : Mon Oct 17 10:44:23 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -24,7 +24,7 @@
 
 /* Model Code Variants */
 
-/* Custom Type definition for MATLABSystem: '<Root>/Digital Write9' */
+/* Custom Type definition for MATLABSystem: '<Root>/PWM Output' */
 #include "MW_SVD.h"
 #ifndef struct_tag_0QIIqIWUIOhUbf1p9QN9pB
 #define struct_tag_0QIIqIWUIOhUbf1p9QN9pB
@@ -63,6 +63,27 @@ struct tag_EkIWEs70Gs0LyfeXELZ2TC
 typedef struct tag_EkIWEs70Gs0LyfeXELZ2TC freedomk64f_DigitalWrite_VOOs_T;
 
 #endif                             /* typedef_freedomk64f_DigitalWrite_VOOs_T */
+
+#ifndef struct_tag_RYgVoAXTz61tXGMaBAGv7F
+#define struct_tag_RYgVoAXTz61tXGMaBAGv7F
+
+struct tag_RYgVoAXTz61tXGMaBAGv7F
+{
+  boolean_T matlabCodegenIsDeleted;
+  int32_T isInitialized;
+  boolean_T isSetupComplete;
+  b_freedomk64f_Hardware_VOOsta_T Hw;
+  MW_Handle_Type MW_PWM_HANDLE;
+};
+
+#endif                                 /* struct_tag_RYgVoAXTz61tXGMaBAGv7F */
+
+#ifndef typedef_freedomk64f_PWMOutput_VOOstat_T
+#define typedef_freedomk64f_PWMOutput_VOOstat_T
+
+typedef struct tag_RYgVoAXTz61tXGMaBAGv7F freedomk64f_PWMOutput_VOOstat_T;
+
+#endif                             /* typedef_freedomk64f_PWMOutput_VOOstat_T */
 
 /* Parameters (default storage) */
 typedef struct P_VOOstateflow_T_ P_VOOstateflow_T;

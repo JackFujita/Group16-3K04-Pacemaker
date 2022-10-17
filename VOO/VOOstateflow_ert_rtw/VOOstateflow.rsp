@@ -1,5 +1,6 @@
 MW_digitalIO.o
 mw_sdk_interface.o
+MW_PWM.o
 ert_main.o
 VOOstateflow.o
 VOOstateflow_data.o

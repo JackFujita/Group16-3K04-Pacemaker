@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'VOOstateflow'.
  *
- * Model version                  : 5.1
+ * Model version                  : 5.13
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Sun Oct 16 23:28:44 2022
+ * C/C++ source code generated on : Mon Oct 17 10:44:23 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -23,6 +23,7 @@
 #define VOOstateflow_COMMON_INCLUDES_
 #include "rtwtypes.h"
 #include "MW_digitalIO.h"
+#include "MW_PWM.h"
 #endif                                 /* VOOstateflow_COMMON_INCLUDES_ */
 
 #include "VOOstateflow_types.h"
@@ -39,21 +40,33 @@
 
 /* Block signals (default storage) */
 typedef struct {
+  real_T State;                        /* '<Root>/Chart' */
+  real_T PACE_CHARGE_CTRL;             /* '<Root>/Chart' */
+  real_T VENT_PACE_CTRL;               /* '<Root>/Chart' */
+  real_T ATR_PACE_CTRL;                /* '<Root>/Chart' */
+  real_T VENT_GND_CTRL;                /* '<Root>/Chart' */
+  real_T ATR_GND_CTRL;                 /* '<Root>/Chart' */
+  real_T PACE_GND_CTRL;                /* '<Root>/Chart' */
+  real_T FRONTEND_CTRL;                /* '<Root>/Chart' */
   real_T PACING_REF_PWM;               /* '<Root>/Chart' */
+  real_T Z_ATR_CTRL;                   /* '<Root>/Chart' */
+  real_T Z_VENT_CTRL;                  /* '<Root>/Chart' */
 } B_VOOstateflow_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
-  freedomk64f_DigitalWrite_VOOs_T obj; /* '<Root>/Digital Write9' */
-  freedomk64f_DigitalWrite_VOOs_T obj_o;/* '<Root>/Digital Write8' */
+  freedomk64f_DigitalWrite_VOOs_T obj; /* '<Root>/Digital Write8' */
   freedomk64f_DigitalWrite_VOOs_T obj_b;/* '<Root>/Digital Write7' */
   freedomk64f_DigitalWrite_VOOs_T obj_h;/* '<Root>/Digital Write6' */
   freedomk64f_DigitalWrite_VOOs_T obj_l;/* '<Root>/Digital Write5' */
   freedomk64f_DigitalWrite_VOOs_T obj_j;/* '<Root>/Digital Write4' */
-  freedomk64f_DigitalWrite_VOOs_T obj_n;/* '<Root>/Digital Write3' */
+  freedomk64f_DigitalWrite_VOOs_T obj_p;/* '<Root>/Digital Write3' */
   freedomk64f_DigitalWrite_VOOs_T obj_e;/* '<Root>/Digital Write2' */
+  freedomk64f_DigitalWrite_VOOs_T obj_m;/* '<Root>/Digital Write11' */
+  freedomk64f_DigitalWrite_VOOs_T obj_o;/* '<Root>/Digital Write10' */
   freedomk64f_DigitalWrite_VOOs_T obj_i;/* '<Root>/Digital Write1' */
-  freedomk64f_DigitalWrite_VOOs_T obj_m;/* '<Root>/Digital Write' */
+  freedomk64f_DigitalWrite_VOOs_T obj_mo;/* '<Root>/Digital Write' */
+  freedomk64f_PWMOutput_VOOstat_T obj_c;/* '<Root>/PWM Output' */
   uint32_T temporalCounter_i1;         /* '<Root>/Chart' */
   uint8_T is_active_c3_VOOstateflow;   /* '<Root>/Chart' */
   uint8_T is_c3_VOOstateflow;          /* '<Root>/Chart' */
@@ -61,10 +74,10 @@ typedef struct {
 
 /* Parameters (default storage) */
 struct P_VOOstateflow_T_ {
-  real_T Constant3_Value;              /* Expression: 200
+  real_T Constant3_Value;              /* Expression: 20
                                         * Referenced by: '<Root>/Constant3'
                                         */
-  real_T Constant_Value;               /* Expression: 1
+  real_T Constant_Value;               /* Expression: 20
                                         * Referenced by: '<Root>/Constant'
                                         */
   real_T Constant4_Value;              /* Expression: 75
@@ -73,11 +86,14 @@ struct P_VOOstateflow_T_ {
   real_T Constant2_Value;              /* Expression: 75
                                         * Referenced by: '<Root>/Constant2'
                                         */
-  real_T Constant5_Value;              /* Expression: 1000
+  real_T Constant5_Value;              /* Expression: 750
                                         * Referenced by: '<Root>/Constant5'
                                         */
-  real_T Constant1_Value;              /* Expression: 1000
+  real_T Constant1_Value;              /* Expression: 750
                                         * Referenced by: '<Root>/Constant1'
+                                        */
+  real_T Constant6_Value;              /* Expression: 1
+                                        * Referenced by: '<Root>/Constant6'
                                         */
 };
 

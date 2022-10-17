@@ -2,7 +2,7 @@
 ## Makefile generated for component 'VOOstateflow'. 
 ## 
 ## Makefile     : VOOstateflow.mk
-## Generated on : Sun Oct 16 23:16:49 2022
+## Generated on : Mon Oct 17 09:37:29 2022
 ## Final product: $(RELATIVE_PATH_TO_ANCHOR)/VOOstateflow.elf
 ## Product type : executable
 ## 
@@ -23,7 +23,7 @@ MAKEFILE                  = VOOstateflow.mk
 MATLAB_ROOT               = C:/PROGRA~1/MATLAB/R2022a
 MATLAB_BIN                = C:/PROGRA~1/MATLAB/R2022a/bin
 MATLAB_ARCH_BIN           = $(MATLAB_BIN)/win64
-START_DIR                 = C:/Users/sabri/Documents/Uni_Y3/SoftwareDevelopment_3K04/3k04-pacemaker
+START_DIR                 = C:/Users/sabri/Documents/Uni_Y3/SoftwareDevelopment_3K04/3k04-pacemaker/VOO
 SOLVER                    = 
 SOLVER_OBJ                = 
 CLASSIC_INTERFACE         = 0
@@ -224,7 +224,7 @@ DEFINES = $(DEFINES_) $(DEFINES_BUILD_ARGS) $(DEFINES_CUSTOM) $(DEFINES_OPTS) $(
 ## SOURCE FILES
 ###########################################################################
 
-SRCS = C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/MW_digitalIO.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/mw_sdk_interface.c $(START_DIR)/VOOstateflow_ert_rtw/VOOstateflow.c $(START_DIR)/VOOstateflow_ert_rtw/VOOstateflow_data.c C:/Freescale/KSDK_1.2.0/platform/devices/startup.c C:/Freescale/KSDK_1.2.0/platform/devices/MK64F12/startup/system_MK64F12.c C:/Freescale/KSDK_1.2.0/platform/devices/MK64F12/startup/gcc/startup_MK64F12.S C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/board.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/hardware_init.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/pin_mux.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/fsl_misc_utilities.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/fsl_edma_irq.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/fsl_uart_irq.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/irq_stub.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/sbrk.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/cmsis_rtos_init.c C:/ProgramData/MATLAB/SupportPackages/R2022a/3P.instrset/cmsis.instrset/CMSIS/RTOS/RTX/Templates/RTX_Conf_CM.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_thread.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_semaphore.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_timer.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_signal.c
+SRCS = C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/MW_digitalIO.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/mw_sdk_interface.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/MW_PWM.c $(START_DIR)/VOOstateflow_ert_rtw/VOOstateflow.c $(START_DIR)/VOOstateflow_ert_rtw/VOOstateflow_data.c C:/Freescale/KSDK_1.2.0/platform/devices/startup.c C:/Freescale/KSDK_1.2.0/platform/devices/MK64F12/startup/system_MK64F12.c C:/Freescale/KSDK_1.2.0/platform/devices/MK64F12/startup/gcc/startup_MK64F12.S C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/board.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/hardware_init.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/pin_mux.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/fsl_misc_utilities.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/fsl_edma_irq.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/fsl_uart_irq.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/irq_stub.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/sbrk.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/cmsis_rtos_init.c C:/ProgramData/MATLAB/SupportPackages/R2022a/3P.instrset/cmsis.instrset/CMSIS/RTOS/RTX/Templates/RTX_Conf_CM.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_thread.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_semaphore.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_timer.c C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/armcortexmbase/cmsis_rtos_rtx/src/mw_signal.c
 
 MAIN_SRC = $(START_DIR)/VOOstateflow_ert_rtw/ert_main.c
 
@@ -234,7 +234,7 @@ ALL_SRCS = $(SRCS) $(MAIN_SRC)
 ## OBJECTS
 ###########################################################################
 
-OBJS = MW_digitalIO.o mw_sdk_interface.o VOOstateflow.o VOOstateflow_data.o startup.o system_MK64F12.o startup_MK64F12.o board.o hardware_init.o pin_mux.o fsl_misc_utilities.o fsl_edma_irq.o fsl_uart_irq.o irq_stub.o sbrk.o cmsis_rtos_init.o RTX_Conf_CM.o mw_thread.o mw_semaphore.o mw_timer.o mw_signal.o
+OBJS = MW_digitalIO.o mw_sdk_interface.o MW_PWM.o VOOstateflow.o VOOstateflow_data.o startup.o system_MK64F12.o startup_MK64F12.o board.o hardware_init.o pin_mux.o fsl_misc_utilities.o fsl_edma_irq.o fsl_uart_irq.o irq_stub.o sbrk.o cmsis_rtos_init.o RTX_Conf_CM.o mw_thread.o mw_semaphore.o mw_timer.o mw_signal.o
 
 MAIN_OBJ = ert_main.o
 
@@ -585,6 +585,10 @@ MW_digitalIO.o : C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/sup
 
 
 mw_sdk_interface.o : C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/mw_sdk_interface.c
+	$(CC) $(CFLAGS) -o "$@" "$<"
+
+
+MW_PWM.o : C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/src/MW_PWM.c
 	$(CC) $(CFLAGS) -o "$@" "$<"
 
 
