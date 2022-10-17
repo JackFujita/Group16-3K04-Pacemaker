@@ -110,6 +110,8 @@ class ThirdPage(tk.Frame):
         Lb1.insert(4, "VVI")
         Lb1.pack()
 
+        ##AAAAAA SOME CHANGES
+
         Label = tk.Label(self, text="Tomato lol", bg = "orange", font=("Arial Bold", 25))
         Label.place(x=40, y=150)
         
