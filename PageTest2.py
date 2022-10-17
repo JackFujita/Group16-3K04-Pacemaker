@@ -165,13 +165,13 @@ class FourthPage(tk.Frame):
         Apply = tk.Button(self, text="Apply Changes", font=("Arial", 15), command=applyChanges())
         Apply.place(x=400, y=200)
 
-        def applyChanges():
+        # def applyChanges():
 
 
-        L1 = tk.Label(border, text="Param1", font=("Arial Bold", 15), bg='ivory')
-        L1.place(x=50, y=20)
-        param1 = tk.Entry(border, width = 30, bd = 5)
-        param1.place(x=180, y=20)
+        # L1 = tk.Label(border, text="Param1", font=("Arial Bold", 15), bg='ivory')
+        # L1.place(x=50, y=20)
+        # param1 = tk.Entry(border, width = 30, bd = 5)
+        # param1.place(x=180, y=20)
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
