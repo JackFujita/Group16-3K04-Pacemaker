@@ -162,17 +162,22 @@ class FourthPage(tk.Frame):
         Back = tk.Button(self, text="Back", font=("Arial", 15), command=lambda: controller.show_frame(ThirdPage))
         Back.place(x=100, y=450)
 
-        L1 = tk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 15), bg='ivory')
+        L1 = tk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10), bg='ivory')
         L1.place(x=50, y=20)
         param1 = tk.Entry(border, width = 30, bd = 5)
         param1.place(x=180, y=20)
+
+        L1 = tk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10), bg='ivory')
+        L1.place(x=50, y=40)
+        param1 = tk.Entry(border, width = 30, bd = 5)
+        param1.place(x=180, y=40)
 
         def applyChanges():
             lowerRateLimit = param1.get()
             print(lowerRateLimit)
 
         Apply = tk.Button(self, text="Apply Changes", font=("Arial", 15), command=applyChanges)
-        Apply.place(x=400, y=400)
+        Apply.place(x=400, y=450)
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
