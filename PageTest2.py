@@ -2,10 +2,11 @@ from atexit import register
 from calendar import c
 from pickle import TRUE
 import tkinter as tk
-from tkinter import ttk
+from tkinter import LEFT, PhotoImage, ttk
 from tkinter import StringVar, messagebox
 import csv
 import sv_ttk
+from PIL import ImageTk, Image
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
@@ -115,8 +116,34 @@ class Login(ttk.Frame):
 class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
+        
+        image = Image.open('Pictures/disconnect2.png')
+        image = image.resize((20,20), Image.ANTIALIAS)
+        global my_image
+        my_image = ImageTk.PhotoImage(image)
+        label = ttk.Label(self, image=my_image)
+        label.place(x = 150, y = 100)
+        
+        label = ttk.Label(self, text="No Pacemaker Connected...")
+        label.place(x = 175, y = 100)
 
-        img = ttk.Label(self, image="./disconect.png", compound="image")
+        image2 = Image.open('Pictures/connect.png')
+        image2 = image2.resize((20,20), Image.ANTIALIAS)
+        global my_image2
+        my_image2 = ImageTk.PhotoImage(image2)
+        label = ttk.Label(self, image=my_image2)
+        label.place(x = 150, y = 60)
+        
+        label = ttk.Label(self, text="Pacemaker Connected")
+        label.place(x = 175, y = 60)
+
+
+
+
+        # disconnect_icon = tk.PhotoImage(file='Pictures/disconnect.png')
+
+        # img = ttk.Label(self, image=disconnect_icon, compound="image")
+        # img.pack()
         
         border = ttk.LabelFrame(self, text='Mode Select')
         border.pack(fill="both", expand="yes", padx = 150, pady=150)
@@ -204,7 +231,7 @@ class Application(tk.Tk):
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
             
-        self.show_frame(Welcome)
+        self.show_frame(ModeSelect)
         
     def show_frame(self, page):
         frame = self.frames[page]
