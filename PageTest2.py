@@ -1,6 +1,7 @@
+from calendar import c
 from pickle import TRUE
 import tkinter as tk
-from tkinter import messagebox
+from tkinter import StringVar, messagebox
 import csv
 
 class FirstPage(tk.Frame):
@@ -71,6 +72,7 @@ class FirstPage(tk.Frame):
                             writer = csv.writer(file)
                             writer.writerow([Username_register.get(), Password_register.get()])
                         messagebox.showinfo("Welcome","You are registered successfully")
+                        ###IMPLEMENT MAX USER FUNCTIONALITY
                     else:
                         messagebox.showinfo("Error","Your password didn't get match")
                 else:
@@ -101,7 +103,7 @@ class ThirdPage(tk.Frame):
         tk.Frame.__init__(self, parent)
         
         self.configure(bg='Tomato')
-        
+
         Label = tk.Label(self, text="Tomato lol", bg = "orange", font=("Arial Bold", 25))
         Label.place(x=40, y=150)
         
@@ -113,6 +115,29 @@ class ThirdPage(tk.Frame):
 
         Button = tk.Button(self, text="Next", font=("Arial", 15), command=lambda: controller.show_frame(FourthPage))
         Button.place(x=550, y=450)
+
+        
+        def show():
+            label.config( text = clicked.get() )
+
+        options = ["AOO", "VOO", "AAI", "VVI"]
+
+        clicked = StringVar()
+        clicked.set(options[0])
+
+        drop = tk.OptionMenu(self , clicked , *options )
+        drop.pack()
+
+        button = tk.Button( self , text = "click Me" , command = show ).pack()
+
+     
+        label = tk.Label( self , text = "--Mode--" )
+        label.pack()
+
+
+        #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
+        
+        
 
 class FourthPage(tk.Frame):
     def __init__(self, parent, controller):
@@ -147,8 +172,7 @@ class FourthPage(tk.Frame):
         L1.place(x=50, y=20)
         param1 = tk.Entry(border, width = 30, bd = 5)
         param1.place(x=180, y=20)
-        
-        
+
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
@@ -172,6 +196,8 @@ class Application(tk.Tk):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Application")
+
+    
             
 app = Application()
 app.maxsize(800,500)
