@@ -116,7 +116,7 @@ class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
-        img = ttk.Label(self, image="./disconect.png", compound="image")
+        #img = ttk.Label(self, image="./disconect.png", compound="image")
         
         border = ttk.LabelFrame(self, text='Mode Select')
         border.pack(fill="both", expand="yes", padx = 150, pady=150)
@@ -152,12 +152,13 @@ class ParamSelect(ttk.Frame):
         # will they mess up the pacemaker? (check that here)
 
         posY = 25
+        posX = 250
 
         border = ttk.LabelFrame(self, text='Parameters')
-        border.pack(fill="both", expand="yes", padx = 150, pady=150)
+        border.pack(fill="both", expand="yes", padx = 100, pady=75)
 
         Label = ttk.Label(self, text="Programmable Parameters", font=("Arial Bold", 20))
-        Label.place(x=40, y=50)
+        Label.place(x=40, y=40)
 
         BackToLogin = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
         BackToLogin.place(x=650, y=450)
@@ -169,49 +170,49 @@ class ParamSelect(ttk.Frame):
         L1.place(x=50, y=posY)
 
         param1 = ttk.Entry(border, width = 30)
-        param1.place(x=180, y=posY-5)
+        param1.place(x=posX, y=posY-5)
 
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+40)
 
         param2 = ttk.Entry(border, width = 30)
-        param2.place(x=180, y=posY+35)
+        param2.place(x=posX, y=posY+35)
 
         L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+80)
 
         param3 = ttk.Entry(border, width = 30)
-        param3.place(x=180, y=posY+75)
+        param3.place(x=posX, y=posY+75)
 
         L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+120)
 
         param4 = ttk.Entry(border, width = 30)
-        param4.place(x=180, y=posY+115)
+        param4.place(x=posX, y=posY+115)
 
         L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+160)
 
         param5 = ttk.Entry(border, width = 30)
-        param5.place(x=180, y=posY+155)
+        param5.place(x=posX, y=posY+155)
 
         L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+200)
 
         param6 = ttk.Entry(border, width = 30)
-        param6.place(x=180, y=posY+195)
+        param6.place(x=posX, y=posY+195)
 
         L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+240)
 
         param7 = ttk.Entry(border, width = 30)
-        param7.place(x=180, y=posY+235)
+        param7.place(x=posX, y=posY+235)
 
         L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
         L1.place(x=50, y=posY+280)
 
         param8 = ttk.Entry(border, width = 30)
-        param8.place(x=180, y=posY+275)
+        param8.place(x=posX, y=posY+275)
 
         def applyChanges():
             lowerRateLimit = param1.get()
