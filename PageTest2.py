@@ -10,7 +10,9 @@ from PIL import ImageTk, Image
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
-        ttk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)  
+# ---------------------------------------------------------------------------------------------------
+        #Make sure we know what this stuff actually means for the discussion
 
         welcomeLabel = ttk.Label(self, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
         #welcomeLabel.grid(row = 0, column = 2, padx = 10, pady = 5)
