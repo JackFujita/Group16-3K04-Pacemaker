@@ -151,8 +151,7 @@ class ParamSelect(ttk.Frame):
         # Implement checks to see if the parameter values are valid
         # will they mess up the pacemaker? (check that here)
 
-
-        lowerRateLimit = 40
+        posY = 25
 
         border = ttk.LabelFrame(self, text='Parameters')
         border.pack(fill="both", expand="yes", padx = 150, pady=150)
@@ -167,21 +166,63 @@ class ParamSelect(ttk.Frame):
         Back.place(x=100, y=450)
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=25)
+        L1.place(x=50, y=posY)
 
         param1 = ttk.Entry(border, width = 30)
-        param1.place(x=180, y=20)
-
+        param1.place(x=180, y=posY-5)
 
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=65)
+        L1.place(x=50, y=posY+40)
 
-        param1 = ttk.Entry(border, width = 30)
-        param1.place(x=180, y=60)
+        param2 = ttk.Entry(border, width = 30)
+        param2.place(x=180, y=posY+35)
+
+        L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
+        L1.place(x=50, y=posY+80)
+
+        param3 = ttk.Entry(border, width = 30)
+        param3.place(x=180, y=posY+75)
+
+        L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
+        L1.place(x=50, y=posY+120)
+
+        param4 = ttk.Entry(border, width = 30)
+        param4.place(x=180, y=posY+115)
+
+        L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
+        L1.place(x=50, y=posY+160)
+
+        param5 = ttk.Entry(border, width = 30)
+        param5.place(x=180, y=posY+155)
+
+        L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
+        L1.place(x=50, y=posY+200)
+
+        param6 = ttk.Entry(border, width = 30)
+        param6.place(x=180, y=posY+195)
+
+        L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
+        L1.place(x=50, y=posY+240)
+
+        param7 = ttk.Entry(border, width = 30)
+        param7.place(x=180, y=posY+235)
+
+        L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
+        L1.place(x=50, y=posY+280)
+
+        param8 = ttk.Entry(border, width = 30)
+        param8.place(x=180, y=posY+275)
 
         def applyChanges():
             lowerRateLimit = param1.get()
-            print(lowerRateLimit)
+            upperRateLimit = param2.get()
+            atrialAmp = param3.get()
+            atrialPW = param4.get()
+            ventAmp = param5.get()
+            ventPW = param6.get()
+            vrp = param7.get()
+            arp = param8.get()
+            
 
         Apply = ttk.Button(self, text="Apply Changes", command=applyChanges)
         Apply.place(x=400, y=450)
