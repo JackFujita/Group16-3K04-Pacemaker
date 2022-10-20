@@ -256,6 +256,8 @@ class ParamSelect(ttk.Frame):
         posY = 25
         posX = 250
         
+        # print(controller.selected.get())
+
         border = ttk.LabelFrame(self, text='Parameters')
         border.pack(fill="both", expand="yes", padx = 100, pady=75)
 
