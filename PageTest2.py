@@ -1,6 +1,7 @@
 from atexit import register
 from calendar import c
 from pickle import TRUE
+from statistics import mode
 import tkinter as tk
 from tkinter import BOTTOM, LEFT, RAISED, RIGHT, TOP, PhotoImage, ttk
 from tkinter import StringVar, messagebox
@@ -122,6 +123,7 @@ class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
+        controller.set_mode("AOO")
         
         top_frame = ttk.Frame(self, padding = 20, width = 300)
         top_frame.pack(fill='x', side = TOP)
@@ -226,6 +228,8 @@ class ModeSelect(ttk.Frame):
                 global applied
                 applied = True
                 errormsg.config(text = '')
+                controller.set_mode(selected.get())
+                # self.mode = selected.get()
             else:
                 # messagebox.showinfo("Error","Please connect a pacemaker")
                 errormsg.config(text = "Please connect a pacemaker")
@@ -247,6 +251,13 @@ class ModeSelect(ttk.Frame):
 
         #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
         
+    def get_mode(self):
+        print(self.mode)
+        return self.mode 
+    # def set_mode():
+    #     return
+    # private: mode
+
 class ParamSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -255,13 +266,18 @@ class ParamSelect(ttk.Frame):
 
         posY = 25
         posX = 250
-        
-        # print(controller.selected.get())
 
+
+
+
+        # mode = controller.get_mode()
+        print(controller.get_mode()) ## NEED THIS TO EXECUTE WHEN WE LOOK AT THE FRAME (SHOW FRAME) NOT INITIALIZE THE FRAME
+        # print(controller.selected.get())
+    
         border = ttk.LabelFrame(self, text='Parameters')
         border.pack(fill="both", expand="yes", padx = 100, pady=75)
 
-        Label = ttk.Label(self, text="Programmable Parameters", font=("Arial Bold", 20))
+        Label = ttk.Label(self, text=controller.get_mode(), font=("Arial Bold", 20))
         Label.place(x=40, y=40)
 
         BackToLogin = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
@@ -333,11 +349,10 @@ class ParamSelect(ttk.Frame):
         Apply.place(x=400, y=450)
 
 
-
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        
+        self.mode = "test mode"
         #creating a window
         window = tk.Frame(self)
         window.pack()
@@ -348,15 +363,24 @@ class Application(tk.Tk):
         self.frames = {}
         for F in (Welcome, Login, ModeSelect, ParamSelect):
             frame = F(window, self)
+                #frame = Welcome(window, self)
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
-            
-        self.show_frame(ModeSelect)
+        # self.frames = {Welcome(window, self), Login(window, self), ModeSelect(windoe,self), ParamSelect(window,self)}
+        self.show_frame(Welcome)
         
     def show_frame(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Pacemaker")
+
+    def set_mode(self, input_mode):
+        self.mode = input_mode
+        print("set mode:", self.mode)
+
+    def get_mode(self):
+        print("get mode:", self.mode)
+        return self.mode
 
 app = Application()
 app.maxsize(1280,720)
