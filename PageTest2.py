@@ -151,7 +151,9 @@ class ModeSelect(ttk.Frame):
 
         prev_IDs = []
         global connected ## GLOBAL IS BAD
+        global applied 
         connected = False
+        applied = False
 
         def connect():
             label.config(text="Pacemaker Connected")
@@ -200,8 +202,17 @@ class ModeSelect(ttk.Frame):
 
         Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))
         Button.pack(side= LEFT)
+
+        def switch_check():
+            if connected and applied:
+                print("switch page")
+                controller.show_frame(ParamSelect)
+            else:
+                errormsg.config(text = "Please connect or select a mode")
+
         
-        Button = ttk.Button(bottom_frame, text="Next", command=lambda: controller.show_frame(ParamSelect))
+        # Button = ttk.Button(bottom_frame, text="Next", command=lambda: controller.show_frame(ParamSelect))
+        Button = ttk.Button(bottom_frame, text="Next", command= switch_check)
         Button.pack(side = RIGHT)
 
         errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
@@ -212,6 +223,8 @@ class ModeSelect(ttk.Frame):
         def save_mode():
             if connected:
                 print(selected.get())
+                global applied
+                applied = True
                 errormsg.config(text = '')
             else:
                 # messagebox.showinfo("Error","Please connect a pacemaker")
