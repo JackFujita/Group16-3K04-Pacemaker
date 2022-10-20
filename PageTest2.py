@@ -2,9 +2,10 @@ from atexit import register
 from calendar import c
 from pickle import TRUE
 import tkinter as tk
-from tkinter import LEFT, PhotoImage, ttk
+from tkinter import BOTTOM, LEFT, RAISED, RIGHT, TOP, PhotoImage, ttk
 from tkinter import StringVar, messagebox
 import csv
+from turtle import left, right
 import sv_ttk
 from PIL import ImageTk, Image
 
@@ -118,43 +119,82 @@ class Login(ttk.Frame):
 class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
+
         
-        image = Image.open('Pictures/disconnect2.png')
-        image = image.resize((20,20), Image.ANTIALIAS)
-        global my_image
-        my_image = ImageTk.PhotoImage(image)
-        label = ttk.Label(self, image=my_image)
-        label.place(x = 150, y = 100)
+        top_frame = ttk.Frame(self, padding = 20, width = 300)
+        top_frame.pack(fill='x', side = TOP)
+
+        second_top = ttk.LabelFrame(self, text = "Connection Status", padding = 20, width = 200) ## Width doesnt work if grid propogate is not called
+        second_top.pack(fill = 'x', padx = 150, pady = 10, side = TOP)
+
+        bottom_frame = ttk.Frame(self, padding = 10, width = 400)
+        bottom_frame.pack(fill = 'x', side=BOTTOM)
+
+        options = ["123", "234", "345", "456", "567", "678"]
+        clicked = StringVar()
+
+        Test_label = ttk.Label(top_frame, text="Pacemaker ID simulation: ")
+        Test_label.pack(side=LEFT)
+        w = ttk.OptionMenu(top_frame, clicked, options[0], *options)
+        w.pack(side=LEFT)
+
+        new_pacemaker_label = ttk.Label(second_top)
+        new_pacemaker_label.pack(pady = 20)
+
+        icon = ttk.Label(second_top)
+        icon.pack(side = LEFT, padx=10)
+
+        label = ttk.Label(second_top)
+        label.pack(side = LEFT)
+
+        prev_IDs = []
+
+        def connect():
+            label.config(text="Pacemaker Connected")
+            image = Image.open('Pictures/connect.png')
+            image = image.resize((20,20), Image.ANTIALIAS)
+            global my_image
+            my_image = ImageTk.PhotoImage(image)
+            icon.config(image = my_image)
+
+            new_pm = True
+            for id in prev_IDs:
+                if id == clicked.get():
+                    new_pm = False
+            prev_IDs.append(clicked.get())
+            if new_pm:
+                new_pacemaker_label.config(text = "New Pacemaker Connected!")
+            else:
+                new_pacemaker_label.config(text = "Welcome Back!")
+
+
+        def disconnect():
+            label.config(text="No Pacemaker Connected...")
+            image = Image.open('Pictures/disconnect2.png')
+            image = image.resize((20,20), Image.ANTIALIAS)
+            global my_image
+            my_image = ImageTk.PhotoImage(image)
+            icon.config(image = my_image)
+
+            new_pacemaker_label.config(text = "")
+
+
+        disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker Simulation')
+        disconnect_button.pack(side=RIGHT)
         
-        label = ttk.Label(self, text="No Pacemaker Connected...")
-        label.place(x = 175, y = 100)
+        connect_button = ttk.Button(top_frame, command= connect, text='Connect Pacemaker Simulation')
+        connect_button.pack(side=RIGHT)
 
-        image2 = Image.open('Pictures/connect.png')
-        image2 = image2.resize((20,20), Image.ANTIALIAS)
-        global my_image2
-        my_image2 = ImageTk.PhotoImage(image2)
-        label = ttk.Label(self, image=my_image2)
-        label.place(x = 150, y = 60)
-        
-        label = ttk.Label(self, text="Pacemaker Connected")
-        label.place(x = 175, y = 60)
-
-
-
-
-        # disconnect_icon = tk.PhotoImage(file='Pictures/disconnect.png')
-
-        # img = ttk.Label(self, image=disconnect_icon, compound="image")
-        # img.pack()
+        options = ["123", "234", "345", "456", "567", "678"]
         
         border = ttk.LabelFrame(self, text='Mode Select')
-        border.pack(fill="both", expand="yes", padx = 150, pady=150)
+        border.pack(fill="x", expand="yes", padx = 150, pady=10)
 
-        Button = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
-        Button.place(x=150, y=450)
+        Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))
+        Button.pack(side= LEFT)
         
-        Button = ttk.Button(self, text="Next", command=lambda: controller.show_frame(ParamSelect))
-        Button.place(x=600, y=450)
+        Button = ttk.Button(bottom_frame, text="Next", command=lambda: controller.show_frame(ParamSelect))
+        Button.pack(side = RIGHT)
 
         ##CHECK TO SEE IF THEY HAVE FILLED OUT THE FORM BEFORE GOING TO NEXT
 
@@ -173,21 +213,20 @@ class ModeSelect(ttk.Frame):
 
         #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
         
-        
 class ParamSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         # Implement checks to see if the parameter values are valid
         # will they mess up the pacemaker? (check that here)
 
-
-        lowerRateLimit = 40
-
+        posY = 25
+        posX = 250
+        
         border = ttk.LabelFrame(self, text='Parameters')
-        border.pack(fill="both", expand="yes", padx = 150, pady=150)
+        border.pack(fill="both", expand="yes", padx = 100, pady=75)
 
         Label = ttk.Label(self, text="Programmable Parameters", font=("Arial Bold", 20))
-        Label.place(x=40, y=50)
+        Label.place(x=40, y=40)
 
         BackToLogin = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
         BackToLogin.place(x=650, y=450)
@@ -196,24 +235,67 @@ class ParamSelect(ttk.Frame):
         Back.place(x=100, y=450)
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=25)
+        L1.place(x=50, y=posY)
 
         param1 = ttk.Entry(border, width = 30)
-        param1.place(x=180, y=20)
-
+        param1.place(x=posX, y=posY-5)
 
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=65)
+        L1.pack()
+        param2 = ttk.Entry(border, width = 30)
+        param2.pack()
 
-        param1 = ttk.Entry(border, width = 30)
-        param1.place(x=180, y=60)
+        
+        L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
+        L1.pack()
+
+        param3 = ttk.Entry(border, width = 30)
+        param3.pack()
+
+        L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
+        L1.pack()
+
+        param4 = ttk.Entry(border, width = 30)
+        param4.pack()
+
+        L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
+        L1.pack()
+
+        param5 = ttk.Entry(border, width = 30)
+        param5.pack()
+
+        L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
+        L1.pack()
+
+        param6 = ttk.Entry(border, width = 30)
+        param6.pack()
+
+        L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
+        L1.pack()
+
+        param7 = ttk.Entry(border, width = 30)
+        param7.pack()
+
+        L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
+        L1.pack()
+
+        param8 = ttk.Entry(border, width = 30)
+        param8.pack()
 
         def applyChanges():
             lowerRateLimit = param1.get()
-            print(lowerRateLimit)
+            upperRateLimit = param2.get()
+            atrialAmp = param3.get()
+            atrialPW = param4.get()
+            ventAmp = param5.get()
+            ventPW = param6.get()
+            vrp = param7.get()
+            arp = param8.get()
+            
 
         Apply = ttk.Button(self, text="Apply Changes", command=applyChanges)
         Apply.place(x=400, y=450)
+
 
 
 class Application(tk.Tk):
@@ -233,7 +315,7 @@ class Application(tk.Tk):
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
             
-        self.show_frame(Welcome)
+        self.show_frame(ModeSelect)
         
     def show_frame(self, page):
         frame = self.frames[page]
