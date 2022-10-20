@@ -15,7 +15,9 @@ class Welcome(ttk.Frame):
 # ---------------------------------------------------------------------------------------------------
         #Make sure we know what this stuff actually means for the discussion
 
-        welcomeLabel = ttk.Label(self, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
+        frame = ttk.Frame(self, padding = 200)
+        frame.pack()
+        welcomeLabel = ttk.Label(frame, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
         #welcomeLabel.grid(row = 0, column = 2, padx = 10, pady = 5)
         welcomeLabel.pack(pady = 20)
 
@@ -25,7 +27,7 @@ class Welcome(ttk.Frame):
         # Button = tk.Button(self, text="Register", font=("Arial", 15), command=lambda: controller.register)
         # Button.grid(row = 4, column = 2, padx = 20, pady = 5)
 
-        Button = ttk.Button(self, text = "Login", command=lambda: controller.show_frame(Login), width=30)
+        Button = ttk.Button(frame, text = "Login", command=lambda: controller.show_frame(Login), width=30)
         #Button.grid(row = 3, column = 2, padx = 10, pady = 5)
         Button.pack()
 
@@ -148,6 +150,8 @@ class ModeSelect(ttk.Frame):
         label.pack(side = LEFT)
 
         prev_IDs = []
+        global connected ## GLOBAL IS BAD
+        connected = False
 
         def connect():
             label.config(text="Pacemaker Connected")
@@ -166,6 +170,8 @@ class ModeSelect(ttk.Frame):
                 new_pacemaker_label.config(text = "New Pacemaker Connected!")
             else:
                 new_pacemaker_label.config(text = "Welcome Back!")
+            global connected  #GLOBAL IS BAD
+            connected = True
 
 
         def disconnect():
@@ -177,6 +183,8 @@ class ModeSelect(ttk.Frame):
             icon.config(image = my_image)
 
             new_pacemaker_label.config(text = "")
+            global connected ## GLOBAL IS BAD
+            connected = False
 
 
         disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker Simulation')
@@ -196,10 +204,23 @@ class ModeSelect(ttk.Frame):
         Button = ttk.Button(bottom_frame, text="Next", command=lambda: controller.show_frame(ParamSelect))
         Button.pack(side = RIGHT)
 
+        errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
+        errormsg.pack(side = TOP)
+
         ##CHECK TO SEE IF THEY HAVE FILLED OUT THE FORM BEFORE GOING TO NEXT
 
         def save_mode():
-            print(selected.get())
+            if connected:
+                print(selected.get())
+                errormsg.config(text = '')
+            else:
+                # messagebox.showinfo("Error","Please connect a pacemaker")
+                errormsg.config(text = "Please connect a pacemaker")
+                return
+
+            if selected.get() == '':
+                errormsg.config(text = "Please select an option")
+                # messagebox.showinfo("Error","Please select an option")
 
         modes = ["AOO", 'VOO', 'AAI', 'VII']
         selected = StringVar()
