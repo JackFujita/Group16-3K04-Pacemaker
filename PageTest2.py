@@ -257,7 +257,7 @@ class ModeSelect(ttk.Frame):
     # def set_mode():
     #     return
     # private: mode
-        
+
 class ParamSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -373,26 +373,35 @@ class ParamSelect(ttk.Frame):
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
-        
+        self.mode = "test mode"
         #creating a window
-        window = tk.Frame(self)
-        window.pack()
+        self.window = tk.Frame(self)
+        self.window.pack()
         
-        window.grid_rowconfigure(0, minsize = 500)
-        window.grid_columnconfigure(0, minsize = 800)
+        self.window.grid_rowconfigure(0, minsize = 500)
+        self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        for F in (Welcome, Login, ModeSelect, ParamSelect):
-            frame = F(window, self)
-            self.frames[F] = frame
-            frame.grid(row = 0, column=0, sticky="nsew")
-            
-        self.show_frame(ParamSelect)
+        # for F in (Welcome, Login, ModeSelect, ParamSelect):
+        #     frame = F(self.window, self)
+        #         #frame = Welcome(window, self)
+        #     self.frames[F] = frame
+        #     frame.grid(row = 0, column=0, sticky="nsew")
+        # # self.frames = {Welcome(window, self), Login(window, self), ModeSelect(windoe,self), ParamSelect(window,self)}
+        self.show_frame(Welcome)
         
     def show_frame(self, page):
+        frame = page(self.window, self)
+        self.frames[page] = frame
+        frame.grid(row = 0, column=0, sticky="nsew")
+        frame.tkraise()
+        self.title("Pacemaker")
+
+    def back(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Pacemaker")
+
 
     def set_mode(self, input_mode):
         self.mode = input_mode
@@ -401,7 +410,7 @@ class Application(tk.Tk):
     def get_mode(self):
         print("get mode:", self.mode)
         return self.mode
-    
+
 app = Application()
 app.maxsize(1280,720)
 sv_ttk.set_theme("light")
