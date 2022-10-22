@@ -283,7 +283,7 @@ class ParamSelect(ttk.Frame):
         BackToLogin = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
         BackToLogin.place(x=650, y=450)
 
-        Back = ttk.Button(self, text="Back", command=lambda: controller.show_frame(ModeSelect))
+        Back = ttk.Button(self, text="Back", command=lambda: controller.back(ModeSelect))
         Back.place(x=100, y=450)
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
@@ -354,25 +354,33 @@ class Application(tk.Tk):
         tk.Tk.__init__(self, *args, **kwargs)
         self.mode = "test mode"
         #creating a window
-        window = tk.Frame(self)
-        window.pack()
+        self.window = tk.Frame(self)
+        self.window.pack()
         
-        window.grid_rowconfigure(0, minsize = 500)
-        window.grid_columnconfigure(0, minsize = 800)
+        self.window.grid_rowconfigure(0, minsize = 500)
+        self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        for F in (Welcome, Login, ModeSelect, ParamSelect):
-            frame = F(window, self)
-                #frame = Welcome(window, self)
-            self.frames[F] = frame
-            frame.grid(row = 0, column=0, sticky="nsew")
-        # self.frames = {Welcome(window, self), Login(window, self), ModeSelect(windoe,self), ParamSelect(window,self)}
-        self.show_frame(ModeSelect)
+        # for F in (Welcome, Login, ModeSelect, ParamSelect):
+        #     frame = F(self.window, self)
+        #         #frame = Welcome(window, self)
+        #     self.frames[F] = frame
+        #     frame.grid(row = 0, column=0, sticky="nsew")
+        # # self.frames = {Welcome(window, self), Login(window, self), ModeSelect(windoe,self), ParamSelect(window,self)}
+        self.show_frame(Welcome)
         
     def show_frame(self, page):
+        frame = page(self.window, self)
+        self.frames[page] = frame
+        frame.grid(row = 0, column=0, sticky="nsew")
+        frame.tkraise()
+        self.title("Pacemaker")
+
+    def back(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Pacemaker")
+
 
     def set_mode(self, input_mode):
         self.mode = input_mode
