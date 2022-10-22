@@ -1,17 +1,24 @@
 from atexit import register
 from calendar import c
 from pickle import TRUE
+from statistics import mode
 import tkinter as tk
-from tkinter import ttk
+from tkinter import BOTTOM, LEFT, RAISED, RIGHT, TOP, PhotoImage, ttk
 from tkinter import StringVar, messagebox
 import csv
+from turtle import left, right
 import sv_ttk
+from PIL import ImageTk, Image
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
-        ttk.Frame.__init__(self, parent)
+        ttk.Frame.__init__(self, parent)  
+# ---------------------------------------------------------------------------------------------------
+        #Make sure we know what this stuff actually means for the discussion
 
-        welcomeLabel = ttk.Label(self, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
+        frame = ttk.Frame(self, padding = 200)
+        frame.pack()
+        welcomeLabel = ttk.Label(frame, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
         #welcomeLabel.grid(row = 0, column = 2, padx = 10, pady = 5)
         welcomeLabel.pack(pady = 20)
 
@@ -21,7 +28,7 @@ class Welcome(ttk.Frame):
         # Button = tk.Button(self, text="Register", font=("Arial", 15), command=lambda: controller.register)
         # Button.grid(row = 4, column = 2, padx = 20, pady = 5)
 
-        Button = ttk.Button(self, text = "Login", command=lambda: controller.show_frame(Login), width=30)
+        Button = ttk.Button(frame, text = "Login", command=lambda: controller.show_frame(Login), width=30)
         #Button.grid(row = 3, column = 2, padx = 10, pady = 5)
         Button.pack()
 
@@ -116,21 +123,121 @@ class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
-        #img = ttk.Label(self, image="./disconect.png", compound="image")
+        controller.set_mode("AOO")
+        
+        top_frame = ttk.Frame(self, padding = 20, width = 300)
+        top_frame.pack(fill='x', side = TOP)
+
+        second_top = ttk.LabelFrame(self, text = "Connection Status", padding = 20, width = 200) ## Width doesnt work if grid propogate is not called
+        second_top.pack(fill = 'x', padx = 150, pady = 10, side = TOP)
+
+        bottom_frame = ttk.Frame(self, padding = 10, width = 400)
+        bottom_frame.pack(fill = 'x', side=BOTTOM)
+
+        options = ["123", "234", "345", "456", "567", "678"]
+        clicked = StringVar()
+
+        Test_label = ttk.Label(top_frame, text="Pacemaker ID simulation: ")
+        Test_label.pack(side=LEFT)
+        w = ttk.OptionMenu(top_frame, clicked, options[0], *options)
+        w.pack(side=LEFT)
+
+        new_pacemaker_label = ttk.Label(second_top)
+        new_pacemaker_label.pack(pady = 20)
+
+        icon = ttk.Label(second_top)
+        icon.pack(side = LEFT, padx=10)
+
+        label = ttk.Label(second_top)
+        label.pack(side = LEFT)
+
+        prev_IDs = []
+        global connected ## GLOBAL IS BAD
+        global applied 
+        connected = False
+        applied = False
+
+        def connect():
+            label.config(text="Pacemaker Connected")
+            image = Image.open('Pictures/connect.png')
+            image = image.resize((20,20), Image.ANTIALIAS)
+            global my_image
+            my_image = ImageTk.PhotoImage(image)
+            icon.config(image = my_image)
+
+            new_pm = True
+            for id in prev_IDs:
+                if id == clicked.get():
+                    new_pm = False
+            prev_IDs.append(clicked.get())
+            if new_pm:
+                new_pacemaker_label.config(text = "New Pacemaker Connected!")
+            else:
+                new_pacemaker_label.config(text = "Welcome Back!")
+            global connected  #GLOBAL IS BAD
+            connected = True
+
+
+        def disconnect():
+            label.config(text="No Pacemaker Connected...")
+            image = Image.open('Pictures/disconnect2.png')
+            image = image.resize((20,20), Image.ANTIALIAS)
+            global my_image
+            my_image = ImageTk.PhotoImage(image)
+            icon.config(image = my_image)
+
+            new_pacemaker_label.config(text = "")
+            global connected ## GLOBAL IS BAD
+            connected = False
+
+
+        disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker Simulation')
+        disconnect_button.pack(side=RIGHT)
+        
+        connect_button = ttk.Button(top_frame, command= connect, text='Connect Pacemaker Simulation')
+        connect_button.pack(side=RIGHT)
+
+        options = ["123", "234", "345", "456", "567", "678"]
         
         border = ttk.LabelFrame(self, text='Mode Select')
-        border.pack(fill="both", expand="yes", padx = 150, pady=150)
+        border.pack(fill="x", expand="yes", padx = 150, pady=10)
 
-        Button = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
-        Button.place(x=150, y=450)
+        Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))
+        Button.pack(side= LEFT)
+
+        def switch_check():
+            if connected and applied:
+                print("switch page")
+                controller.show_frame(ParamSelect)
+            else:
+                errormsg.config(text = "Please connect or select a mode")
+
         
-        Button = ttk.Button(self, text="Next", command=lambda: controller.show_frame(ParamSelect))
-        Button.place(x=600, y=450)
+        # Button = ttk.Button(bottom_frame, text="Next", command=lambda: controller.show_frame(ParamSelect))
+        Button = ttk.Button(bottom_frame, text="Next", command= switch_check)
+        Button.pack(side = RIGHT)
+
+        errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
+        errormsg.pack(side = TOP)
 
         ##CHECK TO SEE IF THEY HAVE FILLED OUT THE FORM BEFORE GOING TO NEXT
 
         def save_mode():
-            print(selected.get())
+            if connected:
+                print(selected.get())
+                global applied
+                applied = True
+                errormsg.config(text = '')
+                controller.set_mode(selected.get())
+                # self.mode = selected.get()
+            else:
+                # messagebox.showinfo("Error","Please connect a pacemaker")
+                errormsg.config(text = "Please connect a pacemaker")
+                return
+
+            if selected.get() == '':
+                errormsg.config(text = "Please select an option")
+                # messagebox.showinfo("Error","Please select an option")
 
         modes = ["AOO", 'VOO', 'AAI', 'VII']
         selected = StringVar()
@@ -144,6 +251,12 @@ class ModeSelect(ttk.Frame):
 
         #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
         
+    def get_mode(self):
+        print(self.mode)
+        return self.mode 
+    # def set_mode():
+    #     return
+    # private: mode
         
 class ParamSelect(ttk.Frame):
     def __init__(self, parent, controller):
@@ -154,65 +267,77 @@ class ParamSelect(ttk.Frame):
         posY = 25
         posX = 250
 
-        border = ttk.LabelFrame(self, text='Parameters')
-        border.pack(fill="both", expand="yes", padx = 100, pady=75)
+        yPad = 15
+        yPadEntry = 8
 
-        Label = ttk.Label(self, text="Programmable Parameters", font=("Arial Bold", 20))
-        Label.place(x=40, y=40)
+        top = ttk.Frame(self, width = 500)
+        top.pack(side = TOP)
 
-        BackToLogin = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
-        BackToLogin.place(x=650, y=450)
+        bottom = ttk.Frame(self, width = 500)
+        bottom.pack(side = BOTTOM)
 
-        Back = ttk.Button(self, text="Back", command=lambda: controller.show_frame(ModeSelect))
-        Back.place(x=100, y=450)
+        border = ttk.Frame(self, width = 300)
+        border.pack(side = LEFT)
+
+        entry = ttk.Frame(self, width = 300)
+        entry.pack(side = LEFT)
+
+        Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
+        Label.pack(pady = 25)
+
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
+        BackToLogin.pack(side = LEFT, padx = 100)
+
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.show_frame(ModeSelect))
+        Back.pack(side = LEFT, padx = 100)
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY)
+        L1.pack(padx = 200, pady = yPad)
 
-        param1 = ttk.Entry(border, width = 30)
-        param1.place(x=posX, y=posY-5)
+        param1 = ttk.Entry(entry, width = 30)
+        param1.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+40)
+        L1.pack(pady = yPad)
 
-        param2 = ttk.Entry(border, width = 30)
-        param2.place(x=posX, y=posY+35)
+        param2 = ttk.Entry(entry, width = 30)
+        param2.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+80)
+        L1.pack(pady = yPad)
 
-        param3 = ttk.Entry(border, width = 30)
-        param3.place(x=posX, y=posY+75)
+        param3 = ttk.Entry(entry, width = 30)
+        param3.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+120)
+        L1.pack(pady = yPad)
 
-        param4 = ttk.Entry(border, width = 30)
-        param4.place(x=posX, y=posY+115)
+        param4 = ttk.Entry(entry, width = 30)
+        param4.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+160)
+        L1.pack(pady = yPad)
 
-        param5 = ttk.Entry(border, width = 30)
-        param5.place(x=posX, y=posY+155)
+        param5 = ttk.Entry(entry, width = 30)
+        param5.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+200)
+        L1.pack(pady = yPad)
 
-        param6 = ttk.Entry(border, width = 30)
-        param6.place(x=posX, y=posY+195)
+        param6 = ttk.Entry(entry, width = 30)
+        param6.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+240)
+        L1.pack(pady = yPad)
 
-        param7 = ttk.Entry(border, width = 30)
-        param7.place(x=posX, y=posY+235)
+        param7 = ttk.Entry(entry, width = 30)
+        param7.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY+280)
+        L1.pack(pady = yPad)
 
-        param8 = ttk.Entry(border, width = 30)
-        param8.place(x=posX, y=posY+275)
+        param8 = ttk.Entry(entry, width = 30)
+        param8.pack(pady = yPadEntry)
 
         def applyChanges():
             intLRL = int(param1.get())
@@ -242,9 +367,8 @@ class ParamSelect(ttk.Frame):
             vrp = param7.get()
             arp = param8.get()
 
-        Apply = ttk.Button(self, text="Apply Changes", command=applyChanges)
-        Apply.place(x=400, y=450)
-
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
+        Apply.pack(side = LEFT, padx = 100)
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -263,13 +387,21 @@ class Application(tk.Tk):
             self.frames[F] = frame
             frame.grid(row = 0, column=0, sticky="nsew")
             
-        self.show_frame(Welcome)
+        self.show_frame(ParamSelect)
         
     def show_frame(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Pacemaker")
 
+    def set_mode(self, input_mode):
+        self.mode = input_mode
+        print("set mode:", self.mode)
+
+    def get_mode(self):
+        print("get mode:", self.mode)
+        return self.mode
+    
 app = Application()
 app.maxsize(1280,720)
 sv_ttk.set_theme("light")
