@@ -215,15 +215,32 @@ class ParamSelect(ttk.Frame):
         param8.place(x=posX, y=posY+275)
 
         def applyChanges():
-            lowerRateLimit = param1.get()
-            upperRateLimit = param2.get()
+            intLRL = int(param1.get())
+            intURL = int(param2.get())
+            intAAMP = int(param3.get())
+            #intAPW = int(param4.get())
+            #intVAMP = int(param5.get())
+            #intVPW = int(param6.get())
+            #intVRP = int(param7.get())
+            #intARP = int(param8.get())
+
+            if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                lowerRateLimit = param1.get()
+            else:
+                param1.delete(0, 100)
+                
+            if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                upperRateLimit = param2.get()
+            else:
+                param2.delete(0, 100)
+
+
             atrialAmp = param3.get()
             atrialPW = param4.get()
             ventAmp = param5.get()
             ventPW = param6.get()
             vrp = param7.get()
             arp = param8.get()
-            
 
         Apply = ttk.Button(self, text="Apply Changes", command=applyChanges)
         Apply.place(x=400, y=450)
