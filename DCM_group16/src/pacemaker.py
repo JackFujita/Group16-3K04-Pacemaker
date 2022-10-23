@@ -1,4 +1,3 @@
-import secrets
 import tkinter as tk
 from tkinter import BOTTOM, LEFT, RAISED, RIGHT, TOP, PhotoImage, ttk
 from tkinter import StringVar, messagebox
