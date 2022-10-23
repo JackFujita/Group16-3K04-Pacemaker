@@ -1,3 +1,4 @@
+import secrets
 import tkinter as tk
 from tkinter import BOTTOM, LEFT, RAISED, RIGHT, TOP, PhotoImage, ttk
 from tkinter import StringVar, messagebox
@@ -60,6 +61,17 @@ class Login(ttk.Frame):
         verify_button.place(x=320, y=130)
         
         def register():
+            try:
+                with open("Secrets.csv", 'r') as file:
+                    csv_reader=csv.reader(file)
+                    row_count = sum(1 for row in csv_reader)
+                if row_count >= 10:
+                    Username_login.config(text="aaa")
+                    messagebox.showinfo("Error", "You have reached the maximum number of registered members on this device")
+                    return
+            except:
+                pass
+            
             window = tk.Tk()
             window.geometry('470x220')
             window.resizable(0,0)
