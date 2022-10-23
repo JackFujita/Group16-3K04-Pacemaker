@@ -239,7 +239,7 @@ class ModeSelect(ttk.Frame):
                 errormsg.config(text = "Please select an option")
                 # messagebox.showinfo("Error","Please select an option")
 
-        modes = ["AOO", 'VOO', 'AAI', 'VII']
+        modes = ["AOO", 'VOO', 'AAI', 'VVI']
         selected = StringVar()
 
         for mode in modes:
@@ -267,8 +267,8 @@ class ParamSelect(ttk.Frame):
         posY = 25
         posX = 250
 
-        yPad = 15
-        yPadEntry = 8
+        yPad = 30
+        yPadEntry = 23
 
         top = ttk.Frame(self, width = 500)
         top.pack(side = TOP)
@@ -277,10 +277,13 @@ class ParamSelect(ttk.Frame):
         bottom.pack(side = BOTTOM)
 
         border = ttk.Frame(self, width = 300)
-        border.pack(side = LEFT)
+        border.pack(side = LEFT, padx = 150)
 
         entry = ttk.Frame(self, width = 300)
         entry.pack(side = LEFT)
+
+        errors = ttk.Frame(self, width = 300)
+        errors.pack(side = LEFT, padx = 25)
 
         Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
         Label.pack(pady = 25)
@@ -288,14 +291,17 @@ class ParamSelect(ttk.Frame):
         BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
         BackToLogin.pack(side = LEFT, padx = 100)
 
-        Back = ttk.Button(bottom, text="Back", command=lambda: controller.show_frame(ModeSelect))
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
         Back.pack(side = LEFT, padx = 100)
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
-        L1.pack(padx = 200, pady = yPad)
+        L1.pack(pady = yPad)
 
         param1 = ttk.Entry(entry, width = 30)
         param1.pack(pady = yPadEntry)
+
+        error1 = ttk.Label(errors, foreground='#fff000000')
+        error1.pack(pady = yPad)
 
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
@@ -303,72 +309,173 @@ class ParamSelect(ttk.Frame):
         param2 = ttk.Entry(entry, width = 30)
         param2.pack(pady = yPadEntry)
 
-        L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
+        error2 = ttk.Label(errors, foreground='#fff000000')
+        error2.pack(pady = yPad)
 
-        param3 = ttk.Entry(entry, width = 30)
-        param3.pack(pady = yPadEntry)
+        # Switch depending on mode
+        mode = controller.get_mode()
 
-        L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
+        if (mode == "AOO" or mode == "AAI"):
+            L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
+            L1.pack(pady = yPad)
 
-        param4 = ttk.Entry(entry, width = 30)
-        param4.pack(pady = yPadEntry)
+            param3 = ttk.Entry(entry, width = 30)
+            param3.pack(pady = yPadEntry)
 
-        L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
+            error3 = ttk.Label(errors, foreground='#fff000000')
+            error3.pack(pady = yPad)
 
-        param5 = ttk.Entry(entry, width = 30)
-        param5.pack(pady = yPadEntry)
+            L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
+            L1.pack(pady = yPad)
 
-        L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
+            param4 = ttk.Entry(entry, width = 30)
+            param4.pack(pady = yPadEntry)
 
-        param6 = ttk.Entry(entry, width = 30)
-        param6.pack(pady = yPadEntry)
+            error4 = ttk.Label(errors, foreground='#fff000000')
+            error4.pack(pady = yPad)
 
-        L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
+        if (mode == "VOO" or mode == "VVI"):
+            L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
+            L1.pack(pady = yPad)
 
-        param7 = ttk.Entry(entry, width = 30)
-        param7.pack(pady = yPadEntry)
+            param5 = ttk.Entry(entry, width = 30)
+            param5.pack(pady = yPadEntry)
 
-        L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
+            error5 = ttk.Label(errors, foreground='#fff000000')
+            error5.pack(pady = yPad)
 
-        param8 = ttk.Entry(entry, width = 30)
-        param8.pack(pady = yPadEntry)
+            L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
+            L1.pack(pady = yPad)
+
+            param6 = ttk.Entry(entry, width = 30)
+            param6.pack(pady = yPadEntry)
+
+            error6 = ttk.Label(errors, foreground='#fff000000')
+            error6.pack(pady = yPad)
+
+        if (mode == "VVI"):
+            L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
+            L1.pack(pady = yPad)
+
+            param7 = ttk.Entry(entry, width = 30)
+            param7.pack(pady = yPadEntry)
+
+            error7 = ttk.Label(errors, foreground='#fff000000')
+            error7.pack(pady = yPad)
+
+        if (mode == "AAI"):
+            L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
+            L1.pack(pady = yPad)
+
+            param8 = ttk.Entry(entry, width = 30)
+            param8.pack(pady = yPadEntry)
+
+            error8 = ttk.Label(errors, foreground='#fff000000')
+            error8.pack(pady = yPad)
 
         def applyChanges():
-            intLRL = int(param1.get())
-            intURL = int(param2.get())
-            intAAMP = int(param3.get())
-            #intAPW = int(param4.get())
-            #intVAMP = int(param5.get())
-            #intVPW = int(param6.get())
-            #intVRP = int(param7.get())
-            #intARP = int(param8.get())
+            error1.config(text = '')
+            error2.config(text = '')
 
-            if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
-                lowerRateLimit = param1.get()
+            if (param1.get()):   
+                intLRL = int(param1.get())
+
+                if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                    lowerRateLimit = intLRL
+                else:
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
             else:
-                param1.delete(0, 100)
-                
-            if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
-                upperRateLimit = param2.get()
+                error1.config(text = 'Please make entries for all fields')
+
+            if (param2.get()):
+                intURL = int(param2.get())
+                if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                    upperRateLimit = intURL
+                else:
+                    param2.delete(0, 100)
+                    error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
             else:
-                param2.delete(0, 100)
+                error2.config(text = 'Please make entries for all fields')        
+            
+            if (mode == "AOO" or mode == "AAI"):
+                error3.config(text = '')
+                error4.config(text = '')
+                if (param3.get()):
+                    intAAMP = float(param3.get())
+                    if (intAAMP == 0 or (intAAMP >= 0.5 and intAAMP <= 3.2 and intAAMP % 0.1) or (intAAMP <= 3.5 and intAAMP >= 7.0 and intAAMP % 0.5)):
+                        atrialAmp = intAAMP
+                    else:
+                        param3.delete(0, 100)
+                        error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                else:
+                    error3.config(text = 'Please make entries for all fields')
+
+                if (param4.get()):
+                    intAPW = float(param4.get())
+                    if (intAPW == 0.05 or (intAPW >= 0.1 and intAPW <= 1.9 and intAPW % 0.1)):
+                        atrialPW = intAPW
+                    else:
+                        param4.delete(0, 100)
+                        error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                else:
+                    error4.config(text = 'Please make entries for all fields')
 
 
-            atrialAmp = param3.get()
-            atrialPW = param4.get()
-            ventAmp = param5.get()
-            ventPW = param6.get()
-            vrp = param7.get()
-            arp = param8.get()
+            if (mode == "VOO" or mode == "VVI"):
+                error5.config(text = '')
+                error6.config(text = '')
+
+                if (param5.get()):
+                    intVAMP = float(param5.get())
+                    if (intVAMP == 0 or (intVAMP >= 0.5 and intVAMP <= 3.2 and intVAMP % 0.1) or (intVAMP <= 3.5 and intVAMP >= 7.0 and intVAMP % 0.5)):
+                        ventricularAmp = intVAMP
+                    else:
+                        param5.delete(0, 100)
+                        error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                else:
+                    error5.config(text = 'Please make entries for all fields')
+
+                if (param6.get()):
+                    intVPW = float(param6.get())
+                    if (intVPW == 0.05 or (intVPW >= 0.1 and intVPW <= 1.9 and intVPW % 0.1)):
+                        ventricularPW = intVPW
+                    else:
+                        param6.delete(0, 100)
+                        error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                else:
+                    error6.config(text = 'Please make entries for all fields')
+
+            if (mode == "VVI"):
+                error7.config(text = '')
+
+                if (param7.get()):
+                    intVRP = int(param7.get())
+                    if (intVRP >= 150 and intVRP <= 500 and intVRP % 10):
+                        vrp = intVRP
+                    else:
+                        param7.delete(0, 100)
+                        error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                else:
+                    error7.config(text = 'Please make entries for all fields')
+
+            if (mode == "AAI"):
+                error8.config(text = '')
+
+                if(param8.get()):
+                    intARP = int(param8.get())                
+                    if (intARP >= 150 and intARP <= 500 and intARP % 10):
+                        arp = intARP
+                    else:
+                        param8.delete(0, 100)
+                        error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                else:
+                    error8.config(text = 'Please make entries for all fields')
+
 
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
+
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
