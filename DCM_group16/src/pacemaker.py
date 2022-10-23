@@ -1,35 +1,21 @@
-from atexit import register
-from calendar import c
-from pickle import TRUE
-from statistics import mode
 import tkinter as tk
 from tkinter import BOTTOM, LEFT, RAISED, RIGHT, TOP, PhotoImage, ttk
 from tkinter import StringVar, messagebox
 import csv
-from turtle import left, right
 import sv_ttk
 from PIL import ImageTk, Image
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)  
-# ---------------------------------------------------------------------------------------------------
-        #Make sure we know what this stuff actually means for the discussion
 
         frame = ttk.Frame(self, padding = 200)
         frame.pack()
         welcomeLabel = ttk.Label(frame, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
-        #welcomeLabel.grid(row = 0, column = 2, padx = 10, pady = 5)
+
         welcomeLabel.pack(pady = 20)
 
-        # Button = tk.Button(self, text="Login", font=("Arial", 15), command=lambda: controller.show_frame(Login))
-        # Button.grid(row = 3, column = 2, padx = 10, pady = 10)
-                
-        # Button = tk.Button(self, text="Register", font=("Arial", 15), command=lambda: controller.register)
-        # Button.grid(row = 4, column = 2, padx = 20, pady = 5)
-
         Button = ttk.Button(frame, text = "Login", command=lambda: controller.show_frame(Login), width=30)
-        #Button.grid(row = 3, column = 2, padx = 10, pady = 5)
         Button.pack()
 
 class Login(ttk.Frame):
@@ -116,7 +102,6 @@ class Login(ttk.Frame):
         B2.place(x=650, y=10)
 
         B3 = ttk.Button(self, text = "Back to welcome", command=lambda: controller.show_frame(Welcome))
-        #B3.grid(row = 4, column = 2, padx = 20, pady = 5) #WHY DOESNT THIS WORK?
         B3.place(x=10,y=10)
         
 class ModeSelect(ttk.Frame):
@@ -212,15 +197,11 @@ class ModeSelect(ttk.Frame):
             else:
                 errormsg.config(text = "Please connect or select a mode")
 
-        
-        # Button = ttk.Button(bottom_frame, text="Next", command=lambda: controller.show_frame(ParamSelect))
         Button = ttk.Button(bottom_frame, text="Next", command= switch_check)
         Button.pack(side = RIGHT)
 
         errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
         errormsg.pack(side = TOP)
-
-        ##CHECK TO SEE IF THEY HAVE FILLED OUT THE FORM BEFORE GOING TO NEXT
 
         def save_mode():
             if connected:
@@ -229,15 +210,12 @@ class ModeSelect(ttk.Frame):
                 applied = True
                 errormsg.config(text = '')
                 controller.set_mode(selected.get())
-                # self.mode = selected.get()
             else:
-                # messagebox.showinfo("Error","Please connect a pacemaker")
                 errormsg.config(text = "Please connect a pacemaker")
                 return
 
             if selected.get() == '':
                 errormsg.config(text = "Please select an option")
-                # messagebox.showinfo("Error","Please select an option")
 
         modes = ["AOO", 'VOO', 'AAI', 'VII']
         selected = StringVar()
@@ -249,104 +227,112 @@ class ModeSelect(ttk.Frame):
         button = ttk.Button(border, text = "Apply", command = save_mode)
         button.pack(fill='x', padx=5,pady=5)
 
-        #Button = tk.Button(self, text="Submit", font=("Arial", 15), command=lambda: controller.submit(data) )
-        
-    def get_mode(self):
-        print(self.mode)
-        return self.mode 
-    # def set_mode():
-    #     return
-    # private: mode
-
 class ParamSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
-        # Implement checks to see if the parameter values are valid
-        # will they mess up the pacemaker? (check that here)
 
-        posY = 25
-        posX = 250
+        yPad = 15
+        yPadEntry = 8
 
+        top = ttk.Frame(self, width = 500)
+        top.pack(side = TOP)
 
+        bottom = ttk.Frame(self, width = 500)
+        bottom.pack(side = BOTTOM)
 
+        border = ttk.Frame(self, width = 300)
+        border.pack(side = LEFT)
 
-        # mode = controller.get_mode()
-        print(controller.get_mode()) ## NEED THIS TO EXECUTE WHEN WE LOOK AT THE FRAME (SHOW FRAME) NOT INITIALIZE THE FRAME
-        # print(controller.selected.get())
-    
-        border = ttk.LabelFrame(self, text='Parameters')
-        border.pack(fill="both", expand="yes", padx = 100, pady=75)
+        entry = ttk.Frame(self, width = 300)
+        entry.pack(side = LEFT)
 
-        Label = ttk.Label(self, text=controller.get_mode(), font=("Arial Bold", 20))
-        Label.place(x=40, y=40)
+        Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
+        Label.pack(pady = 25)
 
-        BackToLogin = ttk.Button(self, text="Back To Login", command=lambda: controller.show_frame(Login))
-        BackToLogin.place(x=650, y=450)
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
+        BackToLogin.pack(side = LEFT, padx = 100)
 
-        Back = ttk.Button(self, text="Back", command=lambda: controller.back(ModeSelect))
-        Back.place(x=100, y=450)
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.show_frame(ModeSelect))
+        Back.pack(side = LEFT, padx = 100)
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
-        L1.place(x=50, y=posY)
+        L1.pack(padx = 200, pady = yPad)
 
-        param1 = ttk.Entry(border, width = 30)
-        param1.place(x=posX, y=posY-5)
+        param1 = ttk.Entry(entry, width = 30)
+        param1.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
-        L1.pack()
-        param2 = ttk.Entry(border, width = 30)
-        param2.pack()
+        L1.pack(pady = yPad)
 
-        
+        param2 = ttk.Entry(entry, width = 30)
+        param2.pack(pady = yPadEntry)
+
         L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
-        L1.pack()
+        L1.pack(pady = yPad)
 
-        param3 = ttk.Entry(border, width = 30)
-        param3.pack()
+        param3 = ttk.Entry(entry, width = 30)
+        param3.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
-        L1.pack()
+        L1.pack(pady = yPad)
 
-        param4 = ttk.Entry(border, width = 30)
-        param4.pack()
+        param4 = ttk.Entry(entry, width = 30)
+        param4.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
-        L1.pack()
+        L1.pack(pady = yPad)
 
-        param5 = ttk.Entry(border, width = 30)
-        param5.pack()
+        param5 = ttk.Entry(entry, width = 30)
+        param5.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
-        L1.pack()
+        L1.pack(pady = yPad)
 
-        param6 = ttk.Entry(border, width = 30)
-        param6.pack()
+        param6 = ttk.Entry(entry, width = 30)
+        param6.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
-        L1.pack()
+        L1.pack(pady = yPad)
 
-        param7 = ttk.Entry(border, width = 30)
-        param7.pack()
+        param7 = ttk.Entry(entry, width = 30)
+        param7.pack(pady = yPadEntry)
 
         L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
-        L1.pack()
+        L1.pack(pady = yPad)
 
-        param8 = ttk.Entry(border, width = 30)
-        param8.pack()
+        param8 = ttk.Entry(entry, width = 30)
+        param8.pack(pady = yPadEntry)
 
         def applyChanges():
-            lowerRateLimit = param1.get()
-            upperRateLimit = param2.get()
+            intLRL = int(param1.get())
+            intURL = int(param2.get())
+            intAAMP = int(param3.get())
+            #intAPW = int(param4.get())
+            #intVAMP = int(param5.get())
+            #intVPW = int(param6.get())
+            #intVRP = int(param7.get())
+            #intARP = int(param8.get())
+
+            if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                lowerRateLimit = param1.get()
+            else:
+                param1.delete(0, 100)
+                
+            if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                upperRateLimit = param2.get()
+            else:
+                param2.delete(0, 100)
+
+
             atrialAmp = param3.get()
             atrialPW = param4.get()
             ventAmp = param5.get()
             ventPW = param6.get()
             vrp = param7.get()
             arp = param8.get()
-            
 
-        Apply = ttk.Button(self, text="Apply Changes", command=applyChanges)
-        Apply.place(x=400, y=450)
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
+        Apply.pack(side = LEFT, padx = 100)
 
 
 class Application(tk.Tk):
@@ -361,12 +347,6 @@ class Application(tk.Tk):
         self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        # for F in (Welcome, Login, ModeSelect, ParamSelect):
-        #     frame = F(self.window, self)
-        #         #frame = Welcome(window, self)
-        #     self.frames[F] = frame
-        #     frame.grid(row = 0, column=0, sticky="nsew")
-        # # self.frames = {Welcome(window, self), Login(window, self), ModeSelect(windoe,self), ParamSelect(window,self)}
         self.show_frame(Welcome)
         
     def show_frame(self, page):
