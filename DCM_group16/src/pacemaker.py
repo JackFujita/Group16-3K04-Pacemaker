@@ -246,7 +246,6 @@ class ParamSelect(ttk.Frame):
         yPad = 15
         yPadEntry = 8
 
-<<<<<<< HEAD:PageTest2.py
         yPad = 30
         yPadEntry = 23
 
@@ -453,105 +452,6 @@ class ParamSelect(ttk.Frame):
                     error8.config(text = 'Please make entries for all fields')
 
 
-=======
-        top = ttk.Frame(self, width = 500)
-        top.pack(side = TOP)
-
-        bottom = ttk.Frame(self, width = 500)
-        bottom.pack(side = BOTTOM)
-
-        border = ttk.Frame(self, width = 300)
-        border.pack(side = LEFT)
-
-        entry = ttk.Frame(self, width = 300)
-        entry.pack(side = LEFT)
-
-        Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
-        Label.pack(pady = 25)
-
-        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
-        BackToLogin.pack(side = LEFT, padx = 100)
-
-        Back = ttk.Button(bottom, text="Back", command=lambda: controller.show_frame(ModeSelect))
-        Back.pack(side = LEFT, padx = 100)
-
-        L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
-        L1.pack(padx = 200, pady = yPad)
-
-        param1 = ttk.Entry(entry, width = 30)
-        param1.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param2 = ttk.Entry(entry, width = 30)
-        param2.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param3 = ttk.Entry(entry, width = 30)
-        param3.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param4 = ttk.Entry(entry, width = 30)
-        param4.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param5 = ttk.Entry(entry, width = 30)
-        param5.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param6 = ttk.Entry(entry, width = 30)
-        param6.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param7 = ttk.Entry(entry, width = 30)
-        param7.pack(pady = yPadEntry)
-
-        L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
-        L1.pack(pady = yPad)
-
-        param8 = ttk.Entry(entry, width = 30)
-        param8.pack(pady = yPadEntry)
-
-        def applyChanges():
-            intLRL = int(param1.get())
-            intURL = int(param2.get())
-            intAAMP = int(param3.get())
-            #intAPW = int(param4.get())
-            #intVAMP = int(param5.get())
-            #intVPW = int(param6.get())
-            #intVRP = int(param7.get())
-            #intARP = int(param8.get())
-
-            if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
-                lowerRateLimit = param1.get()
-            else:
-                param1.delete(0, 100)
-                
-            if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
-                upperRateLimit = param2.get()
-            else:
-                param2.delete(0, 100)
-
-
-            atrialAmp = param3.get()
-            atrialPW = param4.get()
-            ventAmp = param5.get()
-            ventPW = param6.get()
-            vrp = param7.get()
-            arp = param8.get()
-
->>>>>>> ffd1a48d73070785c1811cadc0983b102d02ef7d:DCM_group16/src/pacemaker.py
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
 
