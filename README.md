@@ -1,6 +1,6 @@
 # 3K04-Pacemaker
 
-## Group 16 Members
+## :family: Group 16 Members
 Jack Fujita, Tim Hoy Tang, Shu Dai, Antheus Aldridge, and Sabrina Vieira Sousa
 
 ## :space_invader: Open Problems:

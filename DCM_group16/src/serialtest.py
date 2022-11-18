@@ -14,7 +14,6 @@ ser.close()
 # print(ser3)
 # ser3.close()
 
-info = serial.tools.list_ports.ListPortInfo()
 
 
 # ser = serial.serial_for_url(*args, **kwargs)
