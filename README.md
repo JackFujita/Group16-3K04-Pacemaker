@@ -8,7 +8,9 @@ Jack Fujita, Tim Hoy Tang, Shu Dai, Antheus Aldridge, and Sabrina Vieira Sousa
 + Serial
 
 ## Action Items:
-+ Jack: create master to-do / action item list with notes (TA suggestions, group discussions, etc) on git 
++ Antheus: Finish checks for parameters
+    +  Reference other parameters
+Jack: create master to-do / action item list with notes (TA suggestions, group discussions, etc) on git 
 
 ## Simulink
 State flow and requirements
