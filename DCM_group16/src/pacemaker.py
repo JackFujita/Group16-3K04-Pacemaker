@@ -298,7 +298,7 @@ class ParamSelect(ttk.Frame):
             L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
             L1.pack(pady = yPad)
 
-            param3 = ttk.Entry(entry, width = 30)
+            param3 = ttk.Entry(entry, width = 50)
             param3.pack(pady = yPadEntry)
 
             error3 = ttk.Label(errors, foreground='#fff000000')
@@ -356,47 +356,96 @@ class ParamSelect(ttk.Frame):
             error1.config(text = '')
             error2.config(text = '')
 
-            if (param1.get()):   
-                intLRL = int(param1.get())
+            if (param1.get()):
+                try:
+                    intLRL = int(param1.get())
 
-                if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
-                    lowerRateLimit = intLRL
-                else:
+                    stringLRL = param1.get()
+
+                    checkLRL = controller.check_noDigits(stringLRL)
+
+                    if (checkLRL):
+                        param1.delete(0, 100)
+                        error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                    else:
+                        if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                            lowerRateLimit = intLRL
+                        else:
+                            param1.delete(0, 100)
+                            error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                except:
                     param1.delete(0, 100)
-                    error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                    error1.config(text = 'Please enter an integer')
             else:
                 error1.config(text = 'Please make entries for all fields')
 
             if (param2.get()):
-                intURL = int(param2.get())
-                if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
-                    upperRateLimit = intURL
-                else:
+                try:
+                    intURL = int(param2.get())
+                    stringURL = param2.get()
+
+                    checkURL = controller.check_noDigits(stringURL)
+
+                    if (checkLRL):
+                        param2.delete(0, 100)
+                        error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                    else:
+                        if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                            upperRateLimit = intURL
+                        else:
+                            param2.delete(0, 100)
+                            error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                except:
                     param2.delete(0, 100)
-                    error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                    error2.config(text = 'Please enter an integer')
             else:
-                error2.config(text = 'Please make entries for all fields')        
+                error2.config(text = 'Please make entries for all fields')
             
             if (mode == "AOO" or mode == "AAI"):
                 error3.config(text = '')
                 error4.config(text = '')
+
                 if (param3.get()):
-                    intAAMP = float(param3.get())
-                    if (intAAMP == 0 or (intAAMP >= 0.5 and intAAMP <= 3.2 and intAAMP % 0.1) or (intAAMP <= 3.5 and intAAMP >= 7.0 and intAAMP % 0.5)):
-                        atrialAmp = intAAMP
-                    else:
+                    try:
+                        intAAMP = int(float(param3.get()) * 10)
+                        stringAAMP = param3.get()
+
+                        checkAAMP = controller.check_digits(stringAAMP)
+
+                        if (checkAAMP):
+                            param3.delete(0, 100)
+                            error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                        else:
+                            if (intAAMP == 0 or (intAAMP >= 5 and intAAMP <= 32 and intAAMP % 1 == 0) or (intAAMP >= 35 and intAAMP <= 70 and intAAMP % 5 == 0)):
+                                atrialAmp = intAAMP
+                            else:
+                                param3.delete(0, 100)
+                                error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    except:
                         param3.delete(0, 100)
-                        error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                        error3.config(text = 'Please enter an decimal value or 0')
                 else:
                     error3.config(text = 'Please make entries for all fields')
 
                 if (param4.get()):
-                    intAPW = float(param4.get())
-                    if (intAPW == 0.05 or (intAPW >= 0.1 and intAPW <= 1.9 and intAPW % 0.1)):
-                        atrialPW = intAPW
-                    else:
+                    try:
+                        intAPW = int(float(param4.get()) * 100)
+                        stringAPW = param4.get()
+
+                        checkAPW = controller.check_digits(stringAPW)
+
+                        if (checkAPW):
+                            param4.delete(0, 100)
+                            error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                        else:
+                            if (intAPW == 5 or (intAPW >= 10 and intAPW <= 190 and intAPW % 10 == 0)):
+                                atrialPW = intAPW
+                            else:
+                                param4.delete(0, 100)
+                                error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                    except:
                         param4.delete(0, 100)
-                        error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                        error4.config(text = 'Please enter a decimal')
                 else:
                     error4.config(text = 'Please make entries for all fields')
 
@@ -406,22 +455,46 @@ class ParamSelect(ttk.Frame):
                 error6.config(text = '')
 
                 if (param5.get()):
-                    intVAMP = float(param5.get())
-                    if (intVAMP == 0 or (intVAMP >= 0.5 and intVAMP <= 3.2 and intVAMP % 0.1) or (intVAMP <= 3.5 and intVAMP >= 7.0 and intVAMP % 0.5)):
-                        ventricularAmp = intVAMP
-                    else:
+                    try:
+                        intVAMP = int(float(param5.get()) * 10)
+                        stringVAMP = param5.get()
+
+                        checkVAMP = controller.check_digits(stringVAMP)
+
+                        if (checkVAMP):
+                            param5.delete(0, 100)
+                            error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                        else:
+                            if (intVAMP == 0 or (intVAMP >= 5 and intVAMP <= 32 and intVAMP % 1 == 0) or (intVAMP >= 35 and intVAMP <= 70 and intVAMP % 5 == 0)):
+                                ventricularAmp = intVAMP
+                            else:
+                                param5.delete(0, 100)
+                                error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    except:
                         param5.delete(0, 100)
-                        error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                        error5.config(text = 'Please enter a decimal or 0')
                 else:
                     error5.config(text = 'Please make entries for all fields')
 
                 if (param6.get()):
-                    intVPW = float(param6.get())
-                    if (intVPW == 0.05 or (intVPW >= 0.1 and intVPW <= 1.9 and intVPW % 0.1)):
-                        ventricularPW = intVPW
-                    else:
+                    try:
+                        intVPW = int(float(param6.get()) * 100)
+                        stringVPW = param6.get()
+
+                        checkVPW = controller.check_digits(stringVPW)
+
+                        if (checkVPW):
+                            param6.delete(0, 100)
+                            error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                        else:
+                            if (intVPW == 5 or (intVPW >= 10 and intVPW <= 190 and intVPW % 10 == 0)):
+                                ventricularPW = intVPW
+                            else:
+                                param6.delete(0, 100)
+                                error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                    except:
                         param6.delete(0, 100)
-                        error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                        error6.config(text = 'Please enter a decimal')
                 else:
                     error6.config(text = 'Please make entries for all fields')
 
@@ -429,12 +502,24 @@ class ParamSelect(ttk.Frame):
                 error7.config(text = '')
 
                 if (param7.get()):
-                    intVRP = int(param7.get())
-                    if (intVRP >= 150 and intVRP <= 500 and intVRP % 10):
-                        vrp = intVRP
-                    else:
+                    try:
+                        intVRP = int(param7.get())
+                        stringVRP = param7.get()
+
+                        checkVRP = controller.check_noDigits(stringVRP)
+
+                        if (checkVRP):
+                            param7.delete(0, 100)
+                            error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                        else:
+                            if (intVRP >= 150 and intVRP <= 500 and intVRP % 10 == 0):
+                                vrp = intVRP
+                            else:
+                                param7.delete(0, 100)
+                                error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                    except:
                         param7.delete(0, 100)
-                        error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                        error7.config(text = 'Please enter an integer')
                 else:
                     error7.config(text = 'Please make entries for all fields')
 
@@ -442,12 +527,24 @@ class ParamSelect(ttk.Frame):
                 error8.config(text = '')
 
                 if(param8.get()):
-                    intARP = int(param8.get())                
-                    if (intARP >= 150 and intARP <= 500 and intARP % 10):
-                        arp = intARP
-                    else:
+                    try:
+                        intARP = int(param8.get())
+                        stringARP = param8.get()
+
+                        checkARP = controller.check_noDigits(stringARP)
+
+                        if (checkARP):
+                            param7.delete(0, 100)
+                            error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                        else:
+                            if (intARP >= 150 and intARP <= 500 and intARP % 10 == 0):
+                                arp = intARP
+                            else:
+                                param8.delete(0, 100)
+                                error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                    except:
                         param8.delete(0, 100)
-                        error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                        error8.config(text = 'Please enter an integer')
                 else:
                     error8.config(text = 'Please make entries for all fields')
 
@@ -490,6 +587,29 @@ class Application(tk.Tk):
     def get_mode(self):
         print("get mode:", self.mode)
         return self.mode
+
+    def check_digits(self, inputP):
+        #Janky solution for checking inputs
+        badInput = False
+
+        for i in range(0, len(inputP)):
+            if (inputP[i] == '.'):
+                for j in range(i + 2, len(inputP)):
+                    print(j)
+                    if (inputP[j] != 0):
+                        badInput = True
+                        break
+        return badInput
+
+    def check_noDigits(self, inputP):
+        badInput = False
+
+        for i in range(0, len(inputP)):
+            if (inputP[i] == '.'):
+                badInput = True
+                break
+
+        return badInput
 
 app = Application()
 app.maxsize(1280,720)
