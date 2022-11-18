@@ -1,4 +1,4 @@
-# 3K04-Pacemaker
+# :hearts: 3K04-Pacemaker
 
 ## :family: Group 16 Members
 Jack Fujita, Tim Hoy Tang, Shu Dai, Antheus Aldridge, and Sabrina Vieira Sousa
@@ -8,7 +8,7 @@ Jack Fujita, Tim Hoy Tang, Shu Dai, Antheus Aldridge, and Sabrina Vieira Sousa
 + Serial
 
 ## Action Items:
-### DCM
+### :computer: DCM
 Assignment 2:
 + Jack: Finish the simulink Serial model and test with the board
 + Antheus: Add in parameters for the new modes (rate adaptive stuff)
