@@ -8,9 +8,15 @@ Jack Fujita, Tim Hoy Tang, Shu Dai, Antheus Aldridge, and Sabrina Vieira Sousa
 + Serial
 
 ## Action Items:
-+ Antheus: Finish checks for parameters
-    +  Reference other parameters
-Jack: create master to-do / action item list with notes (TA suggestions, group discussions, etc) on git 
+### DCM
+Assignment 2:
++ Jack: Finish the simulink Serial model and test with the board
++ Antheus: Add in parameters for the new modes (rate adaptive stuff)
+
+Assignment 1 Fixes:
++ Save Parameters to a file with ID -> saving them to simulink in assignment 2
++ Antheus: Finish checks for parameters - make more modular?
+    +  Reference other parameters in checks
 
 ## Simulink
 State flow and requirements
