@@ -168,6 +168,7 @@ class ModeSelect(ttk.Frame):
             prev_IDs.append(clicked.get())
             if new_pm:
                 new_pacemaker_label.config(text = "New Pacemaker Connected!")
+                controller.setDefaultParams(12345) #Creates default parameters (need a real id to send here)
             else:
                 new_pacemaker_label.config(text = "Welcome Back!")
             global connected  #GLOBAL IS BAD
@@ -272,10 +273,31 @@ class ParamSelect(ttk.Frame):
         Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
         Back.pack(side = LEFT, padx = 100)
 
+        # Get default parameters from file
+        with open("Parameters.csv", 'r') as file:
+            csv_reader=csv.reader(file)
+            for line in csv_reader:
+                if (line[0]): # Need proper ID checking here
+                    lrl = line[1]
+                    url = line[2]
+                    aamp = line[3]
+                    vamp = line[4]
+                    apw = line[5]
+                    vpw = line[6]
+                    arp = line[7]
+                    vrp = line[8]
+                    break
+                else:
+                    print("No matching ID")
+
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
 
         param1 = ttk.Entry(entry, width = 30)
+        try:
+            param1.insert(0, lrl)
+        except:
+            pass
         param1.pack(pady = yPadEntry)
 
         error1 = ttk.Label(errors, foreground='#fff000000')
@@ -285,6 +307,10 @@ class ParamSelect(ttk.Frame):
         L1.pack(pady = yPad)
 
         param2 = ttk.Entry(entry, width = 30)
+        try:
+            param2.insert(0, url)
+        except:
+            pass
         param2.pack(pady = yPadEntry)
 
         error2 = ttk.Label(errors, foreground='#fff000000')
@@ -297,7 +323,11 @@ class ParamSelect(ttk.Frame):
             L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
             L1.pack(pady = yPad)
 
-            param3 = ttk.Entry(entry, width = 50)
+            param3 = ttk.Entry(entry, width = 30)
+            try:
+                param3.insert(0, aamp)
+            except:
+                pass
             param3.pack(pady = yPadEntry)
 
             error3 = ttk.Label(errors, foreground='#fff000000')
@@ -307,6 +337,10 @@ class ParamSelect(ttk.Frame):
             L1.pack(pady = yPad)
 
             param4 = ttk.Entry(entry, width = 30)
+            try:
+                param4.insert(0, apw)
+            except:
+                pass
             param4.pack(pady = yPadEntry)
 
             error4 = ttk.Label(errors, foreground='#fff000000')
@@ -317,6 +351,10 @@ class ParamSelect(ttk.Frame):
             L1.pack(pady = yPad)
 
             param5 = ttk.Entry(entry, width = 30)
+            try:
+                param5.insert(0, vamp)
+            except:
+                pass
             param5.pack(pady = yPadEntry)
 
             error5 = ttk.Label(errors, foreground='#fff000000')
@@ -326,6 +364,10 @@ class ParamSelect(ttk.Frame):
             L1.pack(pady = yPad)
 
             param6 = ttk.Entry(entry, width = 30)
+            try:
+                param6.insert(0, vpw)
+            except:
+                pass
             param6.pack(pady = yPadEntry)
 
             error6 = ttk.Label(errors, foreground='#fff000000')
@@ -336,6 +378,10 @@ class ParamSelect(ttk.Frame):
             L1.pack(pady = yPad)
 
             param7 = ttk.Entry(entry, width = 30)
+            try:
+                param7.insert(0, vrp)
+            except:
+                pass
             param7.pack(pady = yPadEntry)
 
             error7 = ttk.Label(errors, foreground='#fff000000')
@@ -346,6 +392,10 @@ class ParamSelect(ttk.Frame):
             L1.pack(pady = yPad)
 
             param8 = ttk.Entry(entry, width = 30)
+            try:
+                param8.insert(0, arp)
+            except:
+                pass
             param8.pack(pady = yPadEntry)
 
             error8 = ttk.Label(errors, foreground='#fff000000')
@@ -354,6 +404,9 @@ class ParamSelect(ttk.Frame):
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
+
+            LRLSet = False
+            URLSet = False
 
             if (param1.get()):
                 try:
@@ -369,6 +422,7 @@ class ParamSelect(ttk.Frame):
                     else:
                         if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
                             lowerRateLimit = intLRL
+                            LRLSet = True
                         else:
                             param1.delete(0, 100)
                             error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
@@ -385,12 +439,13 @@ class ParamSelect(ttk.Frame):
 
                     checkURL = controller.check_noDigits(stringURL)
 
-                    if (checkLRL):
+                    if (checkURL):
                         param2.delete(0, 100)
                         error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
                     else:
                         if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
                             upperRateLimit = intURL
+                            URLSet = True
                         else:
                             param2.delete(0, 100)
                             error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
@@ -399,6 +454,12 @@ class ParamSelect(ttk.Frame):
                     error2.config(text = 'Please enter an integer')
             else:
                 error2.config(text = 'Please make entries for all fields')
+
+            if (LRLSet and URLSet):
+                if (lowerRateLimit > upperRateLimit):
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please make sure that \nlower rate limit is less than \nupper rate limit')
+                    param2.delete(0, 100)
             
             if (mode == "AOO" or mode == "AAI"):
                 error3.config(text = '')
@@ -422,7 +483,7 @@ class ParamSelect(ttk.Frame):
                                 error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
                     except:
                         param3.delete(0, 100)
-                        error3.config(text = 'Please enter an decimal value or 0')
+                        error3.config(text = 'Please enter a decimal value or 0')
                 else:
                     error3.config(text = 'Please make entries for all fields')
 
@@ -497,6 +558,8 @@ class ParamSelect(ttk.Frame):
                 else:
                     error6.config(text = 'Please make entries for all fields')
 
+            VRPSet = False
+
             if (mode == "VVI"):
                 error7.config(text = '')
 
@@ -513,6 +576,7 @@ class ParamSelect(ttk.Frame):
                         else:
                             if (intVRP >= 150 and intVRP <= 500 and intVRP % 10 == 0):
                                 vrp = intVRP
+                                VRPSet = True
                             else:
                                 param7.delete(0, 100)
                                 error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
@@ -521,6 +585,13 @@ class ParamSelect(ttk.Frame):
                         error7.config(text = 'Please enter an integer')
                 else:
                     error7.config(text = 'Please make entries for all fields')
+
+                if (VRPSet and LRLSet):
+                    if (vrp > (int)(1000 / (lowerRateLimit / 60))):
+                        param7.delete(0, 100)
+                        error7.config(text = 'Please make sure VRP does not interfere with rate limit')
+
+            ARPSet = False
 
             if (mode == "AAI"):
                 error8.config(text = '')
@@ -533,11 +604,12 @@ class ParamSelect(ttk.Frame):
                         checkARP = controller.check_noDigits(stringARP)
 
                         if (checkARP):
-                            param7.delete(0, 100)
-                            error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                            param8.delete(0, 100)
+                            error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
                         else:
                             if (intARP >= 150 and intARP <= 500 and intARP % 10 == 0):
                                 arp = intARP
+                                ARPSet = True
                             else:
                                 param8.delete(0, 100)
                                 error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
@@ -546,6 +618,11 @@ class ParamSelect(ttk.Frame):
                         error8.config(text = 'Please enter an integer')
                 else:
                     error8.config(text = 'Please make entries for all fields')
+
+                if (ARPSet and LRLSet):
+                    if (arp > (int)(1000 / (lowerRateLimit / 60))):
+                        param8.delete(0, 100)
+                        error8.config(text = 'Please make sure ARP does not interfere with rate limit')
 
 
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
@@ -609,6 +686,21 @@ class Application(tk.Tk):
                 break
 
         return badInput
+
+    def setDefaultParams(self, pmID):
+        #Default values
+        lrl = 50
+        url = 60
+        aamp = 2.5
+        vamp = 2.5
+        apw = 1
+        vpw = 1
+        arp = 300
+        vrp = 300
+
+        with open("Parameters.csv", 'a', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp])
 
 app = Application()
 app.maxsize(1280,720)
