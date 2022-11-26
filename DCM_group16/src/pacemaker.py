@@ -6,6 +6,7 @@ import sv_ttk
 from PIL import ImageTk, Image
 import serial
 import serial.tools.list_ports
+import struct
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
@@ -132,13 +133,13 @@ class ModeSelect(ttk.Frame):
         bottom_frame = ttk.Frame(self, padding = 10, width = 400)
         bottom_frame.pack(fill = 'x', side=BOTTOM)
 
-        options = ["123", "234", "345", "456", "567", "678"]
-        clicked = StringVar()
+        # options = ["Pacemaker ID"]
+        # clicked = StringVar()
 
-        Test_label = ttk.Label(top_frame, text="Pacemaker ID simulation: ")
-        Test_label.pack(side=LEFT)
-        w = ttk.OptionMenu(top_frame, clicked, options[0], *options)
-        w.pack(side=LEFT)
+        # Test_label = ttk.Label(top_frame, text="Pacemaker ID simulation: ")
+        # Test_label.pack(side=LEFT)
+        # w = ttk.OptionMenu(top_frame, clicked, options[0], *options)
+        # w.pack(side=LEFT)
 
         new_pacemaker_label = ttk.Label(second_top)
         new_pacemaker_label.pack(pady = 20)
@@ -162,11 +163,13 @@ class ModeSelect(ttk.Frame):
                 hwid = info_it[1]
                 if hwid == "1366:1015 SER":
                     break
-            com_name = info[i].name #COMPORT NAME     
-            
-                  
+            com_name = info[i].name #COMPORT NAME 
+            controller.set_com_name(com_name)
+            ser_num = info[i].serial_number    
 
-            label.config(text="Pacemaker Connected")
+            text1 = "Pacemaker " + ser_num + " at " + com_name + " connected"
+
+            label.config(text=text1)
             image = Image.open('Pictures/connect.png')
             image = image.resize((20,20), Image.ANTIALIAS)
             global my_image
@@ -174,15 +177,18 @@ class ModeSelect(ttk.Frame):
             icon.config(image = my_image)
 
             new_pm = True
-            for id in prev_IDs:
-                if id == clicked.get():
-                    new_pm = False
-            prev_IDs.append(clicked.get())
-            if new_pm:
-                new_pacemaker_label.config(text = "New Pacemaker Connected!")
-                controller.setDefaultParams(12345) #Creates default parameters (need a real id to send here)
-            else:
-                new_pacemaker_label.config(text = "Welcome Back!")
+
+            with open('Parameters.csv', 'r') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if row[0] == ser_num:
+                        new_pm = False
+                if new_pm:
+                    new_pacemaker_label.config(text = "New Pacemaker Connected!")
+                    controller.setDefaultParams(ser_num)
+                else:
+                    new_pacemaker_label.config(text = "Welcome Back!")
+
             global connected  #GLOBAL IS BAD
             connected = True
 
@@ -200,13 +206,13 @@ class ModeSelect(ttk.Frame):
             connected = False
 
 
-        disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker Simulation')
+        disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker')
         disconnect_button.pack(side=RIGHT)
         
-        connect_button = ttk.Button(top_frame, command= connect, text='Connect Pacemaker Simulation')
+        connect_button = ttk.Button(top_frame, command= connect, text='Connect Pacemaker')
         connect_button.pack(side=RIGHT)
 
-        options = ["123", "234", "345", "456", "567", "678"]
+        options = []
         
         border = ttk.LabelFrame(self, text='Mode Select')
         border.pack(fill="x", expand="yes", padx = 150, pady=10)
@@ -645,6 +651,7 @@ class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.mode = "test mode"
+        self.com_name = "COM4"
         #creating a window
         self.window = tk.Frame(self)
         self.window.pack()
@@ -653,7 +660,7 @@ class Application(tk.Tk):
         self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        self.show_frame(Welcome)
+        self.show_frame(ModeSelect)
         
     def show_frame(self, page):
         frame = page(self.window, self)
@@ -667,9 +674,30 @@ class Application(tk.Tk):
         frame.tkraise()
         self.title("Pacemaker")
 
+    def set_com_name(self, com_name_in):
+        self.com_name = com_name_in
+
 
     def set_mode(self, input_mode):
         self.mode = input_mode
+        Start = b'\x16'
+        SYNC = b'\x22'
+        Fn_set = b'\x55'
+        #pkmode = struct.pack("c", "a")
+        pkmode = bytes(input_mode,'utf-8')
+        pktest = struct.pack("B",1)
+        Signal_set = Start + Fn_set + pkmode + pktest
+        Signal_echo = Start + SYNC + pkmode + pktest
+        with serial.Serial(self.com_name, 115200) as pacemaker:
+            pacemaker.write(Signal_set)
+
+        with serial.Serial(self.com_name, 115200) as pacemaker:
+            pacemaker.write(Signal_echo)
+            data = pacemaker.read(9)
+            board_read = data[0]
+            print("board read:", board_read)
+
+
         print("set mode:", self.mode)
 
     def get_mode(self):
