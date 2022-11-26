@@ -1,0 +1,7 @@
+unlock Kinetis
+device MK64FN1M0xxx12
+erase
+loadfile "C:\Users\jackg\Desktop\MECHTRON 3K04\Project\3k04-pacemaker\simulink_group16\pacer\Serial_example.bin", 0x0
+r
+g
+q

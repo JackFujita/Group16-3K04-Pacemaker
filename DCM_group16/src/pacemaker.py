@@ -122,7 +122,7 @@ class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
-        controller.set_mode("AOO")
+        # controller.set_mode("AOO")
         
         top_frame = ttk.Frame(self, padding = 20, width = 300)
         top_frame.pack(fill='x', side = TOP)
@@ -164,7 +164,7 @@ class ModeSelect(ttk.Frame):
                 if hwid == "1366:1015 SER":
                     break
             com_name = info[i].name #COMPORT NAME 
-            controller.set_com_name(com_name)
+            # controller.set_com_name(com_name)
             ser_num = info[i].serial_number    
 
             text1 = "Pacemaker " + ser_num + " at " + com_name + " connected"
@@ -641,8 +641,11 @@ class ParamSelect(ttk.Frame):
                     if (arp > (int)(1000 / (lowerRateLimit / 60))):
                         param8.delete(0, 100)
                         error8.config(text = 'Please make sure ARP does not interfere with rate limit')
+            
+            
 
-
+        
+        
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
 
@@ -651,7 +654,7 @@ class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
         self.mode = "test mode"
-        self.com_name = "COM4"
+        # self.com_name = "COM"
         #creating a window
         self.window = tk.Frame(self)
         self.window.pack()
@@ -680,23 +683,61 @@ class Application(tk.Tk):
 
     def set_mode(self, input_mode):
         self.mode = input_mode
+
+        if input_mode == "AOO":
+            red_thing = 2
+            green_thing = 0
+            blue_thing = 0
+        elif input_mode == "VOO":
+            red_thing = 1
+            green_thing = 1
+            blue_thing = 0
+        elif input_mode == "AAI":
+            red_thing = 4
+            green_thing = 0
+            blue_thing = 1
+        else:
+            red_thing = 3
+            green_thing = 1
+            blue_thing = 1
+
+
+        frdm_port = "COM4"
+
         Start = b'\x16'
         SYNC = b'\x22'
         Fn_set = b'\x55'
-        #pkmode = struct.pack("c", "a")
-        pkmode = bytes(input_mode,'utf-8')
-        pktest = struct.pack("B",1)
-        Signal_set = Start + Fn_set + pkmode + pktest
-        Signal_echo = Start + SYNC + pkmode + pktest
-        with serial.Serial(self.com_name, 115200) as pacemaker:
+        lrl_in = 60
+        red_en = struct.pack("B", red_thing)
+        lrl_in = struct.pack("B", lrl_in)
+        green_en = struct.pack("B", green_thing)
+        blue_en = struct.pack("B", blue_thing)
+        off_time = struct.pack("f", 3.1415926)
+        switch_time = struct.pack("H", 500)
+
+        Signal_set = Start + Fn_set + red_en + lrl_in + green_en + blue_en + off_time + switch_time
+        Signal_echo = Start + SYNC + red_en + green_en + blue_en + off_time + switch_time
+
+        with serial.Serial(frdm_port, 115200) as pacemaker:
             pacemaker.write(Signal_set)
+            print("write complete")
 
-        with serial.Serial(self.com_name, 115200) as pacemaker:
-            pacemaker.write(Signal_echo)
-            data = pacemaker.read(9)
-            board_read = data[0]
-            print("board read:", board_read)
+        # with serial.Serial(frdm_port, 115200) as pacemaker:
+        #     pacemaker.write(Signal_echo)
+        #     data = pacemaker.read(9)
+        #     red_rev = data[0]
+        #     green_rev = data[1]
+        #     blue_rev = data[2]
+        #     off_rev =  struct.unpack("f", data[3:7])[0]
+        #     switch_rev =  struct.unpack("H", data[7:9])[0]
+        #     print("echo complete")
 
+        # print("From the board:")
+        # print("red_en = ", red_rev)
+        # print("green_en = ", green_rev)
+        # print("blue_en = ", blue_rev)
+        # print("off_time = ",  off_rev)
+        # print("switch_time = ", switch_rev)
 
         print("set mode:", self.mode)
 
