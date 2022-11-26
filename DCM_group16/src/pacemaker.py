@@ -4,6 +4,8 @@ from tkinter import StringVar, messagebox
 import csv
 import sv_ttk
 from PIL import ImageTk, Image
+import serial
+import serial.tools.list_ports
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
@@ -154,6 +156,16 @@ class ModeSelect(ttk.Frame):
         applied = False
 
         def connect():
+            info = serial.tools.list_ports.comports()
+            for i in range(len(info)):
+                info_it = info[i].hwid.split("=")
+                hwid = info_it[1]
+                if hwid == "1366:1015 SER":
+                    break
+            com_name = info[i].name #COMPORT NAME     
+            
+                  
+
             label.config(text="Pacemaker Connected")
             image = Image.open('Pictures/connect.png')
             image = image.resize((20,20), Image.ANTIALIAS)
