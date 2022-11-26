@@ -641,8 +641,39 @@ class ParamSelect(ttk.Frame):
                     if (arp > (int)(1000 / (lowerRateLimit / 60))):
                         param8.delete(0, 100)
                         error8.config(text = 'Please make sure ARP does not interfere with rate limit')
-            
-            
+
+
+            in_mode = controller.get_mode()
+            if in_mode == "AOO":
+                red_thing = 2
+            if in_mode == "VOO":
+                red_thing = 1
+            if in_mode == "AII":
+                red_thing = 4
+            if in_mode == "VVI":
+                red_thing = 3
+            print(in_mode, red_thing)
+            frdm_port = "COM4"
+
+            Start = b'\x16'
+            SYNC = b'\x22'
+            Fn_set = b'\x55'
+            lrl_in = int(lowerRateLimit)
+            print(lrl_in)
+            red_en = struct.pack("B", red_thing)
+            lrl_in = struct.pack("B", lrl_in)
+            # green_en = struct.pack("B", green_thing)
+            # blue_en = struct.pack("B", blue_thing)
+            # off_time = struct.pack("f", 3.1415926)
+            # switch_time = struct.pack("H", 500)
+
+            Signal_set = Start + Fn_set + red_en + lrl_in 
+            Signal_echo = Start + SYNC + red_en + lrl_in
+
+            with serial.Serial(frdm_port, 115200) as pacemaker:
+                pacemaker.write(Signal_set)
+                print("write complete")
+
 
         
         
@@ -684,43 +715,43 @@ class Application(tk.Tk):
     def set_mode(self, input_mode):
         self.mode = input_mode
 
-        if input_mode == "AOO":
-            red_thing = 2
-            green_thing = 0
-            blue_thing = 0
-        elif input_mode == "VOO":
-            red_thing = 1
-            green_thing = 1
-            blue_thing = 0
-        elif input_mode == "AAI":
-            red_thing = 4
-            green_thing = 0
-            blue_thing = 1
-        else:
-            red_thing = 3
-            green_thing = 1
-            blue_thing = 1
+        # if input_mode == "AOO":
+        #     red_thing = 2
+        #     green_thing = 0
+        #     blue_thing = 0
+        # elif input_mode == "VOO":
+        #     red_thing = 1
+        #     green_thing = 1
+        #     blue_thing = 0
+        # elif input_mode == "AAI":
+        #     red_thing = 4
+        #     green_thing = 0
+        #     blue_thing = 1
+        # else:
+        #     red_thing = 3
+        #     green_thing = 1
+        #     blue_thing = 1
 
 
-        frdm_port = "COM4"
+        # frdm_port = "COM4"
 
-        Start = b'\x16'
-        SYNC = b'\x22'
-        Fn_set = b'\x55'
-        lrl_in = 60
-        red_en = struct.pack("B", red_thing)
-        lrl_in = struct.pack("B", lrl_in)
-        green_en = struct.pack("B", green_thing)
-        blue_en = struct.pack("B", blue_thing)
-        off_time = struct.pack("f", 3.1415926)
-        switch_time = struct.pack("H", 500)
+        # Start = b'\x16'
+        # SYNC = b'\x22'
+        # Fn_set = b'\x55'
+        # lrl_in = 60
+        # red_en = struct.pack("B", red_thing)
+        # lrl_in = struct.pack("B", lrl_in)
+        # green_en = struct.pack("B", green_thing)
+        # blue_en = struct.pack("B", blue_thing)
+        # off_time = struct.pack("f", 3.1415926)
+        # switch_time = struct.pack("H", 500)
 
-        Signal_set = Start + Fn_set + red_en + lrl_in + green_en + blue_en + off_time + switch_time
-        Signal_echo = Start + SYNC + red_en + green_en + blue_en + off_time + switch_time
+        # Signal_set = Start + Fn_set + red_en + lrl_in + green_en + blue_en + off_time + switch_time
+        # Signal_echo = Start + SYNC + red_en + green_en + blue_en + off_time + switch_time
 
-        with serial.Serial(frdm_port, 115200) as pacemaker:
-            pacemaker.write(Signal_set)
-            print("write complete")
+        # with serial.Serial(frdm_port, 115200) as pacemaker:
+        #     pacemaker.write(Signal_set)
+        #     print("write complete")
 
         # with serial.Serial(frdm_port, 115200) as pacemaker:
         #     pacemaker.write(Signal_echo)
