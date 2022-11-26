@@ -674,6 +674,20 @@ class ParamSelect(ttk.Frame):
                 pacemaker.write(Signal_set)
                 print("write complete")
 
+                
+            with serial.Serial(frdm_port, 115200) as pacemaker:
+                pacemaker.write(Signal_echo)
+                print("echo write complete")
+                data = pacemaker.read(9)
+                mode_echo = data[0]
+                lrl_echo = data[1]
+                # off_rev =  struct.unpack("f", data[3:7])[0]
+                # switch_rev =  struct.unpack("H", data[7:9])[0]
+                print("echo complete")
+
+            print("From the board:")
+            print("mode_echo = ", mode_echo)
+            print("lrl_echo = ", lrl_echo)
 
         
         
