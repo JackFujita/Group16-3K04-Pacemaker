@@ -1358,7 +1358,7 @@ class Application(tk.Tk):
         
         return lrl, url, aamp, vamp, apw, vpw, arp, vrp
 
-    def serialSend(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4 ):
+    def serialSend(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4, vent_amp_input = 3.5, vent_sensitivity_input = 2.5, VRP_input = 320, atr_pw_input = 0.4, atr_amp_input = 3.5, atr_sensitivity_input = 0.75, ARP_input = 250):
         if mode_str == "AOO":
             mode_char = 2
         if mode_str == "VOO":
@@ -1371,26 +1371,36 @@ class Application(tk.Tk):
 
         frdm_port = self.com_name
 
-        Start = b'\x16'
-        SYNC = b'\x22'
-        Fn_set = b'\x55'
+        Start = b'\x16' #1
+        SYNC = b'\x22' #2
+        Fn_set = b'\x55' #2
 
         id_int = int(id_input)
         lrl_int = int(lrl_input)
         url_int = int(url_input)
         vent_pw_conv = vent_pw_input*100
+        atr_pw_conv = atr_pw_input*100
         print(lrl_int)
-        id_en = struct.pack("f", id_int)
-        mode_en = struct.pack("B", mode_char)
-        lrl_en = struct.pack("B", lrl_int)
-        url_en = struct.pack("B", url_int)
-        vent_pw_en = struct.pack("B", int(vent_pw_conv))
+        id_en = struct.pack("f", id_int)  #3:6
+        mode_en = struct.pack("B", mode_char) #7
+        lrl_en = struct.pack("B", lrl_int) #8
+        url_en = struct.pack("B", url_int) #9
+        vent_pw_en = struct.pack("B", int(vent_pw_conv)) #10
+        vent_amp_en = struct.pack("f", vent_amp_input) #11:14
+        vent_sensitivity_en = struct.pack("f", vent_sensitivity_input) #15:18
+        VRP_en = struct.pack("H", VRP_input) #19:20
+        atr_pw_en = struct.pack("B", int(atr_pw_conv)) #21
+        atr_amp_en = struct.pack("f", atr_amp_input) #22:25
+        atr_sensitivity_en = struct.pack("f", atr_sensitivity_input) #26:29
+        ARP_en = struct.pack("H", ARP_input) #30:31
+
+
         # green_en = struct.pack("B", green_thing)
         # blue_en = struct.pack("B", blue_thing)
         # off_time = struct.pack("f", 3.1415926)
         # switch_time = struct.pack("H", 500)
 
-        Signal_set = Start + Fn_set + id_en + mode_en + lrl_en + url_en + vent_pw_en
+        Signal_set = Start + Fn_set + id_en + mode_en + lrl_en + url_en + vent_pw_en + vent_amp_en + vent_sensitivity_en + VRP_en + atr_pw_en + atr_amp_en + atr_sensitivity_en + ARP_en
         #Signal_echo = Start + SYNC + mode_en + lrl_en + url_en
 
         with serial.Serial(frdm_port, 115200) as pacemaker:
@@ -1413,7 +1423,6 @@ class Application(tk.Tk):
             url_read = data[7]
             print("serial read complete")
             print(id_read, mode_read, lrl_read, url_read)
-
 
 
 app = Application()
