@@ -7,6 +7,10 @@ from PIL import ImageTk, Image
 import serial
 import serial.tools.list_ports
 import struct
+import datetime as dt
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import random
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
@@ -121,6 +125,9 @@ class Login(ttk.Frame):
 class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
+
+
+    
 
         # controller.set_mode("AOO")
         
@@ -242,6 +249,43 @@ class ModeSelect(ttk.Frame):
         errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
         errormsg.pack(side = TOP)
 
+
+
+        
+        fig = plt.figure()
+        ax = fig.add_subplot(1, 1, 1)
+        xs = []
+        ys = []
+
+        def make_plot():
+            # This function is called periodically from FuncAnimation
+            def animate(i, xs, ys):
+
+                # Read temperature (Celsius) from TMP102
+                val = random.randrange(-5, 5, 1)
+                voltage = round(val, 2)
+
+                # Add x and y to lists
+                xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                ys.append(voltage)
+
+                # Limit x and y lists to 20 items
+                xs = xs[-20:]
+                ys = ys[-20:]
+
+                # Draw x and y lists
+                ax.clear()
+                ax.plot(xs, ys)
+
+                # Format plot
+                plt.xticks(rotation=45, ha='right')
+                plt.subplots_adjust(bottom=0.30)
+                plt.title('TMP102 Temperature over Time')
+                plt.ylabel('Temperature (deg C)')
+
+            ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
+            plt.show()  
+
         def save_mode():
             if connected:
                 print(selected.get())
@@ -255,6 +299,9 @@ class ModeSelect(ttk.Frame):
 
             if selected.get() == '':
                 errormsg.config(text = "Please select an option")
+            
+
+
 
         modes = ["AOO", 'VOO', 'AAI', 'VVI']
         selected = StringVar()
@@ -265,6 +312,8 @@ class ModeSelect(ttk.Frame):
 
         button = ttk.Button(border, text = "Apply", command = save_mode)
         button.pack(fill='x', padx=5,pady=5)
+        button2 = ttk.Button(border, text = "Apply", command = make_plot)
+        button2.pack(fill='x', padx=5,pady=5)
 
 class VOOParams(ttk.Frame):
     def __init__(self, parent, controller):
