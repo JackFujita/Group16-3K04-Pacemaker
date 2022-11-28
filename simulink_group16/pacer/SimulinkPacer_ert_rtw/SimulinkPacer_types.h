@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'SimulinkPacer'.
  *
- * Model version                  : 5.93
+ * Model version                  : 5.94
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Mon Nov 28 17:12:09 2022
+ * C/C++ source code generated on : Mon Nov 28 17:31:16 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -63,6 +63,28 @@ struct tag_GV9UedAE1zOVNNbkXknChB
 typedef struct tag_GV9UedAE1zOVNNbkXknChB freedomk64f_SCIWrite_Simulink_T;
 
 #endif                             /* typedef_freedomk64f_SCIWrite_Simulink_T */
+
+#ifndef struct_tag_s1eQZAg8cMgwN6kxxyzYvC
+#define struct_tag_s1eQZAg8cMgwN6kxxyzYvC
+
+struct tag_s1eQZAg8cMgwN6kxxyzYvC
+{
+  boolean_T matlabCodegenIsDeleted;
+  int32_T isInitialized;
+  boolean_T isSetupComplete;
+  b_freedomk64f_Hardware_Simuli_T Hw;
+  MW_Handle_Type MW_ANALOGIN_HANDLE;
+  real_T SampleTime;
+};
+
+#endif                                 /* struct_tag_s1eQZAg8cMgwN6kxxyzYvC */
+
+#ifndef typedef_freedomk64f_AnalogInput_Simul_T
+#define typedef_freedomk64f_AnalogInput_Simul_T
+
+typedef struct tag_s1eQZAg8cMgwN6kxxyzYvC freedomk64f_AnalogInput_Simul_T;
+
+#endif                             /* typedef_freedomk64f_AnalogInput_Simul_T */
 
 #ifndef struct_tag_q6HQSF2nXq6EjCNj0vbuLD
 #define struct_tag_q6HQSF2nXq6EjCNj0vbuLD

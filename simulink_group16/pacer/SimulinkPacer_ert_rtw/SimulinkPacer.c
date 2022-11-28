@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'SimulinkPacer'.
  *
- * Model version                  : 5.93
+ * Model version                  : 5.94
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Mon Nov 28 17:12:09 2022
+ * C/C++ source code generated on : Mon Nov 28 17:31:16 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -265,7 +265,6 @@ static void Simul_enter_atomic_VOO_Charging(const real_T *Multiply3)
 
 static void SimulinkPace_SystemCore_setup_f(freedomk64f_SCIRead_SimulinkP_T *obj)
 {
-  MW_SCI_Parity_Type ParityValue;
   obj->isSetupComplete = false;
   obj->isInitialized = 1;
   SimulinkPacer_B.TxPinLoc = MW_UNDEFINED_VALUE;
@@ -274,8 +273,8 @@ static void SimulinkPace_SystemCore_setup_f(freedomk64f_SCIRead_SimulinkP_T *obj
     SimulinkPacer_B.TxPinLoc);
   MW_SCI_SetBaudrate(obj->MW_SCIHANDLE, 115200U);
   SimulinkPacer_B.StopBitsValue = MW_SCI_STOPBITS_1;
-  ParityValue = MW_SCI_PARITY_NONE;
-  MW_SCI_SetFrameFormat(obj->MW_SCIHANDLE, 8, ParityValue,
+  SimulinkPacer_B.ParityValue = MW_SCI_PARITY_NONE;
+  MW_SCI_SetFrameFormat(obj->MW_SCIHANDLE, 8, SimulinkPacer_B.ParityValue,
                         SimulinkPacer_B.StopBitsValue);
   obj->isSetupComplete = true;
 }
@@ -287,8 +286,6 @@ void SimulinkPacer_step(void)
   real_T Multiply1;
   real_T Multiply2;
   real_T Multiply3;
-  real_T tomspp;
-  uint8_T RxDataLocChar[11];
   uint8_T status;
   boolean_T DigitalRead1;
   boolean_T tmp;
@@ -299,10 +296,23 @@ void SimulinkPacer_step(void)
     SimulinkPacer_DW.obj_d.SampleTime = SimulinkPacer_P.SerialReceive_SampleTime;
   }
 
-  status = MW_SCI_Receive(SimulinkPacer_DW.obj_d.MW_SCIHANDLE, &RxDataLocChar[0],
-    11U);
-  memcpy((void *)&SimulinkPacer_B.RxData[0], (void *)&RxDataLocChar[0],
-         (uint32_T)((size_t)11 * sizeof(uint8_T)));
+  status = MW_SCI_Receive(SimulinkPacer_DW.obj_d.MW_SCIHANDLE,
+    &SimulinkPacer_B.RxDataLocChar[0], 11U);
+  memcpy((void *)&SimulinkPacer_B.RxData[0], (void *)
+         &SimulinkPacer_B.RxDataLocChar[0], (uint32_T)((size_t)11 * sizeof
+          (uint8_T)));
+
+  /* MATLABSystem: '<Root>/Analog Input' */
+  if (SimulinkPacer_DW.obj.SampleTime != SimulinkPacer_P.AnalogInput_SampleTime)
+  {
+    SimulinkPacer_DW.obj.SampleTime = SimulinkPacer_P.AnalogInput_SampleTime;
+  }
+
+  MW_AnalogIn_Start(SimulinkPacer_DW.obj.MW_ANALOGIN_HANDLE);
+  MW_AnalogInSingle_ReadResult(SimulinkPacer_DW.obj.MW_ANALOGIN_HANDLE,
+    &SimulinkPacer_B.AnalogInput, 7);
+
+  /* End of MATLABSystem: '<Root>/Analog Input' */
 
   /* Chart: '<Root>/Chart1' incorporates:
    *  MATLABSystem: '<Root>/Serial Receive'
@@ -379,7 +389,8 @@ void SimulinkPacer_step(void)
    * About '<S3>/to mspp ':
    *  Operator: reciprocal
    */
-  tomspp = 1.0 / ((real_T)SimulinkPacer_B.lrl_in / SimulinkPacer_P.mintoms_Value);
+  SimulinkPacer_B.tomspp = 1.0 / ((real_T)SimulinkPacer_B.lrl_in /
+    SimulinkPacer_P.mintoms_Value);
 
   /* MATLABSystem: '<S5>/Digital Read' */
   if (SimulinkPacer_DW.obj_e.SampleTime !=
@@ -390,13 +401,13 @@ void SimulinkPacer_step(void)
   tmp = MW_digitalIO_read(SimulinkPacer_DW.obj_e.MW_DIGITALIO_HANDLE);
 
   /* MATLABSystem: '<S5>/Digital Read1' */
-  if (SimulinkPacer_DW.obj.SampleTime != SimulinkPacer_P.DigitalRead1_SampleTime)
-  {
-    SimulinkPacer_DW.obj.SampleTime = SimulinkPacer_P.DigitalRead1_SampleTime;
+  if (SimulinkPacer_DW.obj_m.SampleTime !=
+      SimulinkPacer_P.DigitalRead1_SampleTime) {
+    SimulinkPacer_DW.obj_m.SampleTime = SimulinkPacer_P.DigitalRead1_SampleTime;
   }
 
   /* MATLABSystem: '<S5>/Digital Read1' */
-  DigitalRead1 = MW_digitalIO_read(SimulinkPacer_DW.obj.MW_DIGITALIO_HANDLE);
+  DigitalRead1 = MW_digitalIO_read(SimulinkPacer_DW.obj_m.MW_DIGITALIO_HANDLE);
 
   /* Gain: '<S3>/Multiply' incorporates:
    *  Constant: '<S3>/input V3'
@@ -451,7 +462,7 @@ void SimulinkPacer_step(void)
             SimulinkPacer_DW.temporalCounter_i1 = 0U;
             Sim_enter_atomic_AAI_Refractory(&Multiply2, &Multiply1);
           } else if (SimulinkPacer_DW.temporalCounter_i1 >= (uint32_T)ceil
-                     ((tomspp - SimulinkPacer_P.Constant3_Value *
+                     ((SimulinkPacer_B.tomspp - SimulinkPacer_P.Constant3_Value *
                        SimulinkPacer_DW.artificial_pace) -
                       SimulinkPacer_P.Constant9_Value)) {
             SimulinkPacer_DW.is_AAI = SimulinkPacer_IN_AAI_Pacing;
@@ -518,8 +529,8 @@ void SimulinkPacer_step(void)
         SimulinkPacer_B.ATR_PACE_CTRL = 0.0;
         SimulinkPacer_B.PACE_CHARGE_CTRL = 1.0;
         SimulinkPacer_B.FRONTEND_CTRL = 0.0;
-        if (SimulinkPacer_DW.temporalCounter_i1 >= (uint32_T)ceil(tomspp -
-             SimulinkPacer_P.Constant3_Value)) {
+        if (SimulinkPacer_DW.temporalCounter_i1 >= (uint32_T)ceil
+            (SimulinkPacer_B.tomspp - SimulinkPacer_P.Constant3_Value)) {
           SimulinkPacer_DW.is_AOO = SimulinkPacer_IN_AOO_Pacing;
           SimulinkPacer_DW.temporalCounter_i1 = 0U;
           SimulinkPacer_B.PACE_CHARGE_CTRL = 0.0;
@@ -593,8 +604,8 @@ void SimulinkPacer_step(void)
         SimulinkPacer_B.ATR_PACE_CTRL = 0.0;
         SimulinkPacer_B.PACE_CHARGE_CTRL = 1.0;
         SimulinkPacer_B.FRONTEND_CTRL = 0.0;
-        if (SimulinkPacer_DW.temporalCounter_i1 >= (uint32_T)ceil(tomspp -
-             SimulinkPacer_P.Constant1_Value)) {
+        if (SimulinkPacer_DW.temporalCounter_i1 >= (uint32_T)ceil
+            (SimulinkPacer_B.tomspp - SimulinkPacer_P.Constant1_Value)) {
           SimulinkPacer_DW.is_VOO = SimulinkPacer_IN_VOO_Pacing;
           SimulinkPacer_DW.temporalCounter_i1 = 0U;
           SimulinkPacer_B.PACE_CHARGE_CTRL = 0.0;
@@ -624,7 +635,8 @@ void SimulinkPacer_step(void)
 
      default:
       /* case IN_VVI: */
-      SimulinkPacer_VVI(&tomspp, &Multiply3, &DigitalRead1, &Multiply);
+      SimulinkPacer_VVI(&SimulinkPacer_B.tomspp, &Multiply3, &DigitalRead1,
+                        &Multiply);
       break;
     }
   }
@@ -737,7 +749,7 @@ void SimulinkPacer_step(void)
   /* End of Chart: '<S7>/Chart' */
 
   /* MATLABSystem: '<S7>/Digital Write' */
-  MW_digitalIO_write(SimulinkPacer_DW.obj_m.MW_DIGITALIO_HANDLE,
+  MW_digitalIO_write(SimulinkPacer_DW.obj_mz.MW_DIGITALIO_HANDLE,
                      SimulinkPacer_B.green_charge != 0.0);
 
   /* MATLABSystem: '<S7>/Digital Write1' */
@@ -753,9 +765,10 @@ void SimulinkPacer_step(void)
 void SimulinkPacer_initialize(void)
 {
   {
-    freedomk64f_DigitalRead_Simul_T *obj;
-    freedomk64f_DigitalWrite_Simu_T *obj_0;
-    freedomk64f_PWMOutput_Simulin_T *obj_1;
+    freedomk64f_AnalogInput_Simul_T *obj;
+    freedomk64f_DigitalRead_Simul_T *obj_0;
+    freedomk64f_DigitalWrite_Simu_T *obj_1;
+    freedomk64f_PWMOutput_Simulin_T *obj_2;
 
     /* SystemInitialize for S-Function (sfun_private_function_caller) generated from: '<Root>/Function-Call Subsystem' incorporates:
      *  SubSystem: '<Root>/Function-Call Subsystem'
@@ -770,108 +783,123 @@ void SimulinkPacer_initialize(void)
     SimulinkPacer_DW.obj_d.SampleTime = SimulinkPacer_P.SerialReceive_SampleTime;
     SimulinkPace_SystemCore_setup_f(&SimulinkPacer_DW.obj_d);
 
+    /* Start for MATLABSystem: '<Root>/Analog Input' */
+    SimulinkPacer_DW.obj.matlabCodegenIsDeleted = true;
+    SimulinkPacer_DW.obj.isInitialized = 0;
+    SimulinkPacer_DW.obj.SampleTime = -1.0;
+    SimulinkPacer_DW.obj.matlabCodegenIsDeleted = false;
+    SimulinkPacer_DW.obj.SampleTime = SimulinkPacer_P.AnalogInput_SampleTime;
+    obj = &SimulinkPacer_DW.obj;
+    SimulinkPacer_DW.obj.isSetupComplete = false;
+    SimulinkPacer_DW.obj.isInitialized = 1;
+    obj->MW_ANALOGIN_HANDLE = MW_AnalogInSingle_Open(17U);
+    SimulinkPacer_B.trigger_val = MW_ANALOGIN_SOFTWARE_TRIGGER;
+    MW_AnalogIn_SetTriggerSource(SimulinkPacer_DW.obj.MW_ANALOGIN_HANDLE,
+      SimulinkPacer_B.trigger_val, 0U);
+    SimulinkPacer_DW.obj.isSetupComplete = true;
+
     /* Start for MATLABSystem: '<S5>/Digital Read' */
     SimulinkPacer_DW.obj_e.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_e.isInitialized = 0;
     SimulinkPacer_DW.obj_e.SampleTime = -1.0;
     SimulinkPacer_DW.obj_e.matlabCodegenIsDeleted = false;
     SimulinkPacer_DW.obj_e.SampleTime = SimulinkPacer_P.DigitalRead_SampleTime;
-    obj = &SimulinkPacer_DW.obj_e;
+    obj_0 = &SimulinkPacer_DW.obj_e;
     SimulinkPacer_DW.obj_e.isSetupComplete = false;
     SimulinkPacer_DW.obj_e.isInitialized = 1;
-    obj->MW_DIGITALIO_HANDLE = MW_digitalIO_open(0U, 0);
+    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(0U, 0);
     SimulinkPacer_DW.obj_e.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S5>/Digital Read1' */
-    SimulinkPacer_DW.obj.matlabCodegenIsDeleted = true;
-    SimulinkPacer_DW.obj.isInitialized = 0;
-    SimulinkPacer_DW.obj.SampleTime = -1.0;
-    SimulinkPacer_DW.obj.matlabCodegenIsDeleted = false;
-    SimulinkPacer_DW.obj.SampleTime = SimulinkPacer_P.DigitalRead1_SampleTime;
-    obj = &SimulinkPacer_DW.obj;
-    SimulinkPacer_DW.obj.isSetupComplete = false;
-    SimulinkPacer_DW.obj.isInitialized = 1;
-    obj->MW_DIGITALIO_HANDLE = MW_digitalIO_open(1U, 0);
-    SimulinkPacer_DW.obj.isSetupComplete = true;
+    SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted = true;
+    SimulinkPacer_DW.obj_m.isInitialized = 0;
+    SimulinkPacer_DW.obj_m.SampleTime = -1.0;
+    SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted = false;
+    SimulinkPacer_DW.obj_m.SampleTime = SimulinkPacer_P.DigitalRead1_SampleTime;
+    obj_0 = &SimulinkPacer_DW.obj_m;
+    SimulinkPacer_DW.obj_m.isSetupComplete = false;
+    SimulinkPacer_DW.obj_m.isInitialized = 1;
+    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(1U, 0);
+    SimulinkPacer_DW.obj_m.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write2' */
     SimulinkPacer_DW.obj_n.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_n.isInitialized = 0;
     SimulinkPacer_DW.obj_n.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_n;
+    obj_1 = &SimulinkPacer_DW.obj_n;
     SimulinkPacer_DW.obj_n.isSetupComplete = false;
     SimulinkPacer_DW.obj_n.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(2U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(2U, 1);
     SimulinkPacer_DW.obj_n.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write4' */
     SimulinkPacer_DW.obj_gy.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_gy.isInitialized = 0;
     SimulinkPacer_DW.obj_gy.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_gy;
+    obj_1 = &SimulinkPacer_DW.obj_gy;
     SimulinkPacer_DW.obj_gy.isSetupComplete = false;
     SimulinkPacer_DW.obj_gy.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(9U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(9U, 1);
     SimulinkPacer_DW.obj_gy.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write3' */
     SimulinkPacer_DW.obj_ec.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_ec.isInitialized = 0;
     SimulinkPacer_DW.obj_ec.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_ec;
+    obj_1 = &SimulinkPacer_DW.obj_ec;
     SimulinkPacer_DW.obj_ec.isSetupComplete = false;
     SimulinkPacer_DW.obj_ec.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(8U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(8U, 1);
     SimulinkPacer_DW.obj_ec.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write5' */
     SimulinkPacer_DW.obj_e0.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_e0.isInitialized = 0;
     SimulinkPacer_DW.obj_e0.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_e0;
+    obj_1 = &SimulinkPacer_DW.obj_e0;
     SimulinkPacer_DW.obj_e0.isSetupComplete = false;
     SimulinkPacer_DW.obj_e0.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(12U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(12U, 1);
     SimulinkPacer_DW.obj_e0.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write6' */
     SimulinkPacer_DW.obj_gm.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_gm.isInitialized = 0;
     SimulinkPacer_DW.obj_gm.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_gm;
+    obj_1 = &SimulinkPacer_DW.obj_gm;
     SimulinkPacer_DW.obj_gm.isSetupComplete = false;
     SimulinkPacer_DW.obj_gm.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(11U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(11U, 1);
     SimulinkPacer_DW.obj_gm.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write7' */
     SimulinkPacer_DW.obj_gj.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_gj.isInitialized = 0;
     SimulinkPacer_DW.obj_gj.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_gj;
+    obj_1 = &SimulinkPacer_DW.obj_gj;
     SimulinkPacer_DW.obj_gj.isSetupComplete = false;
     SimulinkPacer_DW.obj_gj.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(10U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(10U, 1);
     SimulinkPacer_DW.obj_gj.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write8' */
     SimulinkPacer_DW.obj_g.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_g.isInitialized = 0;
     SimulinkPacer_DW.obj_g.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_g;
+    obj_1 = &SimulinkPacer_DW.obj_g;
     SimulinkPacer_DW.obj_g.isSetupComplete = false;
     SimulinkPacer_DW.obj_g.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(13U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(13U, 1);
     SimulinkPacer_DW.obj_g.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/PWM Output' */
     SimulinkPacer_DW.obj_by.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_by.isInitialized = 0;
     SimulinkPacer_DW.obj_by.matlabCodegenIsDeleted = false;
-    obj_1 = &SimulinkPacer_DW.obj_by;
+    obj_2 = &SimulinkPacer_DW.obj_by;
     SimulinkPacer_DW.obj_by.isSetupComplete = false;
     SimulinkPacer_DW.obj_by.isInitialized = 1;
-    obj_1->MW_PWM_HANDLE = MW_PWM_Open(5U, 2000.0, 0.0);
+    obj_2->MW_PWM_HANDLE = MW_PWM_Open(5U, 2000.0, 0.0);
     MW_PWM_Start(SimulinkPacer_DW.obj_by.MW_PWM_HANDLE);
     SimulinkPacer_DW.obj_by.isSetupComplete = true;
 
@@ -879,30 +907,30 @@ void SimulinkPacer_initialize(void)
     SimulinkPacer_DW.obj_h.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_h.isInitialized = 0;
     SimulinkPacer_DW.obj_h.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_h;
+    obj_1 = &SimulinkPacer_DW.obj_h;
     SimulinkPacer_DW.obj_h.isSetupComplete = false;
     SimulinkPacer_DW.obj_h.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(4U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(4U, 1);
     SimulinkPacer_DW.obj_h.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/Digital Write10' */
     SimulinkPacer_DW.obj_j.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_j.isInitialized = 0;
     SimulinkPacer_DW.obj_j.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_j;
+    obj_1 = &SimulinkPacer_DW.obj_j;
     SimulinkPacer_DW.obj_j.isSetupComplete = false;
     SimulinkPacer_DW.obj_j.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(7U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(7U, 1);
     SimulinkPacer_DW.obj_j.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S6>/PWM Output1' */
     SimulinkPacer_DW.obj_jf.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_jf.isInitialized = 0;
     SimulinkPacer_DW.obj_jf.matlabCodegenIsDeleted = false;
-    obj_1 = &SimulinkPacer_DW.obj_jf;
+    obj_2 = &SimulinkPacer_DW.obj_jf;
     SimulinkPacer_DW.obj_jf.isSetupComplete = false;
     SimulinkPacer_DW.obj_jf.isInitialized = 1;
-    obj_1->MW_PWM_HANDLE = MW_PWM_Open(3U, 2000.0, 0.0);
+    obj_2->MW_PWM_HANDLE = MW_PWM_Open(3U, 2000.0, 0.0);
     MW_PWM_Start(SimulinkPacer_DW.obj_jf.MW_PWM_HANDLE);
     SimulinkPacer_DW.obj_jf.isSetupComplete = true;
 
@@ -910,41 +938,41 @@ void SimulinkPacer_initialize(void)
     SimulinkPacer_DW.obj_hk.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_hk.isInitialized = 0;
     SimulinkPacer_DW.obj_hk.matlabCodegenIsDeleted = false;
-    obj_1 = &SimulinkPacer_DW.obj_hk;
+    obj_2 = &SimulinkPacer_DW.obj_hk;
     SimulinkPacer_DW.obj_hk.isSetupComplete = false;
     SimulinkPacer_DW.obj_hk.isInitialized = 1;
-    obj_1->MW_PWM_HANDLE = MW_PWM_Open(6U, 2000.0, 0.0);
+    obj_2->MW_PWM_HANDLE = MW_PWM_Open(6U, 2000.0, 0.0);
     MW_PWM_Start(SimulinkPacer_DW.obj_hk.MW_PWM_HANDLE);
     SimulinkPacer_DW.obj_hk.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S7>/Digital Write' */
-    SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted = true;
-    SimulinkPacer_DW.obj_m.isInitialized = 0;
-    SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_m;
-    SimulinkPacer_DW.obj_m.isSetupComplete = false;
-    SimulinkPacer_DW.obj_m.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(43U, 1);
-    SimulinkPacer_DW.obj_m.isSetupComplete = true;
+    SimulinkPacer_DW.obj_mz.matlabCodegenIsDeleted = true;
+    SimulinkPacer_DW.obj_mz.isInitialized = 0;
+    SimulinkPacer_DW.obj_mz.matlabCodegenIsDeleted = false;
+    obj_1 = &SimulinkPacer_DW.obj_mz;
+    SimulinkPacer_DW.obj_mz.isSetupComplete = false;
+    SimulinkPacer_DW.obj_mz.isInitialized = 1;
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(43U, 1);
+    SimulinkPacer_DW.obj_mz.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S7>/Digital Write1' */
     SimulinkPacer_DW.obj_b.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_b.isInitialized = 0;
     SimulinkPacer_DW.obj_b.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_b;
+    obj_1 = &SimulinkPacer_DW.obj_b;
     SimulinkPacer_DW.obj_b.isSetupComplete = false;
     SimulinkPacer_DW.obj_b.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(44U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(44U, 1);
     SimulinkPacer_DW.obj_b.isSetupComplete = true;
 
     /* Start for MATLABSystem: '<S7>/Digital Write2' */
     SimulinkPacer_DW.obj_o.matlabCodegenIsDeleted = true;
     SimulinkPacer_DW.obj_o.isInitialized = 0;
     SimulinkPacer_DW.obj_o.matlabCodegenIsDeleted = false;
-    obj_0 = &SimulinkPacer_DW.obj_o;
+    obj_1 = &SimulinkPacer_DW.obj_o;
     SimulinkPacer_DW.obj_o.isSetupComplete = false;
     SimulinkPacer_DW.obj_o.isInitialized = 1;
-    obj_0->MW_DIGITALIO_HANDLE = MW_digitalIO_open(42U, 1);
+    obj_1->MW_DIGITALIO_HANDLE = MW_digitalIO_open(42U, 1);
     SimulinkPacer_DW.obj_o.isSetupComplete = true;
   }
 }
@@ -962,6 +990,18 @@ void SimulinkPacer_terminate(void)
   }
 
   /* End of Terminate for MATLABSystem: '<Root>/Serial Receive' */
+
+  /* Terminate for MATLABSystem: '<Root>/Analog Input' */
+  if (!SimulinkPacer_DW.obj.matlabCodegenIsDeleted) {
+    SimulinkPacer_DW.obj.matlabCodegenIsDeleted = true;
+    if ((SimulinkPacer_DW.obj.isInitialized == 1) &&
+        SimulinkPacer_DW.obj.isSetupComplete) {
+      MW_AnalogIn_Stop(SimulinkPacer_DW.obj.MW_ANALOGIN_HANDLE);
+      MW_AnalogIn_Close(SimulinkPacer_DW.obj.MW_ANALOGIN_HANDLE);
+    }
+  }
+
+  /* End of Terminate for MATLABSystem: '<Root>/Analog Input' */
 
   /* Terminate for S-Function (sfun_private_function_caller) generated from: '<Root>/Function-Call Subsystem' incorporates:
    *  SubSystem: '<Root>/Function-Call Subsystem'
@@ -982,11 +1022,11 @@ void SimulinkPacer_terminate(void)
   /* End of Terminate for MATLABSystem: '<S5>/Digital Read' */
 
   /* Terminate for MATLABSystem: '<S5>/Digital Read1' */
-  if (!SimulinkPacer_DW.obj.matlabCodegenIsDeleted) {
-    SimulinkPacer_DW.obj.matlabCodegenIsDeleted = true;
-    if ((SimulinkPacer_DW.obj.isInitialized == 1) &&
-        SimulinkPacer_DW.obj.isSetupComplete) {
-      MW_digitalIO_close(SimulinkPacer_DW.obj.MW_DIGITALIO_HANDLE);
+  if (!SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted) {
+    SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted = true;
+    if ((SimulinkPacer_DW.obj_m.isInitialized == 1) &&
+        SimulinkPacer_DW.obj_m.isSetupComplete) {
+      MW_digitalIO_close(SimulinkPacer_DW.obj_m.MW_DIGITALIO_HANDLE);
     }
   }
 
@@ -1128,11 +1168,11 @@ void SimulinkPacer_terminate(void)
   /* End of Terminate for MATLABSystem: '<S6>/PWM Output2' */
 
   /* Terminate for MATLABSystem: '<S7>/Digital Write' */
-  if (!SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted) {
-    SimulinkPacer_DW.obj_m.matlabCodegenIsDeleted = true;
-    if ((SimulinkPacer_DW.obj_m.isInitialized == 1) &&
-        SimulinkPacer_DW.obj_m.isSetupComplete) {
-      MW_digitalIO_close(SimulinkPacer_DW.obj_m.MW_DIGITALIO_HANDLE);
+  if (!SimulinkPacer_DW.obj_mz.matlabCodegenIsDeleted) {
+    SimulinkPacer_DW.obj_mz.matlabCodegenIsDeleted = true;
+    if ((SimulinkPacer_DW.obj_mz.isInitialized == 1) &&
+        SimulinkPacer_DW.obj_mz.isSetupComplete) {
+      MW_digitalIO_close(SimulinkPacer_DW.obj_mz.MW_DIGITALIO_HANDLE);
     }
   }
 

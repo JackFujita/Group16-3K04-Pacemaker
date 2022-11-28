@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'SimulinkPacer'.
  *
- * Model version                  : 5.93
+ * Model version                  : 5.94
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Mon Nov 28 17:12:09 2022
+ * C/C++ source code generated on : Mon Nov 28 17:31:16 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -22,6 +22,7 @@
 #ifndef SimulinkPacer_COMMON_INCLUDES_
 #define SimulinkPacer_COMMON_INCLUDES_
 #include "rtwtypes.h"
+#include "MW_AnalogIn.h"
 #include "MW_digitalIO.h"
 #include "MW_PWM.h"
 #include "MW_SCI.h"
@@ -43,9 +44,13 @@
 /* Block signals (default storage) */
 typedef struct {
   uint8_T RxData[11];
+  uint8_T RxDataLocChar[11];
+  MW_AnalogIn_TriggerSource_Type trigger_val;
   uint32_T TxPinLoc;
   uint32_T SCIModuleLoc;
   MW_SCI_StopBits_Type StopBitsValue;
+  MW_SCI_Parity_Type ParityValue;
+  real_T TmpLatchAtA1Outport1;
   real_T green_charge;                 /* '<S7>/Chart' */
   real_T red_pulse;                    /* '<S7>/Chart' */
   real_T blue_refractory;              /* '<S7>/Chart' */
@@ -61,19 +66,23 @@ typedef struct {
   real_T Z_VENT_CTRL;                  /* '<Root>/Chart' */
   real_T VENT_CMP_REF_PWM;             /* '<Root>/Chart' */
   real_T ATR_CMP_REF_PWM;              /* '<Root>/Chart' */
+  real_T AnalogInput;                  /* '<Root>/Analog Input' */
+  real_T tomspp;
+  uint8_T BytePack[8];                 /* '<S4>/Byte Pack' */
   uint8_T mode;                        /* '<Root>/Chart1' */
   uint8_T lrl_in;                      /* '<Root>/Chart1' */
 } B_SimulinkPacer_T;
 
 /* Block states (default storage) for system '<Root>' */
 typedef struct {
-  freedomk64f_DigitalRead_Simul_T obj; /* '<S5>/Digital Read1' */
+  freedomk64f_AnalogInput_Simul_T obj; /* '<Root>/Analog Input' */
+  freedomk64f_DigitalRead_Simul_T obj_m;/* '<S5>/Digital Read1' */
   freedomk64f_DigitalRead_Simul_T obj_e;/* '<S5>/Digital Read' */
   freedomk64f_SCIRead_SimulinkP_T obj_d;/* '<Root>/Serial Receive' */
   freedomk64f_SCIWrite_Simulink_T obj_a;/* '<S4>/Serial Transmit' */
   freedomk64f_DigitalWrite_Simu_T obj_o;/* '<S7>/Digital Write2' */
   freedomk64f_DigitalWrite_Simu_T obj_b;/* '<S7>/Digital Write1' */
-  freedomk64f_DigitalWrite_Simu_T obj_m;/* '<S7>/Digital Write' */
+  freedomk64f_DigitalWrite_Simu_T obj_mz;/* '<S7>/Digital Write' */
   freedomk64f_DigitalWrite_Simu_T obj_g;/* '<S6>/Digital Write8' */
   freedomk64f_DigitalWrite_Simu_T obj_gj;/* '<S6>/Digital Write7' */
   freedomk64f_DigitalWrite_Simu_T obj_gm;/* '<S6>/Digital Write6' */
@@ -102,6 +111,9 @@ typedef struct {
 
 /* Parameters (default storage) */
 struct P_SimulinkPacer_T_ {
+  real_T AnalogInput_SampleTime;       /* Expression: SampleTime
+                                        * Referenced by: '<Root>/Analog Input'
+                                        */
   real_T DigitalRead_SampleTime;       /* Expression: SampleTime
                                         * Referenced by: '<S5>/Digital Read'
                                         */

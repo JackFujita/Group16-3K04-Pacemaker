@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'SimulinkPacer'.
  *
- * Model version                  : 5.93
+ * Model version                  : 5.94
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Mon Nov 28 17:12:09 2022
+ * C/C++ source code generated on : Mon Nov 28 17:31:16 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex

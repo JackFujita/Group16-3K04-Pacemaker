@@ -1,5 +1,6 @@
-MW_digitalIO.o
+MW_AnalogInput.o
 mw_sdk_interface.o
+MW_digitalIO.o
 MW_PWM.o
 MW_SCI.o
 ert_main.o

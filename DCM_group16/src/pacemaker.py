@@ -11,6 +11,8 @@ import datetime as dt
 import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 import random
+from time import sleep
+
 
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
@@ -260,10 +262,27 @@ class ModeSelect(ttk.Frame):
         def make_plot():
             # This function is called periodically from FuncAnimation
             def animate(i, xs, ys):
+                frdm_port = controller.get_com_name()
+
+                Start = b'\x16' #1
+                SYNC = b'\x22' #2
+
+                Signal_echo = Start + SYNC 
+
+                with serial.Serial(frdm_port, 115200) as pacemaker:
+                    pacemaker.write(Signal_echo)
+                    sleep(10)
+                    data = pacemaker.read(10)
+                    mode_read = data[0]
+                    A1_data = struct.unpack("d", data[2:9])[0]
+                    lrl_read = data[10]
+                    # off_rev =  struct.unpack("f", data[3:7])[0]
+                    # switch_rev =  struct.unpack("H", data[7:9])[0]
+                    print("echo complete", mode_read, A1_data, lrl_read)
 
                 # Read temperature (Celsius) from TMP102
                 val = random.randrange(-5, 5, 1)
-                voltage = round(val, 2)
+                voltage = round(A1_data, 2)
 
                 # Add x and y to lists
                 xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
@@ -516,7 +535,7 @@ class VOOParams(ttk.Frame):
             try:
                 id_send = controller.get_id()
                 mode_send = controller.get_mode()
-                controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit)
+                controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit, ventricularPW, ventricularAmp)
             except: 
                 print("error stuff doesnt exist")
 
@@ -525,7 +544,7 @@ class VOOParams(ttk.Frame):
 
 
         def read():
-            controller.serialRead()
+            controller.serialRead(controller.get_id(), controller.get_mode())
             
         getparam = ttk.Button(bottom, text="getparams", command=read)
         getparam.pack(side = LEFT, padx = 100)
@@ -1280,6 +1299,9 @@ class Application(tk.Tk):
     def set_com_name(self, com_name_in):
         self.com_name = com_name_in
 
+    def get_com_name(self):
+        return self.com_name
+
     def set_id(self, id_input):
         self.id = id_input
 
@@ -1456,22 +1478,55 @@ class Application(tk.Tk):
             pacemaker.write(Signal_set)
             print("write complete")
 
-    def serialRead(self):
+    def serialRead(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4, vent_amp_input = 3.5, vent_sensitivity_input = 2.5, VRP_input = 320, atr_pw_input = 0.4, atr_amp_input = 3.5, atr_sensitivity_input = 0.75, ARP_input = 250):
         Start = b'\x16'
         SYNC = b'\x22'
         Fn_set = b'\x55'
-        Signal_echo = Start + SYNC
+
+        if mode_str == "AOO":
+            mode_char = 2
+        if mode_str == "VOO":
+            mode_char = 1
+        if mode_str == "AII":
+            mode_char = 4
+        if mode_str == "VVI":
+            mode_char = 3
+        print(mode_str, mode_char)
+
+
+        id_int = int(id_input)
+        lrl_int = int(lrl_input)
+        url_int = int(url_input)
+        vent_pw_conv = vent_pw_input*100
+        atr_pw_conv = atr_pw_input*100
+        print(lrl_int)
+        id_en = struct.pack("f", id_int)  #3:6
+        mode_en = struct.pack("B", mode_char) #7
+        lrl_en = struct.pack("B", lrl_int) #8
+        url_en = struct.pack("B", url_int) #9
+        vent_pw_en = struct.pack("B", int(vent_pw_conv)) #10
+        vent_amp_en = struct.pack("f", vent_amp_input) #11:14
+        vent_sensitivity_en = struct.pack("f", vent_sensitivity_input) #15:18
+        VRP_en = struct.pack("H", VRP_input) #19:20
+        atr_pw_en = struct.pack("B", int(atr_pw_conv)) #21
+        atr_amp_en = struct.pack("f", atr_amp_input) #22:25
+        atr_sensitivity_en = struct.pack("f", atr_sensitivity_input) #26:29
+        ARP_en = struct.pack("H", ARP_input) #30:31
+
+        Signal_echo = Start + SYNC + id_en + mode_en + lrl_en + url_en + vent_pw_en + vent_amp_en + vent_sensitivity_en + VRP_en + atr_pw_en + atr_amp_en + atr_sensitivity_en + ARP_en
         frdm_port = self.com_name
 
         with serial.Serial(frdm_port, 115200) as pacemaker:
             pacemaker.write(Signal_echo)
-            data = pacemaker.read(9)
-            id_read = struct.unpack("f", data[0:4])[0]
-            mode_read = data[5]
-            lrl_read = data[6]
-            url_read = data[7]
+            sleep(1)
+            print("sleep")
+            data = pacemaker.read(12)
+            id_read = struct.unpack("f", data[3:7])[0]
+            mode_read = data[0]
+            lrl_read = data[1]
+            #url_read = data[7]
             print("serial read complete")
-            print(id_read, mode_read, lrl_read, url_read)
+            print(id_read, mode_read, lrl_read, id_read)
 
 
 app = Application()
