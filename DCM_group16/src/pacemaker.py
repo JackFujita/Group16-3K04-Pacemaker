@@ -475,6 +475,13 @@ class VOOParams(ttk.Frame):
         Apply.pack(side = LEFT, padx = 100)
 
 
+        def read():
+            controller.serialRead()
+            
+        getparam = ttk.Button(bottom, text="getparams", command=read)
+        getparam.pack(side = LEFT, padx = 100)
+
+
 class VVIParams(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -1351,7 +1358,7 @@ class Application(tk.Tk):
         
         return lrl, url, aamp, vamp, apw, vpw, arp, vrp
 
-    def serialSend(self, id_input, mode_str, lrl_input = 50, url_input = 60):
+    def serialSend(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4 ):
         if mode_str == "AOO":
             mode_char = 2
         if mode_str == "VOO":
@@ -1371,23 +1378,41 @@ class Application(tk.Tk):
         id_int = int(id_input)
         lrl_int = int(lrl_input)
         url_int = int(url_input)
+        vent_pw_conv = vent_pw_input*100
         print(lrl_int)
         id_en = struct.pack("f", id_int)
         mode_en = struct.pack("B", mode_char)
         lrl_en = struct.pack("B", lrl_int)
-        url_en = struct.pack("B", url_input)
+        url_en = struct.pack("B", url_int)
+        vent_pw_en = struct.pack("B", int(vent_pw_conv))
         # green_en = struct.pack("B", green_thing)
         # blue_en = struct.pack("B", blue_thing)
         # off_time = struct.pack("f", 3.1415926)
         # switch_time = struct.pack("H", 500)
 
-        Signal_set = Start + Fn_set + id_en + mode_en + lrl_en + url_en
+        Signal_set = Start + Fn_set + id_en + mode_en + lrl_en + url_en + vent_pw_en
         #Signal_echo = Start + SYNC + mode_en + lrl_en + url_en
 
         with serial.Serial(frdm_port, 115200) as pacemaker:
             pacemaker.write(Signal_set)
             print("write complete")
 
+    def serialRead(self):
+        Start = b'\x16'
+        SYNC = b'\x22'
+        Fn_set = b'\x55'
+        Signal_echo = Start + SYNC
+        frdm_port = self.com_name
+
+        with serial.Serial(frdm_port, 115200) as pacemaker:
+            pacemaker.write(Signal_echo)
+            data = pacemaker.read(9)
+            id_read = struct.unpack("f", data[0:4])[0]
+            mode_read = data[5]
+            lrl_read = data[6]
+            url_read = data[7]
+            print("serial read complete")
+            print(id_read, mode_read, lrl_read, url_read)
 
 
 
