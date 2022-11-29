@@ -4,42 +4,52 @@ from tkinter import StringVar, messagebox
 import csv
 import sv_ttk
 from PIL import ImageTk, Image
+import serial
+import serial.tools.list_ports
+import struct
+import datetime as dt
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
+import random
+from time import sleep
+
 
 # The first welcome frame block
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)  
 
-        frame = ttk.Frame(self, padding = 200)                                                                          #setting up the size of the frame
-        frame.pack()                                                                                                    #pack the frame
-        welcomeLabel = ttk.Label(frame, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))                    #set a label inside the frame
+        frame = ttk.Frame(self, padding=200)  # setting up the size of the frame
+        frame.pack()  # pack the frame
+        welcomeLabel = ttk.Label(frame, text='Welcome to Pacemaker', font=("Roboto medium", 20))  # set a label inside the frame
 
         welcomeLabel.pack(pady = 20)
 
-        Button = ttk.Button(frame, text = "Login", command=lambda: controller.show_frame(Login), width=30)              #set a button which linked to the login frame
+        Button = ttk.Button(frame, text="Login", command=lambda: controller.show_frame(Login), width=30)  # set a button which linked to the login frame
         Button.pack()
 
-#the login frame block
+
+# the login frame block
 class Login(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
-
+        
         # this block of code is use to creat a label use to contain username entry and password entry.
         border = ttk.LabelFrame(self, text='Login')
         border.pack(fill="both", expand="yes", padx = 150, pady=150)
-
+        
         # the username entry
         L1 = ttk.Label(border, text="Username", font=("Arial", 15))
         L1.place(x=50, y=20)
         Username_login = ttk.Entry(border, width = 30)
         Username_login.place(x=180, y=20)
-
+        
         # the password entry
         L2 = ttk.Label(border, text="Password", font=("Arial", 15))
         L2.place(x=50, y=80)
         Password_login = ttk.Entry(border, width = 30, show='*')
         Password_login.place(x=180, y=80)
-
+        
         # This method is used to verify the user's input password and username is correct
         def verify():
             # get user input
@@ -47,28 +57,28 @@ class Login(ttk.Frame):
             input_password = Password_login.get()
 
             try:
-                with open("Secrets.csv", 'r') as file:                                                                  # open the csv file which store all usernames and passwords, if there is no such file, creat a new one
+                with open("Secrets.csv", 'r') as file:  # open the csv file which store all usernames and passwords, if there is no such file, creat a new one
                     csv_reader=csv.reader(file)
                     login_true = False
-                    for line in csv_reader:                                                                             # read line in the csv file, and check is there any username and it's corresponding password match the user input
-                        if (line[0]==input_username) and (line[1]==input_password):
+                    for line in csv_reader:  # read line in the csv file, and check is there any username and it's corresponding password match the user input
+                        if (line[0]==input_username) and (line[1] == input_password):
                             login_true = True
                             break
-                    if login_true:                                                                                      #if matchs, print message and go to the mode select frame
+                    if login_true:  # if matchs, print message and go to the mode select frame
                         print("he valid")
                         controller.show_frame(ModeSelect)
-                    else:                                                                                               #if not match, print message and show a message box which let user input again.
+                    else:  # if not match, print message and show a message box which let user input again.
                         print("invalid")
                         messagebox.showinfo("Error", "Please provide correct username and password")
-            except:                                                                                                     #show the error
+            except:  # show the error
                 messagebox.showinfo("Error", "Please provide correct username and password")
          
-        verify_button = ttk.Button(border, text="Submit", command=verify)                                               #set a button link to verify method
+        verify_button = ttk.Button(border, text="Submit", command=verify)  # set a button link to verify method
         verify_button.place(x=320, y=130)
-
+        
         # this method is use to let new user to register a new account
         def register():
-            try:                                                                                                        #check the total register user number less than 10
+            try:  # check the total register user number less than 10
                 with open("Secrets.csv", 'r') as file:
                     csv_reader=csv.reader(file)
                     row_count = sum(1 for row in csv_reader)
@@ -78,11 +88,11 @@ class Login(ttk.Frame):
                     return
             except:
                 pass
-
+            
             # this block set the size of frame and three entries which let user input their username and password
             window = tk.Tk()
             window.geometry('470x220')
-            window.resizable(0,0)
+            window.resizable(0, 0)
             window.title("Register")
             l1 = ttk.Label(window, text="Username:", font=("Arial",15))
             l1.place(x=10, y=10)
@@ -98,42 +108,42 @@ class Login(ttk.Frame):
             l3.place(x=10, y=110)
             Password_register_2 = tk.Entry(window, width=30, show="*")
             Password_register_2.place(x = 200, y=110)
-
+            
             # this method is use to check the user's input is obey the rule
             def check():
-                if Username_register.get()!="" or Password_register.get()!="" or Password_register_2.get()!="":         # check all three input is not empty
-                    if Password_register.get()==Password_register_2.get():                                              # check two password input is same
-                        with open("Secrets.csv", 'a', newline='') as file:                                              # if all input is good, write the username and password into the store csv file(if there is no such file, creat one)
+                if Username_register.get() != "" or Password_register.get() != "" or Password_register_2.get() != "":  # check all three input is not empty
+                    if Password_register.get() == Password_register_2.get():  # check two password input is same
+                        with open("Secrets.csv", 'a', newline='') as file:  # if all input is good, write the username and password into the store csv file(if there is no such file, creat one)
                             writer = csv.writer(file)
                             writer.writerow([Username_register.get(), Password_register.get()])
-                        messagebox.showinfo("Welcome","You are registered successfully")                                #show a message box as welcome if all check pass
+                        messagebox.showinfo("Welcome", "You are registered successfully")  # show a message box as welcome if all check pass
                         ###IMPLEMENT MAX USER FUNCTIONALITY
                     else:
-                        messagebox.showinfo("Error","Your password didn't get match")                                   #show a message box as error if some step is not pass
+                        messagebox.showinfo("Error", "Your password didn't get match")  # show a message box as error if some step is not pass
                 else:
-                    messagebox.showinfo("Error", "Please fill the complete field")                                      #show a message box which remind user do not input empty
+                    messagebox.showinfo("Error", "Please fill the complete field")  # show a message box which remind user do not input empty
                     
-            b1 = ttk.Button(window, text="Register", command=check)                                                     #set a button linked to check method
+            b1 = ttk.Button(window, text="Register", command=check)  # set a button linked to check method
             b1.place(x=220, y=150)
 
             sv_ttk.set_theme("light")
-            window.mainloop()                                                                                           #make register frame runing before any other frame until the register step over
+            window.mainloop()  # make register frame runing before any other frame until the register step over
             
-        B2 = ttk.Button(self, text="Register", command=register)                                                        #set a button to call the register frame
+        B2 = ttk.Button(self, text="Register", command=register)  # set a button to call the register frame
         B2.place(x=650, y=10)
 
-        B3 = ttk.Button(self, text = "Back to welcome", command=lambda: controller.show_frame(Welcome))                 #set a button back to the welcome frame
+        B3 = ttk.Button(self, text="Back to welcome",
+                        command=lambda: controller.show_frame(Welcome))  # set a button back to the welcome frame
         B3.place(x=10,y=10)
+        
 
-
-
-#the mode select frame
+# the mode select frame
 class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
         # creating mode select frame and inside it has some label to show the connetion state and each mode that user can select
-        controller.set_mode("AOO")
+        #controller.set_mode("AOO")
         
         top_frame = ttk.Frame(self, padding = 20, width = 300)
         top_frame.pack(fill='x', side = TOP)
@@ -144,15 +154,13 @@ class ModeSelect(ttk.Frame):
         bottom_frame = ttk.Frame(self, padding = 10, width = 400)
         bottom_frame.pack(fill = 'x', side=BOTTOM)
 
-        # provide the different id that you can select
-        options = ["123", "234", "345", "456", "567", "678"]
-        clicked = StringVar()   #make the string change when user change the select
+        # options = ["Pacemaker ID"]
+        # clicked = StringVar()
 
-        # set the connection part label block size and position
-        Test_label = ttk.Label(top_frame, text="Pacemaker ID simulation: ")
-        Test_label.pack(side=LEFT)
-        w = ttk.OptionMenu(top_frame, clicked, options[0], *options)
-        w.pack(side=LEFT)
+        # Test_label = ttk.Label(top_frame, text="Pacemaker ID simulation: ")
+        # Test_label.pack(side=LEFT)
+        # w = ttk.OptionMenu(top_frame, clicked, options[0], *options)
+        # w.pack(side=LEFT)
 
         new_pacemaker_label = ttk.Label(second_top)
         new_pacemaker_label.pack(pady = 20)
@@ -172,29 +180,46 @@ class ModeSelect(ttk.Frame):
 
         # method to connect the pacemaker
         def connect():
-            label.config(text="Pacemaker Connected")
-            image = Image.open('Pictures/connect.png')                                                                           #show a connecting picture when connected
+            info = serial.tools.list_ports.comports()
+            for i in range(len(info)):
+                info_it = info[i].hwid.split("=")
+                hwid = info_it[1]
+                if hwid == "1366:1015 SER":
+                    break
+            com_name = info[i].name #COMPORT NAME
+            controller.set_com_name(com_name)
+            ser_num = info[i].serial_number
+
+            text1 = "Pacemaker " + ser_num + " at " + com_name + " connected"
+
+            label.config(text=text1)
+            image = Image.open('Pictures/connect.png')
             image = image.resize((20,20), Image.ANTIALIAS)
             global my_image
             my_image = ImageTk.PhotoImage(image)
             icon.config(image = my_image)
 
-            new_pm = True                                                                                               #check is this pacemaker connected before during the windows runing
-            for id in prev_IDs:
-                if id == clicked.get():                                                                                 #check is the pacemaker id connected before
-                    new_pm = False
-            prev_IDs.append(clicked.get())                                                                              #put the current id into the store list
-            if new_pm:
-                new_pacemaker_label.config(text = "New Pacemaker Connected!")                                           #if it is a new pacemaker, print a text
-                controller.setDefaultParams(12345) #Creates default parameters (need a real id to send here)
-            else:
-                new_pacemaker_label.config(text = "Welcome Back!")                                                      #if it is a old pacemaker, show welcome back
+            new_pm = True
+            try:
+                with open('Parameters.csv', 'r') as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if row[0] == ser_num:
+                            new_pm = False
+                    if new_pm:
+                        new_pacemaker_label.config(text = "New Pacemaker Connected!")  # if it is a new pacemaker, print a text
+                        controller.setDefaultParams(ser_num) #Creates default parameters (need a real id to send here)
+                    else:
+                        new_pacemaker_label.config(text = "Welcome Back!")
+            except:
+                controller.setDefaultParams()
+
             global connected  #GLOBAL IS BAD
-            connected = True                                                                                            #the pacemaker is now connected
+            connected = True  # the pacemaker is now connected
 
         # mehtod to disconnect the pacemaker
         def disconnect():
-            label.config(text="No Pacemaker Connected...")                                                              #show a picture when disconnect
+            label.config(text="No Pacemaker Connected...")  # show a picture when disconnect
             image = Image.open('Pictures/disconnect2.png')
             image = image.resize((20,20), Image.ANTIALIAS)
             global my_image
@@ -203,64 +228,194 @@ class ModeSelect(ttk.Frame):
 
             new_pacemaker_label.config(text = "")
             global connected ## GLOBAL IS BAD
-            connected = False                                                                                           #the pacemaker is now disconnect
+            connected = False  # the pacemaker is now disconnect
 
-
-        disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker Simulation')           #set the disconnect button like to disconnect method
+        disconnect_button = ttk.Button(top_frame, command=disconnect, text='Disonnect Pacemaker ')  # set the disconnect button like to disconnect method
         disconnect_button.pack(side=RIGHT)
         
-        connect_button = ttk.Button(top_frame, command= connect, text='Connect Pacemaker Simulation')                   #set the connect button like to connect method
+        connect_button = ttk.Button(top_frame, command=connect, text='Connect Pacemaker ')  # set the connect button like to connect method
         connect_button.pack(side=RIGHT)
 
-        options = ["123", "234", "345", "456", "567", "678"]                                                            #the giving pacemaker ID
+        options = []  # the giving pacemaker ID
         
-        border = ttk.LabelFrame(self, text='Mode Select')                                                               #the different mode label
+        border = ttk.LabelFrame(self, text='Mode Select')  # the different mode label
         border.pack(fill="x", expand="yes", padx = 150, pady=10)
 
-        Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))           #back to login frame button, link to show login frame method
+        Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))  # back to login frame button, link to show login frame method
         Button.pack(side= LEFT)
 
         # this method is use to check is pacemaker connect and mode is select
         def switch_check():
-            if connected and applied:                                                                                   #if pacemaker is connected and mode is selected, go to the param select frame
+            mode = controller.get_mode()    #get the current user choice mode
+            if connected and applied:   # if pacemaker is connected and mode is selected, go to the param select frame
                 print("switch page")
-                controller.show_frame(ParamSelect)
+                if (mode == "VOO"):     #switch to corresponding frame
+                    controller.show_frame(VOOParams)
+                elif (mode == "AOO"):
+                    controller.show_frame(AOOParams)
+                elif (mode == "VVI"):
+                    controller.show_frame(VVIParams)
+                elif (mode == "AAI"):
+                    controller.show_frame(AAIParams)
             else:
-                errormsg.config(text = "Please connect or select a mode")                                               #if not connect or didn't select a mode, show a error
+                errormsg.config( text="Please connect or select a mode")  # if not connect or didn't select a mode, show a error
 
-        Button = ttk.Button(bottom_frame, text="Next", command= switch_check)                                           #the button link to switch check method
+
+        Button = ttk.Button(bottom_frame, text="Next", command=switch_check)  # the button link to switch check method
         Button.pack(side = RIGHT)
 
-        errormsg = ttk.Label(bottom_frame, foreground='#fff000000')                                                     #the error message label
+        errormsg = ttk.Label(bottom_frame, foreground='#fff000000')  # the error message label
         errormsg.pack(side = TOP)
 
-        # this method is used to check can the option be apply
+        def make_plot_vent():   #method of Ventricle Egram plot
+
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            xs = []
+            ys = []
+
+            # This function is called periodically from FuncAnimation
+            def animate(i, xs, ys):
+
+                # read ventricle or atrium signal (would be from pins)
+                val = random.randrange(-5, 5, 1)
+                voltage = round(val, 2)
+
+                # Add x and y to lists
+                xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                ys.append(voltage)
+
+                # Limit x and y lists to 20 items
+                xs = xs[-20:]
+                ys = ys[-20:]
+
+                # Draw x and y lists
+                ax.clear()
+                ax.plot(xs, ys)
+
+                # Format plot
+                plt.xticks(rotation=45, ha='right')
+                plt.subplots_adjust(bottom=0.30)
+                plt.title('Ventricle Electrogram')
+                plt.ylabel('Voltage (V)')
+
+            ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
+            plt.show()
+
+        def make_plot_atr():    #method of Atrium Egram plot
+
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            xs = []
+            ys = []
+
+            # This function is called periodically from FuncAnimation
+            def animate(i, xs, ys):
+
+                # read ventricle or atrium signal (would be from pins)
+                val = random.randrange(-5, 5, 1)
+                voltage = round(val, 2)
+
+                # Add x and y to lists
+                xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                ys.append(voltage)
+
+                # Limit x and y lists to 20 items
+                xs = xs[-20:]
+                ys = ys[-20:]
+
+                # Draw x and y lists
+                ax.clear()
+                ax.plot(xs, ys)
+
+                # Format plot
+                plt.xticks(rotation=45, ha='right')
+                plt.subplots_adjust(bottom=0.30)
+                plt.title('Atrium Electrogram')
+                plt.ylabel('Voltage (V)')
+
+            ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
+            plt.show()
+
+        def make_plot_both():   #method of Full Egram plot
+            fig, (ax1, ax2) = plt.subplots(2, sharex=True)
+            fig.suptitle('Full Egram')
+
+            xs = []
+            ys = []
+            ys2 = []
+
+            # This function is called periodically from FuncAnimation
+            def animate(i, xs, ys, ys2):
+
+                # read ventricle or atrium signal (would be from pins)
+                val = random.randrange(-5, 5, 1)
+                voltage = round(val, 2)
+                val2 = random.randrange(-5, 5, 1)
+                voltage2 = round(val2, 2)
+
+                # Add x and y to lists
+                xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                ys.append(voltage)
+                ys2.append(voltage2)
+
+                # Limit x and y lists to 20 items
+                xs = xs[-20:]
+                ys = ys[-20:]
+                ys2 = ys2[-20:]
+
+                # Draw x and y lists
+                ax1.clear()
+                ax1.plot(xs, ys)
+                ax2.clear()
+                ax2.plot(xs, ys2)
+
+                # Format plot
+                ax1.set_title('Atrium')
+                ax2.set_title('Ventricle')
+                plt.xticks(rotation=45, ha='right')
+                plt.subplots_adjust(bottom=0.30)
+                plt.title('Full Electrogram')
+                plt.ylabel('Voltage (V)')
+
+            ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, ys2), interval=10)
+            plt.show()
+
+            # this method is used to check can the option be apply
         def save_mode():
-            if connected:                                                                                               #if pacemaker is connected, the applied will be true
+            if connected:  # if pacemaker is connected, the applied will be true
                 print(selected.get())
                 global applied
                 applied = True
                 errormsg.config(text = '')
-                controller.set_mode(selected.get())                                                                     #set the mode as user selected
+                controller.set_mode(selected.get())  # set the mode as user selected
             else:
-                errormsg.config(text = "Please connect a pacemaker")                                                    # if pacemaker is not connected, return a error to tell user to connect the pacemaker
+                errormsg.config(text="Please connect a pacemaker")  # if pacemaker is not connected, return a error to tell user to connect the pacemaker
                 return
 
             if selected.get() == '':
-                errormsg.config(text = "Please select an option")                                                       #if user didn't select an option, return a error message to tell user select one
+                errormsg.config( text="Please select an option")  # if user didn't select an option, return a error message to tell user select one
 
-        modes = ["AOO", 'VOO', 'AAI', 'VVI']                                                                            # four modes
-        selected = StringVar()                                                                                          # the selected mode will change when the user select
+
+
+        modes = ["AOO", 'VOO', 'AAI', 'VVI']  # four modes
+        selected = StringVar()  # the selected mode will change when the user select
 
         for mode in modes:
-            r = ttk.Radiobutton(border, text=mode, value=mode,variable = selected)                                      #creat four radio button of four modes
+            r = ttk.Radiobutton(border, text=mode, value=mode, variable=selected)  # creat four radio button of four modes
             r.pack(fill='x', padx = 5, pady = 5)
 
-        button = ttk.Button(border, text = "Apply", command = save_mode)                                                #apply button link to save_mode method
+        button = ttk.Button(border, text="Apply", command=save_mode)  # apply button link to save_mode method
         button.pack(fill='x', padx=5,pady=5)
+        button2 = ttk.Button(border, text = "Ventricle Egram", command = make_plot_vent)    #show Ventricle Egram button
+        button2.pack(fill='x', padx=5,pady=5)
+        button3 = ttk.Button(border, text = "Atrium Egram", command = make_plot_atr)    #show Atrium Egram button
+        button3.pack(fill='x', padx=5,pady=5)
+        button4 = ttk.Button(border, text = "Full Egram", command = make_plot_both)     #show Full Egram button
+        button4.pack(fill='x', padx=5,pady=5)
 
-#the param select frame
-class ParamSelect(ttk.Frame):
+#the VOO mode frame
+class VOOParams(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
@@ -288,37 +443,20 @@ class ParamSelect(ttk.Frame):
         Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
         Label.pack(pady = 25)
 
-        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))            #the button link to show login frame
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))   # the button link to show login frame
         BackToLogin.pack(side = LEFT, padx = 100)
 
-        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))                             #the button link to mode select frame
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect)) # the button link to mode select frame
         Back.pack(side = LEFT, padx = 100)
 
-        # Get default parameters from file
-        with open("Parameters.csv", 'r') as file:
-            csv_reader=csv.reader(file)
-            for line in csv_reader:
-                if (line[0]): # Need proper ID checking here
-                    lrl = line[1]
-                    url = line[2]
-                    aamp = line[3]
-                    vamp = line[4]
-                    apw = line[5]
-                    vpw = line[6]
-                    arp = line[7]
-                    vrp = line[8]
-                    break
-                else:
-                    print("No matching ID")
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp = controller.readParams()
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
 
-        #set all entry bars and labels
-        #the entry bar will have a default parameters
         param1 = ttk.Entry(entry, width = 30)
         try:
-            param1.insert(0, lrl)                                                                                       #default parameter
+            param1.insert(0, lrl)   #put the default parameter into the entry
         except:
             pass
         param1.pack(pady = yPadEntry)
@@ -329,10 +467,9 @@ class ParamSelect(ttk.Frame):
         L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
 
-        #same as param1
         param2 = ttk.Entry(entry, width = 30)
         try:
-            param2.insert(0, url)
+            param2.insert(0, url)    #put the default parameter into the entry
         except:
             pass
         param2.pack(pady = yPadEntry)
@@ -340,94 +477,33 @@ class ParamSelect(ttk.Frame):
         error2 = ttk.Label(errors, foreground='#fff000000')
         error2.pack(pady = yPad)
 
-        # Switch depending on mode
-        mode = controller.get_mode()
+        L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
 
+        param5 = ttk.Entry(entry, width = 30)
+        try:
+            param5.insert(0, vamp)  #put the default parameter into the entry
+        except:
+            pass
+        param5.pack(pady = yPadEntry)
 
-        #according to different mode user selected before, show different label and different default parameters
-        if (mode == "AOO" or mode == "AAI"):
-            L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
-            L1.pack(pady = yPad)
+        error5 = ttk.Label(errors, foreground='#fff000000')
+        error5.pack(pady = yPad)
 
-            param3 = ttk.Entry(entry, width = 30)
-            try:
-                param3.insert(0, aamp)
-            except:
-                pass
-            param3.pack(pady = yPadEntry)
+        L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
 
-            error3 = ttk.Label(errors, foreground='#fff000000')
-            error3.pack(pady = yPad)
+        param6 = ttk.Entry(entry, width = 30)
+        try:
+            param6.insert(0, vpw)   #put the default parameter into the entry
+        except:
+            pass
+        param6.pack(pady = yPadEntry)
 
-            L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
-            L1.pack(pady = yPad)
+        error6 = ttk.Label(errors, foreground='#fff000000')
+        error6.pack(pady = yPad)
 
-            param4 = ttk.Entry(entry, width = 30)
-            try:
-                param4.insert(0, apw)
-            except:
-                pass
-            param4.pack(pady = yPadEntry)
-
-            error4 = ttk.Label(errors, foreground='#fff000000')
-            error4.pack(pady = yPad)
-
-        if (mode == "VOO" or mode == "VVI"):
-            L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
-            L1.pack(pady = yPad)
-
-            param5 = ttk.Entry(entry, width = 30)
-            try:
-                param5.insert(0, vamp)
-            except:
-                pass
-            param5.pack(pady = yPadEntry)
-
-            error5 = ttk.Label(errors, foreground='#fff000000')
-            error5.pack(pady = yPad)
-
-            L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
-            L1.pack(pady = yPad)
-
-            param6 = ttk.Entry(entry, width = 30)
-            try:
-                param6.insert(0, vpw)
-            except:
-                pass
-            param6.pack(pady = yPadEntry)
-
-            error6 = ttk.Label(errors, foreground='#fff000000')
-            error6.pack(pady = yPad)
-
-        if (mode == "VVI"):
-            L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
-            L1.pack(pady = yPad)
-
-            param7 = ttk.Entry(entry, width = 30)
-            try:
-                param7.insert(0, vrp)
-            except:
-                pass
-            param7.pack(pady = yPadEntry)
-
-            error7 = ttk.Label(errors, foreground='#fff000000')
-            error7.pack(pady = yPad)
-
-        if (mode == "AAI"):
-            L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
-            L1.pack(pady = yPad)
-
-            param8 = ttk.Entry(entry, width = 30)
-            try:
-                param8.insert(0, arp)
-            except:
-                pass
-            param8.pack(pady = yPadEntry)
-
-            error8 = ttk.Label(errors, foreground='#fff000000')
-            error8.pack(pady = yPad)
-
-        #apply changes method, when call this method, it will check the user input parameters are coorect or not
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
@@ -435,9 +511,11 @@ class ParamSelect(ttk.Frame):
             LRLSet = False
             URLSet = False
 
-            #for parameter 1, check the input is digits and the value is in range, else give user a message to remind user.
-            #the range is between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
-            # if pass, the LRLSet became Ture, and lowerRateLimit = intLRL
+            lowerRateLimit = 0
+            upperRateLimit = 0
+
+
+            #check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
             if (param1.get()):
                 try:
                     intLRL = int(param1.get())
@@ -462,9 +540,7 @@ class ParamSelect(ttk.Frame):
             else:
                 error1.config(text = 'Please make entries for all fields')
 
-            # for parameter 2, check the input is digits and the value is in range, else give user a message to remind user.
-            #the range is between 50 and 175 divisible by 5
-            #if pass, the URLSet became Ture and upperRateLimit = intURL
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
             if (param2.get()):
                 try:
                     intURL = int(param2.get())
@@ -488,211 +564,914 @@ class ParamSelect(ttk.Frame):
             else:
                 error2.config(text = 'Please make entries for all fields')
 
-            #if the URLSet and LRLSet all true and lowerRateLimit > upperRateLimit, give an error message to user and delete the user input
+            #make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
             if (LRLSet and URLSet):
                 if (lowerRateLimit > upperRateLimit):
                     param1.delete(0, 100)
                     error1.config(text = 'Please make sure that \nlower rate limit is less than \nupper rate limit')
                     param2.delete(0, 100)
 
+            error5.config(text = '')
+            error6.config(text = '')
 
-            #if user select mode AOO or AAI
-            #make all parameters are in range and not empty
-            #range of AAMP is between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
-            #the range of APW is 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
-            if (mode == "AOO" or mode == "AAI"):
-                error3.config(text = '')
-                error4.config(text = '')
+            # check parameter5 is  digits and in range of 0 or between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
+            if (param5.get()):
+                try:
+                    intVAMP = int(float(param5.get()) * 10)
+                    stringVAMP = param5.get()
 
-                if (param3.get()):
-                    try:
-                        intAAMP = int(float(param3.get()) * 10)
-                        stringAAMP = param3.get()
+                    checkVAMP = controller.check_digits(stringVAMP)
 
-                        checkAAMP = controller.check_digits(stringAAMP)
-
-                        if (checkAAMP):
-                            param3.delete(0, 100)
-                            error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    if (checkVAMP):
+                        param5.delete(0, 100)
+                        error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    else:
+                        if (intVAMP == 0 or (intVAMP >= 5 and intVAMP <= 32 and intVAMP % 1 == 0) or (intVAMP >= 35 and intVAMP <= 70 and intVAMP % 5 == 0)):
+                            ventricularAmp = intVAMP
                         else:
-                            if (intAAMP == 0 or (intAAMP >= 5 and intAAMP <= 32 and intAAMP % 1 == 0) or (intAAMP >= 35 and intAAMP <= 70 and intAAMP % 5 == 0)):
-                                atrialAmp = intAAMP
-                            else:
-                                param3.delete(0, 100)
-                                error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
-                    except:
-                        param3.delete(0, 100)
-                        error3.config(text = 'Please enter a decimal value or 0')
-                else:
-                    error3.config(text = 'Please make entries for all fields')
-
-                if (param4.get()):
-                    try:
-                        intAPW = int(float(param4.get()) * 100)
-                        stringAPW = param4.get()
-
-                        checkAPW = controller.check_digits(stringAPW)
-
-                        if (checkAPW):
-                            param4.delete(0, 100)
-                            error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
-                        else:
-                            if (intAPW == 5 or (intAPW >= 10 and intAPW <= 190 and intAPW % 10 == 0)):
-                                atrialPW = intAPW
-                            else:
-                                param4.delete(0, 100)
-                                error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
-                    except:
-                        param4.delete(0, 100)
-                        error4.config(text = 'Please enter a decimal')
-                else:
-                    error4.config(text = 'Please make entries for all fields')
-
-
-
-            # if user select mode VOO or VVI
-            # make all parameters are in range and not empty
-            # range of VAMP is 0 or a decimal between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
-            #the range of VPW is 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
-            if (mode == "VOO" or mode == "VVI"):
-                error5.config(text = '')
-                error6.config(text = '')
-
-                if (param5.get()):
-                    try:
-                        intVAMP = int(float(param5.get()) * 10)
-                        stringVAMP = param5.get()
-
-                        checkVAMP = controller.check_digits(stringVAMP)
-
-                        if (checkVAMP):
                             param5.delete(0, 100)
                             error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                except:
+                    param5.delete(0, 100)
+                    error5.config(text = 'Please enter a decimal or 0')
+            else:
+                error5.config(text = 'Please make entries for all fields')
+
+            # check parameter6 is  digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
+            if (param6.get()):
+                try:
+                    intVPW = int(float(param6.get()) * 100)
+                    stringVPW = param6.get()
+
+                    checkVPW = controller.check_digits(stringVPW)
+
+                    if (checkVPW):
+                        param6.delete(0, 100)
+                        error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                    else:
+                        if (intVPW == 5 or (intVPW >= 10 and intVPW <= 190 and intVPW % 10 == 0)):
+                            ventricularPW = intVPW
                         else:
-                            if (intVAMP == 0 or (intVAMP >= 5 and intVAMP <= 32 and intVAMP % 1 == 0) or (intVAMP >= 35 and intVAMP <= 70 and intVAMP % 5 == 0)):
-                                ventricularAmp = intVAMP
-                            else:
-                                param5.delete(0, 100)
-                                error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
-                    except:
-                        param5.delete(0, 100)
-                        error5.config(text = 'Please enter a decimal or 0')
-                else:
-                    error5.config(text = 'Please make entries for all fields')
-
-                if (param6.get()):
-                    try:
-                        intVPW = int(float(param6.get()) * 100)
-                        stringVPW = param6.get()
-
-                        checkVPW = controller.check_digits(stringVPW)
-
-                        if (checkVPW):
                             param6.delete(0, 100)
                             error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
-                        else:
-                            if (intVPW == 5 or (intVPW >= 10 and intVPW <= 190 and intVPW % 10 == 0)):
-                                ventricularPW = intVPW
-                            else:
-                                param6.delete(0, 100)
-                                error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
-                    except:
-                        param6.delete(0, 100)
-                        error6.config(text = 'Please enter a decimal')
-                else:
-                    error6.config(text = 'Please make entries for all fields')
+                except:
+                    param6.delete(0, 100)
+                    error6.config(text = 'Please enter a decimal')
+            else:
+                error6.config(text = 'Please make entries for all fields')
 
+            try:
+                id_send = controller.get_id()
+                mode_send = controller.get_mode()
+                controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit, ventricularPW, ventricularAmp)
+            except:
+                print("error stuff doesnt exist")
 
-
-            #if user select mode VVI
-            # make all parameters are in range and not empty
-            #the range of VRP is between 150 and 500 divisible by 10 and larger than (1000 / (lowerRateLimit / 60))
-            VRPSet = False
-
-            if (mode == "VVI"):
-                error7.config(text = '')
-
-                if (param7.get()):
-                    try:
-                        intVRP = int(param7.get())
-                        stringVRP = param7.get()
-
-                        checkVRP = controller.check_noDigits(stringVRP)
-
-                        if (checkVRP):
-                            param7.delete(0, 100)
-                            error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
-                        else:
-                            if (intVRP >= 150 and intVRP <= 500 and intVRP % 10 == 0):
-                                vrp = intVRP
-                                VRPSet = True
-                            else:
-                                param7.delete(0, 100)
-                                error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
-                    except:
-                        param7.delete(0, 100)
-                        error7.config(text = 'Please enter an integer')
-                else:
-                    error7.config(text = 'Please make entries for all fields')
-
-
-                if (VRPSet and LRLSet):
-                    if (vrp > (int)(1000 / (lowerRateLimit / 60))):
-                        param7.delete(0, 100)
-                        error7.config(text = 'Please make sure VRP does not interfere with rate limit')
-
-
-
-            #if user select mode AAI
-            # make all parameters are in range and not empty
-            #the range of ARP is between 150 and 500 divisible by 10 and ARP must larger than (1000 / (lowerRateLimit / 60))
-            ARPSet = False
-
-            if (mode == "AAI"):
-                error8.config(text = '')
-
-                if(param8.get()):
-                    try:
-                        intARP = int(param8.get())
-                        stringARP = param8.get()
-
-                        checkARP = controller.check_noDigits(stringARP)
-
-                        if (checkARP):
-                            param8.delete(0, 100)
-                            error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
-                        else:
-                            if (intARP >= 150 and intARP <= 500 and intARP % 10 == 0):
-                                arp = intARP
-                                ARPSet = True
-                            else:
-                                param8.delete(0, 100)
-                                error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
-                    except:
-                        param8.delete(0, 100)
-                        error8.config(text = 'Please enter an integer')
-                else:
-                    error8.config(text = 'Please make entries for all fields')
-
-                if (ARPSet and LRLSet):
-                    if (arp > (int)(1000 / (lowerRateLimit / 60))):
-                        param8.delete(0, 100)
-                        error8.config(text = 'Please make sure ARP does not interfere with rate limit')
-
-
-        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)                                          #button link to apply changes method, and check all input are allowed
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
 
 
-#the main frame of the program
+        def read():
+            controller.serialRead(controller.get_id(), controller.get_mode())
+
+        getparam = ttk.Button(bottom, text="getparams", command=read)
+        getparam.pack(side = LEFT, padx = 100)
+
+
+#all step is similar to VOO mode frame, include set default parameters to entries
+class VVIParams(ttk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+
+        yPad = 15
+        yPadEntry = 8
+
+        yPad = 30
+        yPadEntry = 23
+
+        top = ttk.Frame(self, width = 500)
+        top.pack(side = TOP)
+
+        bottom = ttk.Frame(self, width = 500)
+        bottom.pack(side = BOTTOM)
+
+        border = ttk.Frame(self, width = 300)
+        border.pack(side = LEFT, padx = 150)
+
+        entry = ttk.Frame(self, width = 300)
+        entry.pack(side = LEFT)
+
+        errors = ttk.Frame(self, width = 300)
+        errors.pack(side = LEFT, padx = 25)
+
+        Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
+        Label.pack(pady = 25)
+
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
+        BackToLogin.pack(side = LEFT, padx = 100)
+
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
+        Back.pack(side = LEFT, padx = 100)
+
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
+
+        L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param1 = ttk.Entry(entry, width = 30)
+        try:
+            param1.insert(0, lrl)   #put the default parameter into the entry
+        except:
+            pass
+        param1.pack(pady = yPadEntry)
+
+        error1 = ttk.Label(errors, foreground='#fff000000')
+        error1.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param2 = ttk.Entry(entry, width = 30)
+        try:
+            param2.insert(0, url)   #put the default parameter into the entry
+        except:
+            pass
+        param2.pack(pady = yPadEntry)
+
+        error2 = ttk.Label(errors, foreground='#fff000000')
+        error2.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Ventricular Amplitude", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param5 = ttk.Entry(entry, width = 30)
+        try:
+            param5.insert(0, vamp)  #put the default parameter into the entry
+        except:
+            pass
+        param5.pack(pady = yPadEntry)
+
+        error5 = ttk.Label(errors, foreground='#fff000000')
+        error5.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Ventricular Pulse Width", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param6 = ttk.Entry(entry, width = 30)
+        try:
+            param6.insert(0, vpw)   #put the default parameter into the entry
+        except:
+            pass
+        param6.pack(pady = yPadEntry)
+
+        error6 = ttk.Label(errors, foreground='#fff000000')
+        error6.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="VRP", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param7 = ttk.Entry(entry, width = 30)
+        try:
+            param7.insert(0, vrp)   #put the default parameter into the entry
+        except:
+            pass
+        param7.pack(pady = yPadEntry)
+
+        error7 = ttk.Label(errors, foreground='#fff000000')
+        error7.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Ventricular Sensitivity", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param8 = ttk.Entry(entry, width = 30)
+        try:
+            param8.insert(0, vent_sensitivity)  #put the default parameter into the entry
+        except:
+            pass
+        param8.pack(pady = yPadEntry)
+
+
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
+        def applyChanges():
+            error1.config(text = '')
+            error2.config(text = '')
+
+            LRLSet = False
+            URLSet = False
+
+            #parameters = 
+
+            lowerRateLimit = 0
+            upperRateLimit = 0
+            atrialAmp = 0
+            atrialPW = 0
+            ventricularAmp = 0
+            ventricularPW = 0
+            arp = 0
+            vrp = 0
+            vent_sensitivity = 0
+
+            # check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
+            if (param1.get()):
+                try:
+                    intLRL = int(param1.get())
+
+                    stringLRL = param1.get()
+
+                    checkLRL = controller.check_noDigits(stringLRL)
+
+                    if (checkLRL):
+                        param1.delete(0, 100)
+                        error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                    else:
+                        if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                            lowerRateLimit = intLRL
+                            LRLSet = True
+                        else:
+                            param1.delete(0, 100)
+                            error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                except:
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please enter an integer')
+            else:
+                error1.config(text = 'Please make entries for all fields')
+
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
+            if (param2.get()):
+                try:
+                    intURL = int(param2.get())
+                    stringURL = param2.get()
+
+                    checkURL = controller.check_noDigits(stringURL)
+
+                    if (checkURL):
+                        param2.delete(0, 100)
+                        error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                    else:
+                        if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                            upperRateLimit = intURL
+                            URLSet = True
+                        else:
+                            param2.delete(0, 100)
+                            error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                except:
+                    param2.delete(0, 100)
+                    error2.config(text = 'Please enter an integer')
+            else:
+                error2.config(text = 'Please make entries for all fields')
+
+            # make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
+            if (LRLSet and URLSet):
+                if (lowerRateLimit > upperRateLimit):
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please make sure that \nlower rate limit is less than \nupper rate limit')
+                    param2.delete(0, 100)
+            
+            error5.config(text = '')
+            error6.config(text = '')
+
+            # check parameter5 is  digits and in range of 0 or between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
+            if (param5.get()):
+                try:
+                    intVAMP = int(float(param5.get()) * 10)
+                    stringVAMP = param5.get()
+
+                    checkVAMP = controller.check_digits(stringVAMP)
+
+                    if (checkVAMP):
+                        param5.delete(0, 100)
+                        error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    else:
+                        if (intVAMP == 0 or (intVAMP >= 5 and intVAMP <= 32 and intVAMP % 1 == 0) or (intVAMP >= 35 and intVAMP <= 70 and intVAMP % 5 == 0)):
+                            ventricularAmp = intVAMP
+                        else:
+                            param5.delete(0, 100)
+                            error5.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                except:
+                    param5.delete(0, 100)
+                    error5.config(text = 'Please enter a decimal or 0')
+            else:
+                error5.config(text = 'Please make entries for all fields')
+
+            # check parameter6 is  digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
+            if (param6.get()):
+                try:
+                    intVPW = int(float(param6.get()) * 100)
+                    stringVPW = param6.get()
+
+                    checkVPW = controller.check_digits(stringVPW)
+
+                    if (checkVPW):
+                        param6.delete(0, 100)
+                        error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                    else:
+                        if (intVPW == 5 or (intVPW >= 10 and intVPW <= 190 and intVPW % 10 == 0)):
+                            ventricularPW = intVPW
+                        else:
+                            param6.delete(0, 100)
+                            error6.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                except:
+                    param6.delete(0, 100)
+                    error6.config(text = 'Please enter a decimal')
+            else:
+                error6.config(text = 'Please make entries for all fields')
+
+            VRPSet = False
+
+            error7.config(text = '')
+
+            # check parameter6 is no digits and in range of 150 and 500 divisible by 10
+            if (param7.get()):
+                try:
+                    intVRP = int(param7.get())
+                    stringVRP = param7.get()
+
+                    checkVRP = controller.check_noDigits(stringVRP)
+
+                    if (checkVRP):
+                        param7.delete(0, 100)
+                        error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                    else:
+                        if (intVRP >= 150 and intVRP <= 500 and intVRP % 10 == 0):
+                            vrp = intVRP
+                            VRPSet = True
+                        else:
+                            param7.delete(0, 100)
+                            error7.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                except:
+                    param7.delete(0, 100)
+                    error7.config(text = 'Please enter an integer')
+            else:
+                error7.config(text = 'Please make entries for all fields')
+
+
+            #make sure VRP does not interfere with rate limit
+            if (VRPSet and LRLSet):
+                if (vrp > (int)(1000 / (lowerRateLimit / 60))):
+                    param7.delete(0, 100)
+                    error7.config(text = 'Please make sure VRP does not interfere with rate limit')
+
+            #get the parameter 8 value
+            if (param8.get()):
+                try:
+                    vent_sensitivity = float(param8.get())
+                except:
+                    pass
+            #try:
+            id_send = controller.get_id()
+            mode_send = controller.get_mode()
+            kwargs = {
+                'id_input': id_send,
+                'mode_str': mode_send,
+                'lrl_input': lowerRateLimit,
+                'url_input': upperRateLimit,
+                'vent_pw_input': ventricularPW,
+                'vent_amp_input': ventricularAmp,
+                'vent_sensitivity_input': vent_sensitivity,
+                'VRP_input': vrp
+            }
+            controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit, ventricularPW, ventricularAmp, vent_sensitivity, vrp)
+            #except:
+                #print("error stuff doesnt exist")
+
+
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)  #apply button
+        Apply.pack(side = LEFT, padx = 100)
+
+
+#all step is similar to VOO mode frame, include set default parameters to entries
+class AOOParams(ttk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+
+        yPad = 15
+        yPadEntry = 8
+
+        yPad = 30
+        yPadEntry = 23
+
+        top = ttk.Frame(self, width = 500)
+        top.pack(side = TOP)
+
+        bottom = ttk.Frame(self, width = 500)
+        bottom.pack(side = BOTTOM)
+
+        border = ttk.Frame(self, width = 300)
+        border.pack(side = LEFT, padx = 150)
+
+        entry = ttk.Frame(self, width = 300)
+        entry.pack(side = LEFT)
+
+        errors = ttk.Frame(self, width = 300)
+        errors.pack(side = LEFT, padx = 25)
+
+        Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
+        Label.pack(pady = 25)
+
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
+        BackToLogin.pack(side = LEFT, padx = 100)
+
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
+        Back.pack(side = LEFT, padx = 100)
+
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
+
+        L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param1 = ttk.Entry(entry, width = 30)
+        try:
+            param1.insert(0, lrl)    #put the default parameter into the entry
+        except:
+            pass
+        param1.pack(pady = yPadEntry)
+
+        error1 = ttk.Label(errors, foreground='#fff000000')
+        error1.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param2 = ttk.Entry(entry, width = 30)
+        try:
+            param2.insert(0, url)    #put the default parameter into the entry
+        except:
+            pass
+        param2.pack(pady = yPadEntry)
+
+        error2 = ttk.Label(errors, foreground='#fff000000')
+        error2.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param3 = ttk.Entry(entry, width = 30)
+        try:
+            param3.insert(0, aamp)   #put the default parameter into the entry
+        except:
+            pass
+        param3.pack(pady = yPadEntry)
+
+        error3 = ttk.Label(errors, foreground='#fff000000')
+        error3.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param4 = ttk.Entry(entry, width = 30)
+        try:
+            param4.insert(0, apw)    #put the default parameter into the entry
+        except:
+            pass
+        param4.pack(pady = yPadEntry)
+
+        error4 = ttk.Label(errors, foreground='#fff000000')
+        error4.pack(pady = yPad)
+
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
+        def applyChanges():
+            error1.config(text = '')
+            error2.config(text = '')
+
+            LRLSet = False
+            URLSet = False
+
+            #parameters = 
+
+            lowerRateLimit = 0
+            upperRateLimit = 0
+            atrialAmp = 0
+            atrialPW = 0
+            ventricularAmp = 0
+            ventricularPW = 0
+            arp = 0
+            vrp = 0
+
+            # check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
+            if (param1.get()):
+                try:
+                    intLRL = int(param1.get())
+
+                    stringLRL = param1.get()
+
+                    checkLRL = controller.check_noDigits(stringLRL)
+
+                    if (checkLRL):
+                        param1.delete(0, 100)
+                        error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                    else:
+                        if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                            lowerRateLimit = intLRL
+                            LRLSet = True
+                        else:
+                            param1.delete(0, 100)
+                            error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                except:
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please enter an integer')
+            else:
+                error1.config(text = 'Please make entries for all fields')
+
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
+            if (param2.get()):
+                try:
+                    intURL = int(param2.get())
+                    stringURL = param2.get()
+
+                    checkURL = controller.check_noDigits(stringURL)
+
+                    if (checkURL):
+                        param2.delete(0, 100)
+                        error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                    else:
+                        if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                            upperRateLimit = intURL
+                            URLSet = True
+                        else:
+                            param2.delete(0, 100)
+                            error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                except:
+                    param2.delete(0, 100)
+                    error2.config(text = 'Please enter an integer')
+            else:
+                error2.config(text = 'Please make entries for all fields')
+
+            # make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
+            if (LRLSet and URLSet):
+                if (lowerRateLimit > upperRateLimit):
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please make sure that \nlower rate limit is less than \nupper rate limit')
+                    param2.delete(0, 100)
+            
+            error3.config(text = '')
+            error4.config(text = '')
+
+            # check parameter3 is digits and in range of 0 or a decimal between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
+            if (param3.get()):
+                try:
+                    intAAMP = int(float(param3.get()) * 10)
+                    stringAAMP = param3.get()
+
+                    checkAAMP = controller.check_digits(stringAAMP)
+
+                    if (checkAAMP):
+                        param3.delete(0, 100)
+                        error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    else:
+                        if (intAAMP == 0 or (intAAMP >= 5 and intAAMP <= 32 and intAAMP % 1 == 0) or (intAAMP >= 35 and intAAMP <= 70 and intAAMP % 5 == 0)):
+                            atrialAmp = intAAMP
+                        else:
+                            param3.delete(0, 100)
+                            error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                except:
+                    param3.delete(0, 100)
+                    error3.config(text = 'Please enter a decimal value or 0')
+            else:
+                error3.config(text = 'Please make entries for all fields')
+
+            # check parameter4 is digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
+            if (param4.get()):
+                try:
+                    intAPW = int(float(param4.get()) * 100)
+                    stringAPW = param4.get()
+
+                    checkAPW = controller.check_digits(stringAPW)
+
+                    if (checkAPW):
+                        param4.delete(0, 100)
+                        error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                    else:
+                        if (intAPW == 5 or (intAPW >= 10 and intAPW <= 190 and intAPW % 10 == 0)):
+                            atrialPW = intAPW
+                        else:
+                            param4.delete(0, 100)
+                            error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                except:
+                    param4.delete(0, 100)
+                    error4.config(text = 'Please enter a decimal')
+            else:
+                error4.config(text = 'Please make entries for all fields')
+
+            id_send = controller.get_id()
+            mode_send = controller.get_mode()
+            kwargs = {
+                'id_input': id_send,
+                'mode_str': mode_send,
+                'lrl_input': lowerRateLimit,
+                'url_input': upperRateLimit,
+                'atr_pw_input': atrialPW,
+                'atr_amp_input': atrialAmp,
+            }
+            controller.serialSend(**kwargs)
+
+
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
+        Apply.pack(side = LEFT, padx = 100)
+
+
+#all step is similar to VOO mode frame, include set default parameters to entries
+class AAIParams(ttk.Frame):
+    def __init__(self, parent, controller):
+        ttk.Frame.__init__(self, parent)
+
+        yPad = 15
+        yPadEntry = 8
+
+        yPad = 30
+        yPadEntry = 23
+
+        top = ttk.Frame(self, width = 500)
+        top.pack(side = TOP)
+
+        bottom = ttk.Frame(self, width = 500)
+        bottom.pack(side = BOTTOM)
+
+        border = ttk.Frame(self, width = 300)
+        border.pack(side = LEFT, padx = 150)
+
+        entry = ttk.Frame(self, width = 300)
+        entry.pack(side = LEFT)
+
+        errors = ttk.Frame(self, width = 300)
+        errors.pack(side = LEFT, padx = 25)
+
+        Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
+        Label.pack(pady = 25)
+
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
+        BackToLogin.pack(side = LEFT, padx = 100)
+
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
+        Back.pack(side = LEFT, padx = 100)
+
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
+
+        L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param1 = ttk.Entry(entry, width = 30)
+        try:
+            param1.insert(0, lrl)    #put the default parameter into the entry
+        except:
+            pass
+        param1.pack(pady = yPadEntry)
+
+        error1 = ttk.Label(errors, foreground='#fff000000')
+        error1.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Upper Rate Limit", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param2 = ttk.Entry(entry, width = 30)
+        try:
+            param2.insert(0, url)    #put the default parameter into the entry
+        except:
+            pass
+        param2.pack(pady = yPadEntry)
+
+        error2 = ttk.Label(errors, foreground='#fff000000')
+        error2.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Atrial Amplitude", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param3 = ttk.Entry(entry, width = 30)
+        try:
+            param3.insert(0, aamp)   #put the default parameter into the entry
+        except:
+            pass
+        param3.pack(pady = yPadEntry)
+
+        error3 = ttk.Label(errors, foreground='#fff000000')
+        error3.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Atrial Pulse Width", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param4 = ttk.Entry(entry, width = 30)
+        try:
+            param4.insert(0, apw)    #put the default parameter into the entry
+        except:
+            pass
+        param4.pack(pady = yPadEntry)
+
+        error4 = ttk.Label(errors, foreground='#fff000000')
+        error4.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="ARP", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param8 = ttk.Entry(entry, width = 30)
+        try:
+            param8.insert(0, arp)    #put the default parameter into the entry
+        except:
+            pass
+        param8.pack(pady = yPadEntry)
+
+        error8 = ttk.Label(errors, foreground='#fff000000')
+        error8.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Atrial Sensitivity", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param9 = ttk.Entry(entry, width = 30)
+        try:
+            param9.insert(0, atr_sensitivity)    #put the default parameter into the entry
+        except:
+            pass
+        param9.pack(pady = yPadEntry)
+
+
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
+        def applyChanges():
+            error1.config(text = '')
+            error2.config(text = '')
+
+            LRLSet = False
+            URLSet = False
+
+            lowerRateLimit = 0
+            upperRateLimit = 0
+            atrialAmp = 0
+            atrialPW = 0
+            ventricularAmp = 0
+            ventricularPW = 0
+            arp = 0
+            vrp = 0
+
+            # check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
+            if (param1.get()):
+                try:
+                    intLRL = int(param1.get())
+
+                    stringLRL = param1.get()
+
+                    checkLRL = controller.check_noDigits(stringLRL)
+
+                    if (checkLRL):
+                        param1.delete(0, 100)
+                        error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                    else:
+                        if ((intLRL >= 30 and intLRL <= 50 and intLRL % 5 == 0) or (intLRL >= 50 and intLRL <= 90 and intLRL % 1 == 0) or (intLRL >= 90 and intLRL <= 175 and intLRL % 5 == 0)):
+                            lowerRateLimit = intLRL
+                            LRLSet = True
+                        else:
+                            param1.delete(0, 100)
+                            error1.config(text = 'Please enter an integer between 30 and 50 divisible by 5 or \nbetween 50 and 90 divisible by 1 or between 90 and 175 divisible by 5')
+                except:
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please enter an integer')
+            else:
+                error1.config(text = 'Please make entries for all fields')
+
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
+            if (param2.get()):
+                try:
+                    intURL = int(param2.get())
+                    stringURL = param2.get()
+
+                    checkURL = controller.check_noDigits(stringURL)
+
+                    if (checkURL):
+                        param2.delete(0, 100)
+                        error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                    else:
+                        if (intURL >= 50 and intURL <= 175 and intURL % 5 == 0):
+                            upperRateLimit = intURL
+                            URLSet = True
+                        else:
+                            param2.delete(0, 100)
+                            error2.config(text = 'Please enter an integer \nbetween 50 and 175 divisible by 5')
+                except:
+                    param2.delete(0, 100)
+                    error2.config(text = 'Please enter an integer')
+            else:
+                error2.config(text = 'Please make entries for all fields')
+
+            # make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
+            if (LRLSet and URLSet):
+                if (lowerRateLimit > upperRateLimit):
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please make sure that \nlower rate limit is less than \nupper rate limit')
+                    param2.delete(0, 100)
+
+            error3.config(text = '')
+            error4.config(text = '')
+
+            # check parameter3 is digits and in range of 0 or a decimal between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
+            if (param3.get()):
+                try:
+                    intAAMP = int(float(param3.get()) * 10)
+                    stringAAMP = param3.get()
+
+                    checkAAMP = controller.check_digits(stringAAMP)
+
+                    if (checkAAMP):
+                        param3.delete(0, 100)
+                        error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                    else:
+                        if (intAAMP == 0 or (intAAMP >= 5 and intAAMP <= 32 and intAAMP % 1 == 0) or (intAAMP >= 35 and intAAMP <= 70 and intAAMP % 5 == 0)):
+                            atrialAmp = intAAMP
+                        else:
+                            param3.delete(0, 100)
+                            error3.config(text = 'Please enter 0 or a decimal between 0.5 and 3.2 divisible by 0.1 \nor between 3.5 and 7 divisible by 0.5')
+                except:
+                    param3.delete(0, 100)
+                    error3.config(text = 'Please enter a decimal value or 0')
+            else:
+                error3.config(text = 'Please make entries for all fields')
+
+            # check parameter4 is digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
+            if (param4.get()):
+                try:
+                    intAPW = int(float(param4.get()) * 100)
+                    stringAPW = param4.get()
+
+                    checkAPW = controller.check_digits(stringAPW)
+
+                    if (checkAPW):
+                        param4.delete(0, 100)
+                        error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                    else:
+                        if (intAPW == 5 or (intAPW >= 10 and intAPW <= 190 and intAPW % 10 == 0)):
+                            atrialPW = intAPW
+                        else:
+                            param4.delete(0, 100)
+                            error4.config(text = 'Please enter 0.05 or a decimal between \n0.1 and 1.9 divisible by 0.1')
+                except:
+                    param4.delete(0, 100)
+                    error4.config(text = 'Please enter a decimal')
+            else:
+                error4.config(text = 'Please make entries for all fields')
+
+            error8.config(text = '')
+
+            # check parameter4 is no digits and in range of 0.05 or a decimal between 150 and 500 divisible by 10
+            if(param8.get()):
+                try:
+                    intARP = int(param8.get())
+                    stringARP = param8.get()
+
+                    checkARP = controller.check_noDigits(stringARP)
+
+                    if (checkARP):
+                        param8.delete(0, 100)
+                        error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                    else:
+                        if (intARP >= 150 and intARP <= 500 and intARP % 10 == 0):
+                            arp = intARP
+                            ARPSet = True
+                        else:
+                            param8.delete(0, 100)
+                            error8.config(text = 'Please enter a valid integer between \n150 and 500 divisible by 10')
+                except:
+                    param8.delete(0, 100)
+                    error8.config(text = 'Please enter an integer')
+            else:
+                error8.config(text = 'Please make entries for all fields')
+
+            #make sure ARP does not interfere with rate limit
+            if (ARPSet and LRLSet):
+                if (arp > (int)(1000 / (lowerRateLimit / 60))):
+                    param8.delete(0, 100)
+                    error8.config(text = 'Please make sure ARP does not interfere with rate limit')
+
+            #get the parameter 9 value
+            if (param9.get()):
+                try:
+                    atr_sensitivity = float(param9.get())
+                except:
+                    pass
+
+            id_send = controller.get_id()
+            mode_send = controller.get_mode()
+            kwargs = {
+                'id_input': id_send,
+                'mode_str': mode_send,
+                'lrl_input': lowerRateLimit,
+                'url_input': upperRateLimit,
+                'atr_pw_input': atrialPW,
+                'atr_amp_input': atrialAmp,
+                'atr_sensitivity_input': atr_sensitivity,
+                'ARP_input': arp
+            }
+            controller.serialSend(**kwargs)
+
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
+        Apply.pack(side = LEFT, padx = 100)
+
+
+# the main frame of the program
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
 
-        #creating main frame structures and set it parameters
+        # creating main frame structures and set it parameters
 
         self.mode = "test mode"
-
+        self.com_name = "test name"
+        self.id = "123456"
+        #creating a window
         self.window = tk.Frame(self)
         self.window.pack()
         
@@ -700,9 +1479,9 @@ class Application(tk.Tk):
         self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        self.show_frame(Welcome)    #the first show frame is welcome frame
-
-    #show the corresponding frame method
+        self.show_frame(ModeSelect)  # the first show frame is mode select frame
+        
+    # show the corresponding frame method
     def show_frame(self, page):
         frame = page(self.window, self)
         self.frames[page] = frame
@@ -710,26 +1489,89 @@ class Application(tk.Tk):
         frame.tkraise()
         self.title("Pacemaker")
 
-    #back to last frame method
+    # back to last frame method
     def back(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Pacemaker")
 
-    #set mode method
-    def set_mode(self, input_mode):
-        self.mode = input_mode
+    #set com name
+    def set_com_name(self, com_name_in):
+        self.com_name = com_name_in
+
+    #get com name
+    def get_com_name(self):
+        return self.com_name
+
+    #set id
+    def set_id(self, id_input):
+        self.id = id_input
+
+    #get id
+    def get_id(self):
+        return self.id
+
+    def set_mode(self, mode_str):
+        self.mode = mode_str
+
+        self.serialSend(self.id, mode_str)
+
+        # if mode_str == "AOO":
+        #     mode_char = 2
+        # if mode_str == "VOO":
+        #     mode_char = 1
+        # if mode_str == "AII":
+        #     mode_char = 4
+        # if mode_str == "VVI":
+        #     mode_char = 3
+
+        # frdm_port = "COM4"
+
+        # Start = b'\x16'
+        # SYNC = b'\x22'
+        # Fn_set = b'\x55'
+        # lrl_in = 60
+        # red_en = struct.pack("B", red_thing)
+        # lrl_in = struct.pack("B", lrl_in)
+        # green_en = struct.pack("B", green_thing)
+        # blue_en = struct.pack("B", blue_thing)
+        # off_time = struct.pack("f", 3.1415926)
+        # switch_time = struct.pack("H", 500)
+
+        # Signal_set = Start + Fn_set + red_en + lrl_in + green_en + blue_en + off_time + switch_time
+        # Signal_echo = Start + SYNC + red_en + green_en + blue_en + off_time + switch_time
+
+        # with serial.Serial(frdm_port, 115200) as pacemaker:
+        #     pacemaker.write(Signal_set)
+        #     print("write complete")
+
+        # with serial.Serial(frdm_port, 115200) as pacemaker:
+        #     pacemaker.write(Signal_echo)
+        #     data = pacemaker.read(9)
+        #     red_rev = data[0]
+        #     green_rev = data[1]
+        #     blue_rev = data[2]
+        #     off_rev =  struct.unpack("f", data[3:7])[0]
+        #     switch_rev =  struct.unpack("H", data[7:9])[0]
+        #     print("echo complete")
+
+        # print("From the board:")
+        # print("red_en = ", red_rev)
+        # print("green_en = ", green_rev)
+        # print("blue_en = ", blue_rev)
+        # print("off_time = ",  off_rev)
+        # print("switch_time = ", switch_rev)
+
         print("set mode:", self.mode)
 
-    #get current mode method
+    # get current mode method
     def get_mode(self):
         print("get mode:", self.mode)
         return self.mode
 
-
     # the method use for loop to check the input is proper digits( more than two decimal places will return True as bad input )
     def check_digits(self, inputP):
-        #Janky solution for checking inputs
+        # Janky solution for checking inputs
         badInput = False
 
         for i in range(0, len(inputP)):
@@ -751,7 +1593,8 @@ class Application(tk.Tk):
                 break
 
         return badInput
-    #the defualt parameters store method
+
+    # the defualt parameters store method
     def setDefaultParams(self, pmID):
         #Default values
         lrl = 50
@@ -762,12 +1605,144 @@ class Application(tk.Tk):
         vpw = 1
         arp = 300
         vrp = 300
+        vent_sensitivity = 3.25
+        atr_sensitivity = 3.25
 
         with open("Parameters.csv", 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp])
+            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity])
 
-# run the frame
+    #write parameters to file
+    def writeToParams(self, pmID, params):
+        with open("Parameters.csv", 'w', newline='') as file:
+            writer = csv.writer(file)
+            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_senstivity, atr_sensitivity])
+
+    #read parameters from file
+    def readParams(self):
+        # Get default parameters from file
+        with open("Parameters.csv", 'r') as file:
+            csv_reader=csv.reader(file)
+            for line in csv_reader:
+                if (line[0]): # Need proper ID checking here
+                    lrl = line[1]
+                    url = line[2]
+                    aamp = line[3]
+                    vamp = line[4]
+                    apw = line[5]
+                    vpw = line[6]
+                    arp = line[7]
+                    vrp = line[8]
+                    vent_sensitivity = line[9]
+                    atr_sensitivity = line[10]
+                    break
+                else:
+                    print("No matching ID")
+        
+        return lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity
+
+    def serialSend(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4, vent_amp_input = 3.5, vent_sensitivity_input = 2.5, VRP_input = 320, atr_pw_input = 0.4, atr_amp_input = 3.5, atr_sensitivity_input = 0.75, ARP_input = 250):
+        if mode_str == "AOO":
+            mode_char = 2
+        if mode_str == "VOO":
+            mode_char = 1
+        if mode_str == "AAI":
+            mode_char = 4
+        if mode_str == "VVI":
+            mode_char = 3
+        print(mode_str, mode_char)
+
+        frdm_port = self.com_name
+
+        Start = b'\x16' #1
+        SYNC = b'\x22' #2
+        Fn_set = b'\x55' #2
+
+        id_int = int(id_input)
+        lrl_int = int(lrl_input)
+        url_int = int(url_input)
+        vent_pw_conv = vent_pw_input
+        atr_pw_conv = atr_pw_input
+        print(lrl_int)
+        id_en = struct.pack("f", id_int)  #3:6
+        mode_en = struct.pack("B", mode_char) #7
+        lrl_en = struct.pack("B", lrl_int) #8
+        url_en = struct.pack("B", url_int) #9
+        print(vent_pw_input)
+        print(vent_pw_conv)
+        vent_pw_en = struct.pack("B", int(vent_pw_conv)) #10
+        vent_amp_en = struct.pack("f", vent_amp_input) #11:14
+        vent_sensitivity_en = struct.pack("f", vent_sensitivity_input) #15:18
+        VRP_en = struct.pack("H", VRP_input) #19:20
+        atr_pw_en = struct.pack("B", int(atr_pw_conv)) #21
+        atr_amp_en = struct.pack("f", atr_amp_input) #22:25
+        atr_sensitivity_en = struct.pack("f", atr_sensitivity_input) #26:29
+        ARP_en = struct.pack("H", ARP_input) #30:31
+
+
+        # green_en = struct.pack("B", green_thing)
+        # blue_en = struct.pack("B", blue_thing)
+        # off_time = struct.pack("f", 3.1415926)
+        # switch_time = struct.pack("H", 500)
+
+        Signal_set = Start + Fn_set + id_en + mode_en + lrl_en + url_en + vent_pw_en + vent_amp_en + vent_sensitivity_en + VRP_en + atr_pw_en + atr_amp_en + atr_sensitivity_en + ARP_en
+        #Signal_echo = Start + SYNC + mode_en + lrl_en + url_en
+
+        with serial.Serial(frdm_port, 115200) as pacemaker:
+            pacemaker.write(Signal_set)
+            print("write complete")
+
+    def serialRead(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4, vent_amp_input = 3.5, vent_sensitivity_input = 2.5, VRP_input = 320, atr_pw_input = 0.4, atr_amp_input = 3.5, atr_sensitivity_input = 0.75, ARP_input = 250):
+        Start = b'\x16'
+        SYNC = b'\x22'
+        Fn_set = b'\x55'
+
+        if mode_str == "AOO":
+            mode_char = 2
+        if mode_str == "VOO":
+            mode_char = 1
+        if mode_str == "AII":
+            mode_char = 4
+        if mode_str == "VVI":
+            mode_char = 3
+        print(mode_str, mode_char)
+
+
+        id_int = int(id_input)
+        lrl_int = int(lrl_input)
+        url_int = int(url_input)
+        vent_pw_conv = vent_pw_input*100
+        atr_pw_conv = atr_pw_input*100
+        print(lrl_int)
+        id_en = struct.pack("f", id_int)  #3:6
+        mode_en = struct.pack("B", mode_char) #7
+        lrl_en = struct.pack("B", lrl_int) #8
+        url_en = struct.pack("B", url_int) #9
+        vent_pw_en = struct.pack("B", int(vent_pw_conv)) #10
+        vent_amp_en = struct.pack("f", vent_amp_input) #11:14
+        vent_sensitivity_en = struct.pack("f", vent_sensitivity_input) #15:18
+        VRP_en = struct.pack("H", VRP_input) #19:20
+        atr_pw_en = struct.pack("B", int(atr_pw_conv)) #21
+        atr_amp_en = struct.pack("f", atr_amp_input) #22:25
+        atr_sensitivity_en = struct.pack("f", atr_sensitivity_input) #26:29
+        ARP_en = struct.pack("H", ARP_input) #30:31
+
+        Signal_echo = Start + SYNC + id_en + mode_en + lrl_en + url_en + vent_pw_en + vent_amp_en + vent_sensitivity_en + VRP_en + atr_pw_en + atr_amp_en + atr_sensitivity_en + ARP_en
+        frdm_port = self.com_name
+
+        with serial.Serial(frdm_port, 115200) as pacemaker:
+            pacemaker.write(Signal_echo)
+            sleep(1)
+            print("sleep")
+            data = pacemaker.read(12)
+            id_read = struct.unpack("f", data[3:7])[0]
+            mode_read = data[0]
+            lrl_read = data[1]
+            #url_read = data[7]
+            print("serial read complete")
+            print(id_read, mode_read, lrl_read, id_read)
+
+
 app = Application()
 app.maxsize(1280,720)
 sv_ttk.set_theme("light")
