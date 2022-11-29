@@ -186,17 +186,19 @@ class ModeSelect(ttk.Frame):
             icon.config(image = my_image)
 
             new_pm = True
-
-            with open('Parameters.csv', 'r') as file:
-                reader = csv.reader(file)
-                for row in reader:
-                    if row[0] == ser_num:
-                        new_pm = False
-                if new_pm:
-                    new_pacemaker_label.config(text = "New Pacemaker Connected!")
-                    controller.setDefaultParams(ser_num)
-                else:
-                    new_pacemaker_label.config(text = "Welcome Back!")
+            try:
+                with open('Parameters.csv', 'r') as file:
+                    reader = csv.reader(file)
+                    for row in reader:
+                        if row[0] == ser_num:
+                            new_pm = False
+                    if new_pm:
+                        new_pacemaker_label.config(text = "New Pacemaker Connected!")
+                        controller.setDefaultParams(ser_num)
+                    else:
+                        new_pacemaker_label.config(text = "Welcome Back!")
+            except:
+                controller.setDefaultParams()
 
             global connected  #GLOBAL IS BAD
             connected = True
@@ -368,7 +370,7 @@ class VOOParams(ttk.Frame):
         Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
         Back.pack(side = LEFT, padx = 100)
 
-        lrl, url, aamp, vamp, apw, vpw, arp, vrp = controller.readParams()
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
@@ -584,7 +586,7 @@ class VVIParams(ttk.Frame):
         Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
         Back.pack(side = LEFT, padx = 100)
 
-        lrl, url, aamp, vamp, apw, vpw, arp, vrp = controller.readParams()
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
@@ -651,6 +653,17 @@ class VVIParams(ttk.Frame):
         error7 = ttk.Label(errors, foreground='#fff000000')
         error7.pack(pady = yPad)
 
+        L1 = ttk.Label(border, text="Ventricular Sensitivity", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param8 = ttk.Entry(entry, width = 30)
+        try:
+            param8.insert(0, vent_sensitivity)
+        except:
+            pass
+        param8.pack(pady = yPadEntry)
+
+
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
@@ -668,6 +681,7 @@ class VVIParams(ttk.Frame):
             ventricularPW = 0
             arp = 0
             vrp = 0
+            vent_sensitivity = 0
 
             if (param1.get()):
                 try:
@@ -800,6 +814,29 @@ class VVIParams(ttk.Frame):
                 if (vrp > (int)(1000 / (lowerRateLimit / 60))):
                     param7.delete(0, 100)
                     error7.config(text = 'Please make sure VRP does not interfere with rate limit')
+            
+            if (param8.get()):
+                try:
+                    vent_sensitivity = float(param8.get())
+                except:
+                    pass
+            #try:
+            id_send = controller.get_id()
+            mode_send = controller.get_mode()
+            kwargs = {
+                'id_input': id_send,
+                'mode_str': mode_send,
+                'lrl_input': lowerRateLimit,
+                'url_input': upperRateLimit,
+                'vent_pw_input': ventricularPW,
+                'vent_amp_input': ventricularAmp,
+                'vent_sensitivity_input': vent_sensitivity,
+                'VRP_input': vrp                
+            }
+            controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit, ventricularPW, ventricularAmp, vent_sensitivity, vrp)
+            #except: 
+                #print("error stuff doesnt exist")
+
 
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
@@ -839,7 +876,7 @@ class AOOParams(ttk.Frame):
         Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
         Back.pack(side = LEFT, padx = 100)
 
-        lrl, url, aamp, vamp, apw, vpw, arp, vrp = controller.readParams()
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
@@ -1011,6 +1048,19 @@ class AOOParams(ttk.Frame):
             else:
                 error4.config(text = 'Please make entries for all fields')
 
+            id_send = controller.get_id()
+            mode_send = controller.get_mode()
+            kwargs = {
+                'id_input': id_send,
+                'mode_str': mode_send,
+                'lrl_input': lowerRateLimit,
+                'url_input': upperRateLimit,
+                'atr_pw_input': atrialPW,
+                'atr_amp_input': atrialAmp,           
+            }
+            controller.serialSend(**kwargs)
+            
+
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
 
@@ -1049,7 +1099,7 @@ class AAIParams(ttk.Frame):
         Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
         Back.pack(side = LEFT, padx = 100)
 
-        lrl, url, aamp, vamp, apw, vpw, arp, vrp = controller.readParams()
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
@@ -1115,6 +1165,18 @@ class AAIParams(ttk.Frame):
 
         error8 = ttk.Label(errors, foreground='#fff000000')
         error8.pack(pady = yPad)
+
+        L1 = ttk.Label(border, text="Atrial Sensitivity", font=("Arial Bold", 10))
+        L1.pack(pady = yPad)
+
+        param9 = ttk.Entry(entry, width = 30)
+        try:
+            param9.insert(0, atr_sensitivity)
+        except:
+            pass
+        param9.pack(pady = yPadEntry)
+
+
 
         def applyChanges():
             error1.config(text = '')
@@ -1262,11 +1324,28 @@ class AAIParams(ttk.Frame):
                     param8.delete(0, 100)
                     error8.config(text = 'Please make sure ARP does not interfere with rate limit')
 
-
+            if (param9.get()):
+                try:
+                    atr_sensitivity = float(param9.get())
+                except:
+                    pass
+            
+            id_send = controller.get_id()
+            mode_send = controller.get_mode()
+            kwargs = {
+                'id_input': id_send,
+                'mode_str': mode_send,
+                'lrl_input': lowerRateLimit,
+                'url_input': upperRateLimit,
+                'atr_pw_input': atrialPW,
+                'atr_amp_input': atrialAmp,
+                'atr_sensitivity_input': atr_sensitivity,
+                'ARP_input': arp
+            }
+            controller.serialSend(**kwargs)
+            
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
-
-
 
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
@@ -1388,7 +1467,7 @@ class Application(tk.Tk):
 
         return badInput
 
-    def setDefaultParams(self, pmID):
+    def setDefaultParams(self, pmID = 12345):
         #Default values
         lrl = 50
         url = 60
@@ -1398,15 +1477,17 @@ class Application(tk.Tk):
         vpw = 1
         arp = 300
         vrp = 300
+        vent_sensitivity = 3.25
+        atr_sensitivity = 3.25
 
         with open("Parameters.csv", 'a', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp])
+            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity])
 
     def writeToParams(self, pmID, params):
         with open("Parameters.csv", 'w', newline='') as file:
             writer = csv.writer(file)
-            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp])
+            writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_senstivity, atr_sensitivity])
 
     
     def readParams(self):
@@ -1423,18 +1504,20 @@ class Application(tk.Tk):
                     vpw = line[6]
                     arp = line[7]
                     vrp = line[8]
+                    vent_sensitivity = line[9]
+                    atr_sensitivity = line[10]
                     break
                 else:
                     print("No matching ID")
         
-        return lrl, url, aamp, vamp, apw, vpw, arp, vrp
+        return lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity
 
     def serialSend(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4, vent_amp_input = 3.5, vent_sensitivity_input = 2.5, VRP_input = 320, atr_pw_input = 0.4, atr_amp_input = 3.5, atr_sensitivity_input = 0.75, ARP_input = 250):
         if mode_str == "AOO":
             mode_char = 2
         if mode_str == "VOO":
             mode_char = 1
-        if mode_str == "AII":
+        if mode_str == "AAI":
             mode_char = 4
         if mode_str == "VVI":
             mode_char = 3
@@ -1449,13 +1532,15 @@ class Application(tk.Tk):
         id_int = int(id_input)
         lrl_int = int(lrl_input)
         url_int = int(url_input)
-        vent_pw_conv = vent_pw_input*100
-        atr_pw_conv = atr_pw_input*100
+        vent_pw_conv = vent_pw_input
+        atr_pw_conv = atr_pw_input
         print(lrl_int)
         id_en = struct.pack("f", id_int)  #3:6
         mode_en = struct.pack("B", mode_char) #7
         lrl_en = struct.pack("B", lrl_int) #8
         url_en = struct.pack("B", url_int) #9
+        print(vent_pw_input)
+        print(vent_pw_conv)
         vent_pw_en = struct.pack("B", int(vent_pw_conv)) #10
         vent_amp_en = struct.pack("f", vent_amp_input) #11:14
         vent_sensitivity_en = struct.pack("f", vent_sensitivity_input) #15:18
