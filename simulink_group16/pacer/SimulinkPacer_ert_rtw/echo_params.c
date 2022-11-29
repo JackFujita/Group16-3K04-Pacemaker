@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'SimulinkPacer'.
  *
- * Model version                  : 5.94
+ * Model version                  : 5.80
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Mon Nov 28 17:31:16 2022
+ * C/C++ source code generated on : Mon Nov 28 22:33:48 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -49,49 +49,45 @@ static void SimulinkPacer_SystemCore_setup(freedomk64f_SCIWrite_Simulink_T *obj)
 void echo_params_Init(void)
 {
   /* Start for MATLABSystem: '<S4>/Serial Transmit' */
-  SimulinkPacer_DW.obj_a.isInitialized = 0;
-  SimulinkPacer_DW.obj_a.matlabCodegenIsDeleted = false;
-  SimulinkPacer_SystemCore_setup(&SimulinkPacer_DW.obj_a);
+  SimulinkPacer_DW.obj_p.isInitialized = 0;
+  SimulinkPacer_DW.obj_p.matlabCodegenIsDeleted = false;
+  SimulinkPacer_SystemCore_setup(&SimulinkPacer_DW.obj_p);
 }
 
 /* Output and update for Simulink Function: '<Root>/Function-Call Subsystem' */
 void echo_params(void)
 {
-  int32_T i;
-  uint8_T TxDataLocChar[10];
-  uint8_T rtb_TmpSignalConversionAtSerial[10];
+  uint8_T TxDataLocChar[6];
+  uint8_T rtb_TmpSignalConversionAtSerial[6];
   uint8_T status;
 
-  /* SignalConversion generated from: '<S4>/A1' */
-  SimulinkPacer_B.TmpLatchAtA1Outport1 = SimulinkPacer_B.AnalogInput;
+  /* SignalConversion generated from: '<S4>/id_in' */
+  SimulinkPacer_B.id_in = SimulinkPacer_B.id_in_o;
 
   /* S-Function (any2byte): '<S4>/Byte Pack' */
 
   /* Pack: <S4>/Byte Pack */
-  (void) memcpy(&SimulinkPacer_B.BytePack[0],
-                &SimulinkPacer_B.TmpLatchAtA1Outport1,
-                8);
+  (void) memcpy(&SimulinkPacer_B.BytePack[0], &SimulinkPacer_B.id_in,
+                4);
 
   /* SignalConversion generated from: '<S4>/Serial Transmit' incorporates:
    *  SignalConversion generated from: '<S4>/lrl_echo'
    *  SignalConversion generated from: '<S4>/mode'
    */
   rtb_TmpSignalConversionAtSerial[0] = SimulinkPacer_B.mode;
-  for (i = 0; i < 8; i++) {
-    rtb_TmpSignalConversionAtSerial[i + 1] = SimulinkPacer_B.BytePack[i];
-  }
-
-  rtb_TmpSignalConversionAtSerial[9] = SimulinkPacer_B.lrl_in;
-
-  /* End of SignalConversion generated from: '<S4>/Serial Transmit' */
+  rtb_TmpSignalConversionAtSerial[1] = SimulinkPacer_B.lrl_in;
+  rtb_TmpSignalConversionAtSerial[2] = SimulinkPacer_B.BytePack[0];
+  rtb_TmpSignalConversionAtSerial[3] = SimulinkPacer_B.BytePack[1];
+  rtb_TmpSignalConversionAtSerial[4] = SimulinkPacer_B.BytePack[2];
+  rtb_TmpSignalConversionAtSerial[5] = SimulinkPacer_B.BytePack[3];
 
   /* MATLABSystem: '<S4>/Serial Transmit' */
   status = 1U;
   while (status != 0) {
     memcpy((void *)&TxDataLocChar[0], (void *)&rtb_TmpSignalConversionAtSerial[0],
-           (uint32_T)((size_t)10 * sizeof(uint8_T)));
-    status = MW_SCI_Transmit(SimulinkPacer_DW.obj_a.MW_SCIHANDLE,
-      &TxDataLocChar[0], 10U);
+           (uint32_T)((size_t)6 * sizeof(uint8_T)));
+    status = MW_SCI_Transmit(SimulinkPacer_DW.obj_p.MW_SCIHANDLE,
+      &TxDataLocChar[0], 6U);
   }
 
   /* End of MATLABSystem: '<S4>/Serial Transmit' */
@@ -101,11 +97,11 @@ void echo_params(void)
 void echo_params_Term(void)
 {
   /* Terminate for MATLABSystem: '<S4>/Serial Transmit' */
-  if (!SimulinkPacer_DW.obj_a.matlabCodegenIsDeleted) {
-    SimulinkPacer_DW.obj_a.matlabCodegenIsDeleted = true;
-    if ((SimulinkPacer_DW.obj_a.isInitialized == 1) &&
-        SimulinkPacer_DW.obj_a.isSetupComplete) {
-      MW_SCI_Close(SimulinkPacer_DW.obj_a.MW_SCIHANDLE);
+  if (!SimulinkPacer_DW.obj_p.matlabCodegenIsDeleted) {
+    SimulinkPacer_DW.obj_p.matlabCodegenIsDeleted = true;
+    if ((SimulinkPacer_DW.obj_p.isInitialized == 1) &&
+        SimulinkPacer_DW.obj_p.isSetupComplete) {
+      MW_SCI_Close(SimulinkPacer_DW.obj_p.MW_SCIHANDLE);
     }
   }
 

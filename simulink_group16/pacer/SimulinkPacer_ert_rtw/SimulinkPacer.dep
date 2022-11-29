@@ -2,25 +2,24 @@ SimulinkPacer.o: \
  C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_ert_rtw/SimulinkPacer.c \
  C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_ert_rtw/SimulinkPacer.h \
  C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/rtwtypes.h \
- C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_AnalogIn.h \
- C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_SVD.h \
  C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_digitalIO.h \
+ C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_SVD.h \
  C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_PWM.h \
  C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_SCI.h \
  C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_ert_rtw/SimulinkPacer_types.h \
  C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_SVD.h \
  C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/echo_params.h \
+ C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/rt_roundd_snf.h \
+ C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/rtwtypes.h \
  C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_ert_rtw/echo_params_private.h
 
 C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_ert_rtw/SimulinkPacer.h:
 
 C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/rtwtypes.h:
 
-C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_AnalogIn.h:
+C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_digitalIO.h:
 
 C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_SVD.h:
-
-C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_digitalIO.h:
 
 C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_PWM.h:
 
@@ -31,5 +30,9 @@ C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_er
 C:/ProgramData/MATLAB/SupportPackages/R2022a/toolbox/target/supportpackages/freedomk64f/include/MW_SVD.h:
 
 C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/echo_params.h:
+
+C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/rt_roundd_snf.h:
+
+C:/Users/jackg/Desktop/MECHTRON\ 3K04/Project/3k04-pacemaker/simulink_group16/pacer/slprj/ert/_sharedutils/rtwtypes.h:
 
 C:/Users/jackg/Desktop/MECHTR~3/Project/3K04-P~1/SIMULI~1/pacer/SimulinkPacer_ert_rtw/echo_params_private.h:

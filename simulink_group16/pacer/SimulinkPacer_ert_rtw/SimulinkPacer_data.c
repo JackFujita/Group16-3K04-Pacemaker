@@ -7,9 +7,9 @@
  *
  * Code generated for Simulink model 'SimulinkPacer'.
  *
- * Model version                  : 5.94
+ * Model version                  : 5.80
  * Simulink Coder version         : 9.7 (R2022a) 13-Nov-2021
- * C/C++ source code generated on : Mon Nov 28 17:31:16 2022
+ * C/C++ source code generated on : Mon Nov 28 22:33:48 2022
  *
  * Target selection: ert.tlc
  * Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -21,11 +21,6 @@
 
 /* Block parameters (default storage) */
 P_SimulinkPacer_T SimulinkPacer_P = {
-  /* Expression: SampleTime
-   * Referenced by: '<Root>/Analog Input'
-   */
-  -1.0,
-
   /* Expression: SampleTime
    * Referenced by: '<S5>/Digital Read'
    */
@@ -41,20 +36,15 @@ P_SimulinkPacer_T SimulinkPacer_P = {
    */
   -1.0,
 
-  /* Expression: 5
+  /* Expression: 100
+   * Referenced by: '<S3>/Constant'
+   */
+  100.0,
+
+  /* Expression: 100
    * Referenced by: '<S3>/Constant1'
    */
-  5.0,
-
-  /* Expression: 5
-   * Referenced by: '<S3>/Constant3'
-   */
-  5.0,
-
-  /* Expression: 3
-   * Referenced by: '<S3>/input V1'
-   */
-  3.0,
+  100.0,
 
   /* Expression: 5
    * Referenced by: '<S3>/max V1'
@@ -65,11 +55,6 @@ P_SimulinkPacer_T SimulinkPacer_P = {
    * Referenced by: '<S3>/Multiply3'
    */
   100.0,
-
-  /* Expression: 3
-   * Referenced by: '<S3>/input V2'
-   */
-  3.0,
 
   /* Expression: 5
    * Referenced by: '<S3>/max V2'
@@ -86,25 +71,10 @@ P_SimulinkPacer_T SimulinkPacer_P = {
    */
   60000.0,
 
-  /* Expression: 120
-   * Referenced by: '<S3>/upper rate limit in pulses//min'
-   */
-  120.0,
-
   /* Expression: 60000
    * Referenced by: '<S3>/min to ms1'
    */
   60000.0,
-
-  /* Expression: 150
-   * Referenced by: '<S3>/Constant5'
-   */
-  150.0,
-
-  /* Expression: 3.5
-   * Referenced by: '<S3>/input V3'
-   */
-  3.5,
 
   /* Expression: 5
    * Referenced by: '<S3>/max V3'
@@ -115,16 +85,6 @@ P_SimulinkPacer_T SimulinkPacer_P = {
    * Referenced by: '<S3>/Multiply'
    */
   100.0,
-
-  /* Expression: 150
-   * Referenced by: '<S3>/Constant9'
-   */
-  150.0,
-
-  /* Expression: 3.25
-   * Referenced by: '<S3>/input V4'
-   */
-  3.25,
 
   /* Expression: 5
    * Referenced by: '<S3>/max V4'

@@ -14,62 +14,71 @@ import random
 from time import sleep
 
 
+# The first welcome frame block
 class Welcome(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)  
 
-        frame = ttk.Frame(self, padding = 200)
-        frame.pack()
-        welcomeLabel = ttk.Label(frame, text = 'Welcome to Pacemaker', font = ("Roboto medium", 20))
+        frame = ttk.Frame(self, padding=200)  # setting up the size of the frame
+        frame.pack()  # pack the frame
+        welcomeLabel = ttk.Label(frame, text='Welcome to Pacemaker', font=("Roboto medium", 20))  # set a label inside the frame
 
         welcomeLabel.pack(pady = 20)
 
-        Button = ttk.Button(frame, text = "Login", command=lambda: controller.show_frame(Login), width=30)
+        Button = ttk.Button(frame, text="Login", command=lambda: controller.show_frame(Login), width=30)  # set a button which linked to the login frame
         Button.pack()
 
+
+# the login frame block
 class Login(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
         
+        # this block of code is use to creat a label use to contain username entry and password entry.
         border = ttk.LabelFrame(self, text='Login')
         border.pack(fill="both", expand="yes", padx = 150, pady=150)
         
+        # the username entry
         L1 = ttk.Label(border, text="Username", font=("Arial", 15))
         L1.place(x=50, y=20)
         Username_login = ttk.Entry(border, width = 30)
         Username_login.place(x=180, y=20)
         
+        # the password entry
         L2 = ttk.Label(border, text="Password", font=("Arial", 15))
         L2.place(x=50, y=80)
         Password_login = ttk.Entry(border, width = 30, show='*')
         Password_login.place(x=180, y=80)
         
+        # This method is used to verify the user's input password and username is correct
         def verify():
+            # get user input
             input_username = Username_login.get()
             input_password = Password_login.get()
 
             try:
-                with open("Secrets.csv", 'r') as file:
+                with open("Secrets.csv", 'r') as file:  # open the csv file which store all usernames and passwords, if there is no such file, creat a new one
                     csv_reader=csv.reader(file)
                     login_true = False
-                    for line in csv_reader:
-                        if (line[0]==input_username) and (line[1]==input_password):
+                    for line in csv_reader:  # read line in the csv file, and check is there any username and it's corresponding password match the user input
+                        if (line[0]==input_username) and (line[1] == input_password):
                             login_true = True
                             break
-                    if login_true:
+                    if login_true:  # if matchs, print message and go to the mode select frame
                         print("he valid")
                         controller.show_frame(ModeSelect)
-                    else:
+                    else:  # if not match, print message and show a message box which let user input again.
                         print("invalid")
                         messagebox.showinfo("Error", "Please provide correct username and password")
-            except:
+            except:  # show the error
                 messagebox.showinfo("Error", "Please provide correct username and password")
          
-        verify_button = ttk.Button(border, text="Submit", command=verify)
+        verify_button = ttk.Button(border, text="Submit", command=verify)  # set a button link to verify method
         verify_button.place(x=320, y=130)
         
+        # this method is use to let new user to register a new account
         def register():
-            try:
+            try:  # check the total register user number less than 10
                 with open("Secrets.csv", 'r') as file:
                     csv_reader=csv.reader(file)
                     row_count = sum(1 for row in csv_reader)
@@ -80,9 +89,10 @@ class Login(ttk.Frame):
             except:
                 pass
             
+            # this block set the size of frame and three entries which let user input their username and password
             window = tk.Tk()
             window.geometry('470x220')
-            window.resizable(0,0)
+            window.resizable(0, 0)
             window.title("Register")
             l1 = ttk.Label(window, text="Username:", font=("Arial",15))
             l1.place(x=10, y=10)
@@ -99,39 +109,41 @@ class Login(ttk.Frame):
             Password_register_2 = tk.Entry(window, width=30, show="*")
             Password_register_2.place(x = 200, y=110)
             
+            # this method is use to check the user's input is obey the rule
             def check():
-                if Username_register.get()!="" or Password_register.get()!="" or Password_register_2.get()!="":
-                    if Password_register.get()==Password_register_2.get():
-                        with open("Secrets.csv", 'a', newline='') as file:
+                if Username_register.get() != "" or Password_register.get() != "" or Password_register_2.get() != "":  # check all three input is not empty
+                    if Password_register.get() == Password_register_2.get():  # check two password input is same
+                        with open("Secrets.csv", 'a', newline='') as file:  # if all input is good, write the username and password into the store csv file(if there is no such file, creat one)
                             writer = csv.writer(file)
                             writer.writerow([Username_register.get(), Password_register.get()])
-                        messagebox.showinfo("Welcome","You are registered successfully")
+                        messagebox.showinfo("Welcome", "You are registered successfully")  # show a message box as welcome if all check pass
                         ###IMPLEMENT MAX USER FUNCTIONALITY
                     else:
-                        messagebox.showinfo("Error","Your password didn't get match")
+                        messagebox.showinfo("Error", "Your password didn't get match")  # show a message box as error if some step is not pass
                 else:
-                    messagebox.showinfo("Error", "Please fill the complete field")
+                    messagebox.showinfo("Error", "Please fill the complete field")  # show a message box which remind user do not input empty
                     
-            b1 = ttk.Button(window, text="Register", command=check)
+            b1 = ttk.Button(window, text="Register", command=check)  # set a button linked to check method
             b1.place(x=220, y=150)
 
             sv_ttk.set_theme("light")
-            window.mainloop()
+            window.mainloop()  # make register frame runing before any other frame until the register step over
             
-        B2 = ttk.Button(self, text="Register", command=register)
+        B2 = ttk.Button(self, text="Register", command=register)  # set a button to call the register frame
         B2.place(x=650, y=10)
 
-        B3 = ttk.Button(self, text = "Back to welcome", command=lambda: controller.show_frame(Welcome))
+        B3 = ttk.Button(self, text="Back to welcome",
+                        command=lambda: controller.show_frame(Welcome))  # set a button back to the welcome frame
         B3.place(x=10,y=10)
         
+
+# the mode select frame
 class ModeSelect(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
 
-
-    
-
-        # controller.set_mode("AOO")
+        # creating mode select frame and inside it has some label to show the connetion state and each mode that user can select
+        #controller.set_mode("AOO")
         
         top_frame = ttk.Frame(self, padding = 20, width = 300)
         top_frame.pack(fill='x', side = TOP)
@@ -160,11 +172,13 @@ class ModeSelect(ttk.Frame):
         label.pack(side = LEFT)
 
         prev_IDs = []
+        # two global variable that used in following methods.
         global connected ## GLOBAL IS BAD
         global applied 
         connected = False
         applied = False
 
+        # method to connect the pacemaker
         def connect():
             info = serial.tools.list_ports.comports()
             for i in range(len(info)):
@@ -172,9 +186,9 @@ class ModeSelect(ttk.Frame):
                 hwid = info_it[1]
                 if hwid == "1366:1015 SER":
                     break
-            com_name = info[i].name #COMPORT NAME 
+            com_name = info[i].name #COMPORT NAME
             controller.set_com_name(com_name)
-            ser_num = info[i].serial_number    
+            ser_num = info[i].serial_number
 
             text1 = "Pacemaker " + ser_num + " at " + com_name + " connected"
 
@@ -193,19 +207,19 @@ class ModeSelect(ttk.Frame):
                         if row[0] == ser_num:
                             new_pm = False
                     if new_pm:
-                        new_pacemaker_label.config(text = "New Pacemaker Connected!")
-                        controller.setDefaultParams(ser_num)
+                        new_pacemaker_label.config(text = "New Pacemaker Connected!")  # if it is a new pacemaker, print a text
+                        controller.setDefaultParams(ser_num) #Creates default parameters (need a real id to send here)
                     else:
                         new_pacemaker_label.config(text = "Welcome Back!")
             except:
                 controller.setDefaultParams()
 
             global connected  #GLOBAL IS BAD
-            connected = True
+            connected = True  # the pacemaker is now connected
 
-
+        # mehtod to disconnect the pacemaker
         def disconnect():
-            label.config(text="No Pacemaker Connected...")
+            label.config(text="No Pacemaker Connected...")  # show a picture when disconnect
             image = Image.open('Pictures/disconnect2.png')
             image = image.resize((20,20), Image.ANTIALIAS)
             global my_image
@@ -214,28 +228,28 @@ class ModeSelect(ttk.Frame):
 
             new_pacemaker_label.config(text = "")
             global connected ## GLOBAL IS BAD
-            connected = False
+            connected = False  # the pacemaker is now disconnect
 
-
-        disconnect_button = ttk.Button(top_frame, command= disconnect, text='Disonnect Pacemaker')
+        disconnect_button = ttk.Button(top_frame, command=disconnect, text='Disonnect Pacemaker ')  # set the disconnect button like to disconnect method
         disconnect_button.pack(side=RIGHT)
         
-        connect_button = ttk.Button(top_frame, command= connect, text='Connect Pacemaker')
+        connect_button = ttk.Button(top_frame, command=connect, text='Connect Pacemaker ')  # set the connect button like to connect method
         connect_button.pack(side=RIGHT)
 
-        options = []
+        options = []  # the giving pacemaker ID
         
-        border = ttk.LabelFrame(self, text='Mode Select')
+        border = ttk.LabelFrame(self, text='Mode Select')  # the different mode label
         border.pack(fill="x", expand="yes", padx = 150, pady=10)
 
-        Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))
+        Button = ttk.Button(bottom_frame, text="Back To Login", command=lambda: controller.show_frame(Login))  # back to login frame button, link to show login frame method
         Button.pack(side= LEFT)
 
+        # this method is use to check is pacemaker connect and mode is select
         def switch_check():
-            mode = controller.get_mode()
-            if connected and applied:
+            mode = controller.get_mode()    #get the current user choice mode
+            if connected and applied:   # if pacemaker is connected and mode is selected, go to the param select frame
                 print("switch page")
-                if (mode == "VOO"):
+                if (mode == "VOO"):     #switch to corresponding frame
                     controller.show_frame(VOOParams)
                 elif (mode == "AOO"):
                     controller.show_frame(AOOParams)
@@ -244,22 +258,22 @@ class ModeSelect(ttk.Frame):
                 elif (mode == "AAI"):
                     controller.show_frame(AAIParams)
             else:
-                errormsg.config(text = "Please connect or select a mode")
+                errormsg.config( text="Please connect or select a mode")  # if not connect or didn't select a mode, show a error
 
 
-        Button = ttk.Button(bottom_frame, text="Next", command= switch_check)
+        Button = ttk.Button(bottom_frame, text="Next", command=switch_check)  # the button link to switch check method
         Button.pack(side = RIGHT)
 
-        errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
+        errormsg = ttk.Label(bottom_frame, foreground='#fff000000')  # the error message label
         errormsg.pack(side = TOP)
 
-        def make_plot_vent():
+        def make_plot_vent():   #method of Ventricle Egram plot
 
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
             xs = []
             ys = []
-            
+
             # This function is called periodically from FuncAnimation
             def animate(i, xs, ys):
 
@@ -286,15 +300,15 @@ class ModeSelect(ttk.Frame):
                 plt.ylabel('Voltage (V)')
 
             ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
-            plt.show()  
+            plt.show()
 
-        def make_plot_atr():
+        def make_plot_atr():    #method of Atrium Egram plot
 
             fig = plt.figure()
             ax = fig.add_subplot(1, 1, 1)
             xs = []
             ys = []
-            
+
             # This function is called periodically from FuncAnimation
             def animate(i, xs, ys):
 
@@ -321,16 +335,16 @@ class ModeSelect(ttk.Frame):
                 plt.ylabel('Voltage (V)')
 
             ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
-            plt.show()  
+            plt.show()
 
-        def make_plot_both():
+        def make_plot_both():   #method of Full Egram plot
             fig, (ax1, ax2) = plt.subplots(2, sharex=True)
             fig.suptitle('Full Egram')
 
             xs = []
             ys = []
             ys2 = []
-            
+
             # This function is called periodically from FuncAnimation
             def animate(i, xs, ys, ys2):
 
@@ -355,7 +369,7 @@ class ModeSelect(ttk.Frame):
                 ax1.plot(xs, ys)
                 ax2.clear()
                 ax2.plot(xs, ys2)
-                
+
                 # Format plot
                 ax1.set_title('Atrium')
                 ax2.set_title('Ventricle')
@@ -365,42 +379,42 @@ class ModeSelect(ttk.Frame):
                 plt.ylabel('Voltage (V)')
 
             ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, ys2), interval=10)
-            plt.show()  
+            plt.show()
 
+            # this method is used to check can the option be apply
         def save_mode():
-            if connected:
+            if connected:  # if pacemaker is connected, the applied will be true
                 print(selected.get())
                 global applied
                 applied = True
                 errormsg.config(text = '')
-                controller.set_mode(selected.get())
+                controller.set_mode(selected.get())  # set the mode as user selected
             else:
-                errormsg.config(text = "Please connect a pacemaker")
+                errormsg.config(text="Please connect a pacemaker")  # if pacemaker is not connected, return a error to tell user to connect the pacemaker
                 return
 
             if selected.get() == '':
-                errormsg.config(text = "Please select an option")
-            
+                errormsg.config( text="Please select an option")  # if user didn't select an option, return a error message to tell user select one
 
 
 
-        modes = ["AOO", 'VOO', 'AAI', 'VVI']
-        selected = StringVar()
+        modes = ["AOO", 'VOO', 'AAI', 'VVI']  # four modes
+        selected = StringVar()  # the selected mode will change when the user select
 
         for mode in modes:
-            r = ttk.Radiobutton(border, text=mode, value=mode,variable = selected)
+            r = ttk.Radiobutton(border, text=mode, value=mode, variable=selected)  # creat four radio button of four modes
             r.pack(fill='x', padx = 5, pady = 5)
 
-        button = ttk.Button(border, text = "Apply", command = save_mode)
+        button = ttk.Button(border, text="Apply", command=save_mode)  # apply button link to save_mode method
         button.pack(fill='x', padx=5,pady=5)
-        button2 = ttk.Button(border, text = "Ventricle Egram", command = make_plot_vent)
+        button2 = ttk.Button(border, text = "Ventricle Egram", command = make_plot_vent)    #show Ventricle Egram button
         button2.pack(fill='x', padx=5,pady=5)
-        button3 = ttk.Button(border, text = "Atrium Egram", command = make_plot_atr)
+        button3 = ttk.Button(border, text = "Atrium Egram", command = make_plot_atr)    #show Atrium Egram button
         button3.pack(fill='x', padx=5,pady=5)
-        button4 = ttk.Button(border, text = "Full Egram", command = make_plot_both)
+        button4 = ttk.Button(border, text = "Full Egram", command = make_plot_both)     #show Full Egram button
         button4.pack(fill='x', padx=5,pady=5)
 
-
+#the VOO mode frame
 class VOOParams(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -429,20 +443,20 @@ class VOOParams(ttk.Frame):
         Label = ttk.Label(top, text="Programmable Parameters", font=("Arial Bold", 20))
         Label.pack(pady = 25)
 
-        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))
+        BackToLogin = ttk.Button(bottom, text="Back To Login", command=lambda: controller.show_frame(Login))   # the button link to show login frame
         BackToLogin.pack(side = LEFT, padx = 100)
 
-        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect))
+        Back = ttk.Button(bottom, text="Back", command=lambda: controller.back(ModeSelect)) # the button link to mode select frame
         Back.pack(side = LEFT, padx = 100)
 
-        lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity = controller.readParams()
+        lrl, url, aamp, vamp, apw, vpw, arp, vrp = controller.readParams()
 
         L1 = ttk.Label(border, text="Lower Rate Limit", font=("Arial Bold", 10))
         L1.pack(pady = yPad)
 
         param1 = ttk.Entry(entry, width = 30)
         try:
-            param1.insert(0, lrl)
+            param1.insert(0, lrl)   #put the default parameter into the entry
         except:
             pass
         param1.pack(pady = yPadEntry)
@@ -455,7 +469,7 @@ class VOOParams(ttk.Frame):
 
         param2 = ttk.Entry(entry, width = 30)
         try:
-            param2.insert(0, url)
+            param2.insert(0, url)    #put the default parameter into the entry
         except:
             pass
         param2.pack(pady = yPadEntry)
@@ -468,7 +482,7 @@ class VOOParams(ttk.Frame):
 
         param5 = ttk.Entry(entry, width = 30)
         try:
-            param5.insert(0, vamp)
+            param5.insert(0, vamp)  #put the default parameter into the entry
         except:
             pass
         param5.pack(pady = yPadEntry)
@@ -481,7 +495,7 @@ class VOOParams(ttk.Frame):
 
         param6 = ttk.Entry(entry, width = 30)
         try:
-            param6.insert(0, vpw)
+            param6.insert(0, vpw)   #put the default parameter into the entry
         except:
             pass
         param6.pack(pady = yPadEntry)
@@ -489,6 +503,7 @@ class VOOParams(ttk.Frame):
         error6 = ttk.Label(errors, foreground='#fff000000')
         error6.pack(pady = yPad)
 
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
@@ -499,6 +514,8 @@ class VOOParams(ttk.Frame):
             lowerRateLimit = 0
             upperRateLimit = 0
 
+
+            #check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
             if (param1.get()):
                 try:
                     intLRL = int(param1.get())
@@ -523,6 +540,7 @@ class VOOParams(ttk.Frame):
             else:
                 error1.config(text = 'Please make entries for all fields')
 
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
             if (param2.get()):
                 try:
                     intURL = int(param2.get())
@@ -546,6 +564,7 @@ class VOOParams(ttk.Frame):
             else:
                 error2.config(text = 'Please make entries for all fields')
 
+            #make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
             if (LRLSet and URLSet):
                 if (lowerRateLimit > upperRateLimit):
                     param1.delete(0, 100)
@@ -555,6 +574,7 @@ class VOOParams(ttk.Frame):
             error5.config(text = '')
             error6.config(text = '')
 
+            # check parameter5 is  digits and in range of 0 or between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
             if (param5.get()):
                 try:
                     intVAMP = int(float(param5.get()) * 10)
@@ -577,6 +597,7 @@ class VOOParams(ttk.Frame):
             else:
                 error5.config(text = 'Please make entries for all fields')
 
+            # check parameter6 is  digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
             if (param6.get()):
                 try:
                     intVPW = int(float(param6.get()) * 100)
@@ -598,12 +619,12 @@ class VOOParams(ttk.Frame):
                     error6.config(text = 'Please enter a decimal')
             else:
                 error6.config(text = 'Please make entries for all fields')
-                
+
             try:
                 id_send = controller.get_id()
                 mode_send = controller.get_mode()
                 controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit, ventricularPW, ventricularAmp)
-            except: 
+            except:
                 print("error stuff doesnt exist")
 
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
@@ -612,11 +633,12 @@ class VOOParams(ttk.Frame):
 
         def read():
             controller.serialRead(controller.get_id(), controller.get_mode())
-            
+
         getparam = ttk.Button(bottom, text="getparams", command=read)
         getparam.pack(side = LEFT, padx = 100)
 
 
+#all step is similar to VOO mode frame, include set default parameters to entries
 class VVIParams(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -658,7 +680,7 @@ class VVIParams(ttk.Frame):
 
         param1 = ttk.Entry(entry, width = 30)
         try:
-            param1.insert(0, lrl)
+            param1.insert(0, lrl)   #put the default parameter into the entry
         except:
             pass
         param1.pack(pady = yPadEntry)
@@ -671,7 +693,7 @@ class VVIParams(ttk.Frame):
 
         param2 = ttk.Entry(entry, width = 30)
         try:
-            param2.insert(0, url)
+            param2.insert(0, url)   #put the default parameter into the entry
         except:
             pass
         param2.pack(pady = yPadEntry)
@@ -684,7 +706,7 @@ class VVIParams(ttk.Frame):
 
         param5 = ttk.Entry(entry, width = 30)
         try:
-            param5.insert(0, vamp)
+            param5.insert(0, vamp)  #put the default parameter into the entry
         except:
             pass
         param5.pack(pady = yPadEntry)
@@ -697,7 +719,7 @@ class VVIParams(ttk.Frame):
 
         param6 = ttk.Entry(entry, width = 30)
         try:
-            param6.insert(0, vpw)
+            param6.insert(0, vpw)   #put the default parameter into the entry
         except:
             pass
         param6.pack(pady = yPadEntry)
@@ -710,7 +732,7 @@ class VVIParams(ttk.Frame):
 
         param7 = ttk.Entry(entry, width = 30)
         try:
-            param7.insert(0, vrp)
+            param7.insert(0, vrp)   #put the default parameter into the entry
         except:
             pass
         param7.pack(pady = yPadEntry)
@@ -723,12 +745,13 @@ class VVIParams(ttk.Frame):
 
         param8 = ttk.Entry(entry, width = 30)
         try:
-            param8.insert(0, vent_sensitivity)
+            param8.insert(0, vent_sensitivity)  #put the default parameter into the entry
         except:
             pass
         param8.pack(pady = yPadEntry)
 
 
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
@@ -748,6 +771,7 @@ class VVIParams(ttk.Frame):
             vrp = 0
             vent_sensitivity = 0
 
+            # check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
             if (param1.get()):
                 try:
                     intLRL = int(param1.get())
@@ -772,6 +796,7 @@ class VVIParams(ttk.Frame):
             else:
                 error1.config(text = 'Please make entries for all fields')
 
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
             if (param2.get()):
                 try:
                     intURL = int(param2.get())
@@ -795,6 +820,7 @@ class VVIParams(ttk.Frame):
             else:
                 error2.config(text = 'Please make entries for all fields')
 
+            # make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
             if (LRLSet and URLSet):
                 if (lowerRateLimit > upperRateLimit):
                     param1.delete(0, 100)
@@ -804,6 +830,7 @@ class VVIParams(ttk.Frame):
             error5.config(text = '')
             error6.config(text = '')
 
+            # check parameter5 is  digits and in range of 0 or between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
             if (param5.get()):
                 try:
                     intVAMP = int(float(param5.get()) * 10)
@@ -826,6 +853,7 @@ class VVIParams(ttk.Frame):
             else:
                 error5.config(text = 'Please make entries for all fields')
 
+            # check parameter6 is  digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
             if (param6.get()):
                 try:
                     intVPW = int(float(param6.get()) * 100)
@@ -852,6 +880,7 @@ class VVIParams(ttk.Frame):
 
             error7.config(text = '')
 
+            # check parameter6 is no digits and in range of 150 and 500 divisible by 10
             if (param7.get()):
                 try:
                     intVRP = int(param7.get())
@@ -875,11 +904,14 @@ class VVIParams(ttk.Frame):
             else:
                 error7.config(text = 'Please make entries for all fields')
 
+
+            #make sure VRP does not interfere with rate limit
             if (VRPSet and LRLSet):
                 if (vrp > (int)(1000 / (lowerRateLimit / 60))):
                     param7.delete(0, 100)
                     error7.config(text = 'Please make sure VRP does not interfere with rate limit')
-            
+
+            #get the parameter 8 value
             if (param8.get()):
                 try:
                     vent_sensitivity = float(param8.get())
@@ -896,17 +928,18 @@ class VVIParams(ttk.Frame):
                 'vent_pw_input': ventricularPW,
                 'vent_amp_input': ventricularAmp,
                 'vent_sensitivity_input': vent_sensitivity,
-                'VRP_input': vrp                
+                'VRP_input': vrp
             }
             controller.serialSend(id_send, mode_send, lowerRateLimit, upperRateLimit, ventricularPW, ventricularAmp, vent_sensitivity, vrp)
-            #except: 
+            #except:
                 #print("error stuff doesnt exist")
 
 
-        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
+        Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)  #apply button
         Apply.pack(side = LEFT, padx = 100)
 
 
+#all step is similar to VOO mode frame, include set default parameters to entries
 class AOOParams(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -948,7 +981,7 @@ class AOOParams(ttk.Frame):
 
         param1 = ttk.Entry(entry, width = 30)
         try:
-            param1.insert(0, lrl)
+            param1.insert(0, lrl)    #put the default parameter into the entry
         except:
             pass
         param1.pack(pady = yPadEntry)
@@ -961,7 +994,7 @@ class AOOParams(ttk.Frame):
 
         param2 = ttk.Entry(entry, width = 30)
         try:
-            param2.insert(0, url)
+            param2.insert(0, url)    #put the default parameter into the entry
         except:
             pass
         param2.pack(pady = yPadEntry)
@@ -974,7 +1007,7 @@ class AOOParams(ttk.Frame):
 
         param3 = ttk.Entry(entry, width = 30)
         try:
-            param3.insert(0, aamp)
+            param3.insert(0, aamp)   #put the default parameter into the entry
         except:
             pass
         param3.pack(pady = yPadEntry)
@@ -987,7 +1020,7 @@ class AOOParams(ttk.Frame):
 
         param4 = ttk.Entry(entry, width = 30)
         try:
-            param4.insert(0, apw)
+            param4.insert(0, apw)    #put the default parameter into the entry
         except:
             pass
         param4.pack(pady = yPadEntry)
@@ -995,6 +1028,7 @@ class AOOParams(ttk.Frame):
         error4 = ttk.Label(errors, foreground='#fff000000')
         error4.pack(pady = yPad)
 
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
@@ -1013,6 +1047,7 @@ class AOOParams(ttk.Frame):
             arp = 0
             vrp = 0
 
+            # check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
             if (param1.get()):
                 try:
                     intLRL = int(param1.get())
@@ -1037,6 +1072,7 @@ class AOOParams(ttk.Frame):
             else:
                 error1.config(text = 'Please make entries for all fields')
 
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
             if (param2.get()):
                 try:
                     intURL = int(param2.get())
@@ -1060,6 +1096,7 @@ class AOOParams(ttk.Frame):
             else:
                 error2.config(text = 'Please make entries for all fields')
 
+            # make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
             if (LRLSet and URLSet):
                 if (lowerRateLimit > upperRateLimit):
                     param1.delete(0, 100)
@@ -1069,6 +1106,7 @@ class AOOParams(ttk.Frame):
             error3.config(text = '')
             error4.config(text = '')
 
+            # check parameter3 is digits and in range of 0 or a decimal between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
             if (param3.get()):
                 try:
                     intAAMP = int(float(param3.get()) * 10)
@@ -1091,6 +1129,7 @@ class AOOParams(ttk.Frame):
             else:
                 error3.config(text = 'Please make entries for all fields')
 
+            # check parameter4 is digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
             if (param4.get()):
                 try:
                     intAPW = int(float(param4.get()) * 100)
@@ -1121,15 +1160,16 @@ class AOOParams(ttk.Frame):
                 'lrl_input': lowerRateLimit,
                 'url_input': upperRateLimit,
                 'atr_pw_input': atrialPW,
-                'atr_amp_input': atrialAmp,           
+                'atr_amp_input': atrialAmp,
             }
             controller.serialSend(**kwargs)
-            
+
 
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
 
-        
+
+#all step is similar to VOO mode frame, include set default parameters to entries
 class AAIParams(ttk.Frame):
     def __init__(self, parent, controller):
         ttk.Frame.__init__(self, parent)
@@ -1171,7 +1211,7 @@ class AAIParams(ttk.Frame):
 
         param1 = ttk.Entry(entry, width = 30)
         try:
-            param1.insert(0, lrl)
+            param1.insert(0, lrl)    #put the default parameter into the entry
         except:
             pass
         param1.pack(pady = yPadEntry)
@@ -1184,7 +1224,7 @@ class AAIParams(ttk.Frame):
 
         param2 = ttk.Entry(entry, width = 30)
         try:
-            param2.insert(0, url)
+            param2.insert(0, url)    #put the default parameter into the entry
         except:
             pass
         param2.pack(pady = yPadEntry)
@@ -1197,7 +1237,7 @@ class AAIParams(ttk.Frame):
 
         param3 = ttk.Entry(entry, width = 30)
         try:
-            param3.insert(0, aamp)
+            param3.insert(0, aamp)   #put the default parameter into the entry
         except:
             pass
         param3.pack(pady = yPadEntry)
@@ -1210,7 +1250,7 @@ class AAIParams(ttk.Frame):
 
         param4 = ttk.Entry(entry, width = 30)
         try:
-            param4.insert(0, apw)
+            param4.insert(0, apw)    #put the default parameter into the entry
         except:
             pass
         param4.pack(pady = yPadEntry)
@@ -1223,7 +1263,7 @@ class AAIParams(ttk.Frame):
 
         param8 = ttk.Entry(entry, width = 30)
         try:
-            param8.insert(0, arp)
+            param8.insert(0, arp)    #put the default parameter into the entry
         except:
             pass
         param8.pack(pady = yPadEntry)
@@ -1236,13 +1276,13 @@ class AAIParams(ttk.Frame):
 
         param9 = ttk.Entry(entry, width = 30)
         try:
-            param9.insert(0, atr_sensitivity)
+            param9.insert(0, atr_sensitivity)    #put the default parameter into the entry
         except:
             pass
         param9.pack(pady = yPadEntry)
 
 
-
+        # apply changes method, when call this method, it will check the user input parameters are correct or not
         def applyChanges():
             error1.config(text = '')
             error2.config(text = '')
@@ -1259,6 +1299,7 @@ class AAIParams(ttk.Frame):
             arp = 0
             vrp = 0
 
+            # check parameter1 is no digits and in range of between 30 and 50 divisible by 5 or between 50 and 90 divisible by 1 or between 90 and 175 divisible by 5
             if (param1.get()):
                 try:
                     intLRL = int(param1.get())
@@ -1283,6 +1324,7 @@ class AAIParams(ttk.Frame):
             else:
                 error1.config(text = 'Please make entries for all fields')
 
+            # check parameter2 is no digits and in range of between 50 and 175 divisible by 5
             if (param2.get()):
                 try:
                     intURL = int(param2.get())
@@ -1306,6 +1348,7 @@ class AAIParams(ttk.Frame):
             else:
                 error2.config(text = 'Please make entries for all fields')
 
+            # make sure lower rate limit(parameter 1) lower than upper rate limit(parameter 2)
             if (LRLSet and URLSet):
                 if (lowerRateLimit > upperRateLimit):
                     param1.delete(0, 100)
@@ -1315,6 +1358,7 @@ class AAIParams(ttk.Frame):
             error3.config(text = '')
             error4.config(text = '')
 
+            # check parameter3 is digits and in range of 0 or a decimal between 0.5 and 3.2 divisible by 0.1 or between 3.5 and 7 divisible by 0.5
             if (param3.get()):
                 try:
                     intAAMP = int(float(param3.get()) * 10)
@@ -1337,6 +1381,7 @@ class AAIParams(ttk.Frame):
             else:
                 error3.config(text = 'Please make entries for all fields')
 
+            # check parameter4 is digits and in range of 0.05 or a decimal between 0.1 and 1.9 divisible by 0.1
             if (param4.get()):
                 try:
                     intAPW = int(float(param4.get()) * 100)
@@ -1361,6 +1406,7 @@ class AAIParams(ttk.Frame):
 
             error8.config(text = '')
 
+            # check parameter4 is no digits and in range of 0.05 or a decimal between 150 and 500 divisible by 10
             if(param8.get()):
                 try:
                     intARP = int(param8.get())
@@ -1384,17 +1430,19 @@ class AAIParams(ttk.Frame):
             else:
                 error8.config(text = 'Please make entries for all fields')
 
+            #make sure ARP does not interfere with rate limit
             if (ARPSet and LRLSet):
                 if (arp > (int)(1000 / (lowerRateLimit / 60))):
                     param8.delete(0, 100)
                     error8.config(text = 'Please make sure ARP does not interfere with rate limit')
 
+            #get the parameter 9 value
             if (param9.get()):
                 try:
                     atr_sensitivity = float(param9.get())
                 except:
                     pass
-            
+
             id_send = controller.get_id()
             mode_send = controller.get_mode()
             kwargs = {
@@ -1408,13 +1456,18 @@ class AAIParams(ttk.Frame):
                 'ARP_input': arp
             }
             controller.serialSend(**kwargs)
-            
+
         Apply = ttk.Button(bottom, text="Apply Changes", command=applyChanges)
         Apply.pack(side = LEFT, padx = 100)
 
+
+# the main frame of the program
 class Application(tk.Tk):
     def __init__(self, *args, **kwargs):
         tk.Tk.__init__(self, *args, **kwargs)
+
+        # creating main frame structures and set it parameters
+
         self.mode = "test mode"
         self.com_name = "test name"
         self.id = "123456"
@@ -1426,8 +1479,9 @@ class Application(tk.Tk):
         self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        self.show_frame(ModeSelect)
+        self.show_frame(ModeSelect)  # the first show frame is mode select frame
         
+    # show the corresponding frame method
     def show_frame(self, page):
         frame = page(self.window, self)
         self.frames[page] = frame
@@ -1435,20 +1489,25 @@ class Application(tk.Tk):
         frame.tkraise()
         self.title("Pacemaker")
 
+    # back to last frame method
     def back(self, page):
         frame = self.frames[page]
         frame.tkraise()
         self.title("Pacemaker")
 
+    #set com name
     def set_com_name(self, com_name_in):
         self.com_name = com_name_in
 
+    #get com name
     def get_com_name(self):
         return self.com_name
 
+    #set id
     def set_id(self, id_input):
         self.id = id_input
 
+    #get id
     def get_id(self):
         return self.id
 
@@ -1505,12 +1564,14 @@ class Application(tk.Tk):
 
         print("set mode:", self.mode)
 
+    # get current mode method
     def get_mode(self):
         print("get mode:", self.mode)
         return self.mode
 
+    # the method use for loop to check the input is proper digits( more than two decimal places will return True as bad input )
     def check_digits(self, inputP):
-        #Janky solution for checking inputs
+        # Janky solution for checking inputs
         badInput = False
 
         for i in range(0, len(inputP)):
@@ -1522,6 +1583,7 @@ class Application(tk.Tk):
                         break
         return badInput
 
+    # the method use for loop to check the input is not contain digits(if contain digits, return True as bad input)
     def check_noDigits(self, inputP):
         badInput = False
 
@@ -1532,7 +1594,8 @@ class Application(tk.Tk):
 
         return badInput
 
-    def setDefaultParams(self, pmID = 12345):
+    # the defualt parameters store method
+    def setDefaultParams(self, pmID):
         #Default values
         lrl = 50
         url = 60
@@ -1549,12 +1612,13 @@ class Application(tk.Tk):
             writer = csv.writer(file)
             writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity])
 
+    #write parameters to file
     def writeToParams(self, pmID, params):
         with open("Parameters.csv", 'w', newline='') as file:
             writer = csv.writer(file)
             writer.writerow([pmID, lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_senstivity, atr_sensitivity])
 
-    
+    #read parameters from file
     def readParams(self):
         # Get default parameters from file
         with open("Parameters.csv", 'r') as file:
@@ -1577,6 +1641,7 @@ class Application(tk.Tk):
         
         return lrl, url, aamp, vamp, apw, vpw, arp, vrp, vent_sensitivity, atr_sensitivity
 
+
     def serialSend(self, id_input, mode_str, lrl_input = 60, url_input = 120, vent_pw_input = 0.4, vent_amp_input = 3.5, vent_sensitivity_input = 2.5, VRP_input = 320, atr_pw_input = 0.4, atr_amp_input = 3.5, atr_sensitivity_input = 0.75, ARP_input = 250):
         if mode_str == "AOO":
             mode_char = 2
@@ -1586,8 +1651,12 @@ class Application(tk.Tk):
             mode_char = 4
         if mode_str == "VVI":
             mode_char = 3
-        print(mode_str, mode_char)
 
+
+
+
+        print(mode_str, mode_char)
+        print("sending:", id_input, mode_str, lrl_input, url_input, vent_pw_input, vent_amp_input, vent_sensitivity_input, VRP_input, atr_pw_input, atr_amp_input, atr_sensitivity_input, ARP_input)
         frdm_port = self.com_name
 
         Start = b'\x16' #1
@@ -1599,29 +1668,30 @@ class Application(tk.Tk):
         url_int = int(url_input)
         vent_pw_conv = vent_pw_input
         atr_pw_conv = atr_pw_input
-        print(lrl_int)
+        #print(lrl_int)
         id_en = struct.pack("f", id_int)  #3:6
         mode_en = struct.pack("B", mode_char) #7
         lrl_en = struct.pack("B", lrl_int) #8
         url_en = struct.pack("B", url_int) #9
-        print(vent_pw_input)
-        print(vent_pw_conv)
+        #print(vent_pw_input)
+        #print(vent_pw_conv)
         vent_pw_en = struct.pack("B", int(vent_pw_conv)) #10
         vent_amp_en = struct.pack("f", vent_amp_input) #11:14
         vent_sensitivity_en = struct.pack("f", vent_sensitivity_input) #15:18
-        VRP_en = struct.pack("H", VRP_input) #19:20
-        atr_pw_en = struct.pack("B", int(atr_pw_conv)) #21
-        atr_amp_en = struct.pack("f", atr_amp_input) #22:25
-        atr_sensitivity_en = struct.pack("f", atr_sensitivity_input) #26:29
-        ARP_en = struct.pack("H", ARP_input) #30:31
+        VRP_en = struct.pack("f", VRP_input) #19:22
+        atr_pw_en = struct.pack("B", int(atr_pw_conv)) #23
+        atr_amp_en = struct.pack("f", atr_amp_input) #24:27
+        atr_sensitivity_en = struct.pack("f", atr_sensitivity_input) #28:31
+        ARP_en = struct.pack("H", ARP_input) #32:33
 
 
         # green_en = struct.pack("B", green_thing)
         # blue_en = struct.pack("B", blue_thing)
         # off_time = struct.pack("f", 3.1415926)
         # switch_time = struct.pack("H", 500)
-
         Signal_set = Start + Fn_set + id_en + mode_en + lrl_en + url_en + vent_pw_en + vent_amp_en + vent_sensitivity_en + VRP_en + atr_pw_en + atr_amp_en + atr_sensitivity_en + ARP_en
+        print("signal set", Signal_set)
+
         #Signal_echo = Start + SYNC + mode_en + lrl_en + url_en
 
         with serial.Serial(frdm_port, 115200) as pacemaker:
@@ -1664,6 +1734,7 @@ class Application(tk.Tk):
         ARP_en = struct.pack("H", ARP_input) #30:31
 
         Signal_echo = Start + SYNC + id_en + mode_en + lrl_en + url_en + vent_pw_en + vent_amp_en + vent_sensitivity_en + VRP_en + atr_pw_en + atr_amp_en + atr_sensitivity_en + ARP_en
+        print("signal echo", Signal_echo)
         frdm_port = self.com_name
 
         with serial.Serial(frdm_port, 115200) as pacemaker:
