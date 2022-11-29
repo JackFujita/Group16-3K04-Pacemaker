@@ -253,38 +253,19 @@ class ModeSelect(ttk.Frame):
         errormsg = ttk.Label(bottom_frame, foreground='#fff000000')
         errormsg.pack(side = TOP)
 
+        def make_plot_vent():
 
-
-        
-        fig = plt.figure()
-        ax = fig.add_subplot(1, 1, 1)
-        xs = []
-        ys = []
-
-        def make_plot():
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            xs = []
+            ys = []
+            
             # This function is called periodically from FuncAnimation
             def animate(i, xs, ys):
-                frdm_port = controller.get_com_name()
 
-                Start = b'\x16' #1
-                SYNC = b'\x22' #2
-
-                Signal_echo = Start + SYNC 
-
-                with serial.Serial(frdm_port, 115200) as pacemaker:
-                    pacemaker.write(Signal_echo)
-                    sleep(10)
-                    data = pacemaker.read(10)
-                    mode_read = data[0]
-                    A1_data = struct.unpack("d", data[2:9])[0]
-                    lrl_read = data[10]
-                    # off_rev =  struct.unpack("f", data[3:7])[0]
-                    # switch_rev =  struct.unpack("H", data[7:9])[0]
-                    print("echo complete", mode_read, A1_data, lrl_read)
-
-                # Read temperature (Celsius) from TMP102
+                # read ventricle or atrium signal (would be from pins)
                 val = random.randrange(-5, 5, 1)
-                voltage = round(A1_data, 2)
+                voltage = round(val, 2)
 
                 # Add x and y to lists
                 xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
@@ -301,10 +282,89 @@ class ModeSelect(ttk.Frame):
                 # Format plot
                 plt.xticks(rotation=45, ha='right')
                 plt.subplots_adjust(bottom=0.30)
-                plt.title('TMP102 Temperature over Time')
-                plt.ylabel('Temperature (deg C)')
+                plt.title('Ventricle Electrogram')
+                plt.ylabel('Voltage (V)')
 
             ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
+            plt.show()  
+
+        def make_plot_atr():
+
+            fig = plt.figure()
+            ax = fig.add_subplot(1, 1, 1)
+            xs = []
+            ys = []
+            
+            # This function is called periodically from FuncAnimation
+            def animate(i, xs, ys):
+
+                # read ventricle or atrium signal (would be from pins)
+                val = random.randrange(-5, 5, 1)
+                voltage = round(val, 2)
+
+                # Add x and y to lists
+                xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                ys.append(voltage)
+
+                # Limit x and y lists to 20 items
+                xs = xs[-20:]
+                ys = ys[-20:]
+
+                # Draw x and y lists
+                ax.clear()
+                ax.plot(xs, ys)
+
+                # Format plot
+                plt.xticks(rotation=45, ha='right')
+                plt.subplots_adjust(bottom=0.30)
+                plt.title('Atrium Electrogram')
+                plt.ylabel('Voltage (V)')
+
+            ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys), interval=10)
+            plt.show()  
+
+        def make_plot_both():
+            fig, (ax1, ax2) = plt.subplots(2, sharex=True)
+            fig.suptitle('Full Egram')
+
+            xs = []
+            ys = []
+            ys2 = []
+            
+            # This function is called periodically from FuncAnimation
+            def animate(i, xs, ys, ys2):
+
+                # read ventricle or atrium signal (would be from pins)
+                val = random.randrange(-5, 5, 1)
+                voltage = round(val, 2)
+                val2 = random.randrange(-5, 5, 1)
+                voltage2 = round(val2, 2)
+
+                # Add x and y to lists
+                xs.append(dt.datetime.now().strftime('%H:%M:%S.%f'))
+                ys.append(voltage)
+                ys2.append(voltage2)
+
+                # Limit x and y lists to 20 items
+                xs = xs[-20:]
+                ys = ys[-20:]
+                ys2 = ys2[-20:]
+
+                # Draw x and y lists
+                ax1.clear()
+                ax1.plot(xs, ys)
+                ax2.clear()
+                ax2.plot(xs, ys2)
+                
+                # Format plot
+                ax1.set_title('Atrium')
+                ax2.set_title('Ventricle')
+                plt.xticks(rotation=45, ha='right')
+                plt.subplots_adjust(bottom=0.30)
+                plt.title('Full Electrogram')
+                plt.ylabel('Voltage (V)')
+
+            ani = animation.FuncAnimation(fig, animate, fargs=(xs, ys, ys2), interval=10)
             plt.show()  
 
         def save_mode():
@@ -333,8 +393,13 @@ class ModeSelect(ttk.Frame):
 
         button = ttk.Button(border, text = "Apply", command = save_mode)
         button.pack(fill='x', padx=5,pady=5)
-        button2 = ttk.Button(border, text = "Apply", command = make_plot)
+        button2 = ttk.Button(border, text = "Ventricle Egram", command = make_plot_vent)
         button2.pack(fill='x', padx=5,pady=5)
+        button3 = ttk.Button(border, text = "Atrium Egram", command = make_plot_atr)
+        button3.pack(fill='x', padx=5,pady=5)
+        button4 = ttk.Button(border, text = "Full Egram", command = make_plot_both)
+        button4.pack(fill='x', padx=5,pady=5)
+
 
 class VOOParams(ttk.Frame):
     def __init__(self, parent, controller):
