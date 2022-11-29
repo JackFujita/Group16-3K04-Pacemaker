@@ -1483,7 +1483,7 @@ class Application(tk.Tk):
         self.window.grid_columnconfigure(0, minsize = 800)
         
         self.frames = {}
-        self.show_frame(ModeSelect)  # the first show frame is mode select frame
+        self.show_frame(Welcome)  # the first show frame is mode select frame
         
     # show the corresponding frame method
     def show_frame(self, page):
