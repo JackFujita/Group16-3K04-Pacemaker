@@ -876,7 +876,11 @@ class VVIParams(ttk.Frame):
             else:
                 error6.config(text = 'Please make entries for all fields')
 
-            VRPSet = False
+            if (LRLSet and URLSet):
+                if (lowerRateLimit > upperRateLimit):
+                    param1.delete(0, 100)
+                    error1.config(text = 'Please make sure that \nlower rate limit is less than \nupper rate limit')
+                    param2.delete(0, 100)
 
             error7.config(text = '')
 
