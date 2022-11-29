@@ -193,7 +193,7 @@ class ModeSelect(ttk.Frame):
             text1 = "Pacemaker " + ser_num + " at " + com_name + " connected"
 
             label.config(text=text1)
-            image = Image.open('Pictures/connect.png')
+            image = Image.open('images/connect.png')
             image = image.resize((20,20), Image.ANTIALIAS)
             global my_image
             my_image = ImageTk.PhotoImage(image)
@@ -220,7 +220,7 @@ class ModeSelect(ttk.Frame):
         # mehtod to disconnect the pacemaker
         def disconnect():
             label.config(text="No Pacemaker Connected...")  # show a picture when disconnect
-            image = Image.open('Pictures/disconnect2.png')
+            image = Image.open('images/disconnect2.png')
             image = image.resize((20,20), Image.ANTIALIAS)
             global my_image
             my_image = ImageTk.PhotoImage(image)
